@@ -1,3 +1,4 @@
+
 import type { Translation } from './types';
 
 const ku: Translation = {
@@ -56,7 +57,7 @@ const ku: Translation = {
   sourcesButton: "سەرچاوەکان",
   shareButton: "هاوبەشی پێکردن",
   aboutDialogTitle: "دەربارەی ئەپەکە",
-  aboutDialogContent: "ئەم ئەپە بە شێوەیەکی راستەوخۆ و نوێکراوە نرخی گۆڕینەوەی دیناری عێراقی (IQD) بۆ دۆلاری ئەمریکی (USD) و دراوەکانی تر پیشان دەدات. نرخەکان بە شێوەیەکی ئۆتۆماتیکی نوێ دەکرێنەوە بۆ دابینکردنی نوێترین زانیاری.",
+  aboutDialogContent: "ئەپلیکەیشنێکی مۆدێرن بۆ زانینی نرخی دراوەکان. دینار ڵایڤ مۆدێلێکی زیرەکی دەستکرد (AI) بەکاردەهێنێت بۆ وەرگرتن و دڵنیابوونەوە لە داتاکان لە سەرچاوە باوەڕپێکراوەکانی ئینتەرنێتەوە، بۆ دڵنیابوون لەوەی وردترین نرخی بازاڕ بۆ دیناری عێراقی (IQD) بەدەست دەهێنیت.",
   shareMessage: (marketRate: string, centralBankRate: string) => `نرخی ئێستای دینار:\nنرخی بازاڕ: 100$ = ${marketRate} دینار\nنرخی بانکی ناوەندی: 100$ = ${centralBankRate} دینار`,
   copiedToClipboard: "کۆپی کرا!",
   closeButton: "داخستن",
@@ -72,7 +73,7 @@ const ku: Translation = {
   assistantTyping: "یاریدەدەر دەنووسێت...",
 
   // Rate History and Cooldown
-  rateHistoryTitle: "گۆڕانی نرخ (3 ڕۆژ)",
+  rateHistoryTitle: "گۆڕانی نرخ (7 ڕۆژ)",
   noHistoryData: "هیچ داتایەکی مێژوویی نییە.",
   refreshCooldown: (time: string) => `تکایە ${time} چاوەڕێ بکە بۆ نوێکردنەوە.`,
 
@@ -163,7 +164,7 @@ const en: Translation = {
   sourcesButton: "Sources",
   shareButton: "Share",
   aboutDialogTitle: "About the App",
-  aboutDialogContent: "A modern and real-time currency exchange tracker for the Iraqi Dinar (IQD) to the US Dollar (USD). It displays the latest buy and sell rates, updating automatically to provide the most current information.",
+  aboutDialogContent: "A modern and real-time currency exchange tracker. DinarLive utilizes an advanced AI model to actively fetch and verify data from reliable web sources, ensuring you get the most accurate market rates for the Iraqi Dinar (IQD).",
   shareMessage: (marketRate: string, centralBankRate: string) => `Current IQD Rate:\nMarket: 100 USD = ${marketRate} IQD\nCentral Bank: 100 USD = ${centralBankRate} IQD`,
   copiedToClipboard: "Copied!",
   closeButton: "Close",
@@ -179,7 +180,7 @@ const en: Translation = {
   assistantTyping: "Assistant is typing...",
 
   // Rate History and Cooldown
-  rateHistoryTitle: "Rate History (3 Days)",
+  rateHistoryTitle: "Rate History (7 Days)",
   noHistoryData: "No historical data available.",
   refreshCooldown: (time: string) => `Please wait ${time} to refresh.`,
 
@@ -270,7 +271,7 @@ const ar: Translation = {
   sourcesButton: "المصادر",
   shareButton: "مشاركة",
   aboutDialogTitle: "عن التطبيق",
-  aboutDialogContent: "هذا التطبيق يعرض سعر صرف الدينار العراقي (IQD) مقابل الدولار الأمريكي (USD) والعملات الأخرى بشكل مباشر ومحدث. يتم تحديث الأسعار تلقائيًا لتوفير أحدث المعلومات.",
+  aboutDialogContent: "تطبيق حديث لمتابعة أسعار العملات. يستخدم DinarLive نموذج ذكاء اصطناعي متطور لجلب البيانات والتحقق منها من مصادر ويب موثوقة، مما يضمن حصولك على أدق أسعار السوق للدينار العراقي (IQD).",
   shareMessage: (marketRate: string, centralBankRate: string) => `سعر الدينار الحالي:\nسعر السوق: 100$ = ${marketRate} دينار\nسعر البنك المركزي: 100$ = ${centralBankRate} دينار`,
   copiedToClipboard: "تم النسخ!",
   closeButton: "إغلاق",
@@ -286,7 +287,7 @@ const ar: Translation = {
   assistantTyping: "المساعد يكتب...",
 
   // Rate History and Cooldown
-  rateHistoryTitle: "سجل الأسعار (3 أيام)",
+  rateHistoryTitle: "سجل الأسعار (7 أيام)",
   noHistoryData: "لا توجد بيانات تاريخية متاحة.",
   refreshCooldown: (time: string) => `يرجى الانتظار ${time} للتحديث.`,
 

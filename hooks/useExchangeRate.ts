@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { ExchangeRateData, GroundingChunk, ExchangeRateErrorType, RateHistoryEntry } from '../types';
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 
 const FETCH_INTERVAL_MS = 2 * 60 * 60 * 1000; // 2 hours
 const REFRESH_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
@@ -12,7 +12,6 @@ const CACHED_RATE_KEY = 'dinarLive_cachedRate';
 const CACHED_SOURCES_KEY = 'dinarLive_cachedSources';
 const CACHED_HISTORY_KEY = 'dinarLive_cachedHistory';
 const LAST_REFRESH_KEY = 'dinarLive_lastRefresh';
-
 
 const getInitialState = <T,>(key: string): T | null => {
     try {
@@ -64,57 +63,48 @@ export const useExchangeRate = () => {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
+      // Strict extraction prompt based on user requirements
       const prompt = `
-        You are an expert financial data extraction bot. Your sole function is to visit specific webpages, extract currency exchange data, and return it in a raw JSON format. You MUST NOT use any APIs or cached knowledge. You MUST visit the URLs provided and parse their content. The entire response must be ONLY the JSON object, without any introductory text, markdown, or explanations.
+        **TASK:** Fetch and extract currency data strictly.
 
-        **ACTION 1: Get Iraqi Dinar (IQD) rate from Alanchand**
-        - **URL**: Browse to \`https://alanchand.com/en/exchange-rates/iqd-usd\`.
-        - **Find the Table**: Locate the main exchange rate table on the page. It is often under a heading like "Exchange Rates For Iraqi Dinar - IQD".
-        - **Find the Row**: In that table, find the row for "USD - United States Dollar".
-        - **Extract the Value**: From that exact row, get the number from the "Buy" column.
-        - **Verification**: This number represents the rate for 100 USD to IQD and should be above 135,000.
-        - **JSON field**: Put this number into the \`iqdPer100Usd\` field. If you cannot find a valid number after a thorough search of the page's content, you MUST use \`0\`.
+        **PART 1: CURRENT USD-IQD RATE (Mandatory Accuracy)**
+        - **Source URL:** https://alanchand.com/en/exchange-rates/usd-iqd
+        - **Strict Extraction Rule:**
+          1. Locate the HTML element with ID "#destinationAmount" (or similar output field for the converted amount).
+          2. Locate the base currency text "span.currOrigin" (Should be "1 USD").
+          3. Extract the numeric text from "#destinationAmount". 
+        - **Logic:** This number represents the value of **1 USD**. 
+        - **Validation:** 
+           - The number should contain only digits and dots.
+           - If the value is ~1400-1600, it is the price for 1 USD.
+           - **Output:** Convert this to the price for **100 USD** for the JSON output.
 
-        **ACTION 2: Get Iranian Toman (IRT) rate from Bonbast**
-        - **URL**: Browse to \`https://bonbast.com\`.
-        - **Find the Table**: Locate the main table of exchange rates.
-        - **Find the Row**: In that table, find the row for the "US Dollar".
-        - **Extract the Value**: From that exact row, get the number from the "Sell" column.
-        - **Verification**: This number is the rate for 1 USD to IRT.
-        - **JSON field**: Put this number into the \`irtPerUsd\` field. If you cannot find it, you MUST use \`0\`.
+        **PART 2: HISTORY (7 Days)**
+        - **Source URL:** https://alanchand.com/en/exchange-rates/iqd-usd
+        - **Action:** Extract the 7-day history table from this page. 
+        - **Note:** This is a different URL from Part 1. Use this URL specifically for the table.
 
-        **ACTION 3: Get rates for EUR, TRY, GBP**
-        - **Method**: Use a general web search to find the current exchange rates.
-        - **Required Rates**:
-          - How many EUR for 1 USD?
-          - How many TRY for 1 USD?
-          - How many GBP for 1 USD?
-        - **JSON fields**: Put these values into \`eurPerUsd\`, \`tryPerUsd\`, and \`gbpPerUsd\` respectively. If a rate is not found, use \`0\`.
+        **PART 3: OTHER CURRENCIES**
+        - Look for EUR, TRY, GBP, and Toman (IRT) rates against USD.
 
-        **ACTION 4: Get IQD History from Alanchand**
-        - **URL**: Use the same Alanchand URL from ACTION 1.
-        - **Find the Table**: Find the history table, usually titled "Last 7 Days Exchange Rate History USD to IQD".
-        - **Extract Data**: From this table, extract the 'Date' and the rate ('100 USD = IQD' column) for the three most recent, unique dates.
-        - **Format**: Dates must be "YYYY-MM-DD".
-        - **JSON field**: Put this data as an array of objects into the \`history\` field. If you cannot find the table, return an empty array \`[]\`.
-
-        **FINAL JSON OUTPUT STRUCTURE (RAW JSON ONLY):**
+        **OUTPUT JSON FORMAT:**
+        Return ONLY valid JSON. No markdown.
         {
           "current": {
-            "iqdPer100Usd": <number | 0>,
-            "eurPerUsd": <number | 0>,
-            "tryPerUsd": <number | 0>,
-            "gbpPerUsd": <number | 0>,
-            "irtPerUsd": <number | 0>
+            "iqdPer100Usd": number, // The extracted "#destinationAmount" * 100
+            "eurPerUsd": number,
+            "tryPerUsd": number,
+            "gbpPerUsd": number,
+            "irtPerUsd": number
           },
           "history": [
-            { "date": "YYYY-MM-DD", "rate": <number> }
+            { "date": "YYYY-MM-DD", "rate": number }
           ]
         }
       `;
     
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3-pro-preview',
         contents: prompt,
         config: {
           tools: [{ googleSearch: {} }],
@@ -122,25 +112,34 @@ export const useExchangeRate = () => {
       });
 
       const rawText = response.text;
-      // Use a regex to find a JSON object within the response text.
-      // This is more robust against conversational text or markdown.
       const jsonMatch = rawText.match(/\{[\s\S]*\}/);
       
       if (!jsonMatch) {
-        throw new Error(`Could not find a valid JSON object in the API response. Response was: "${rawText}"`);
+        throw new Error(`Could not find a valid JSON object in the API response.`);
       }
       
       const jsonStr = jsonMatch[0];
       const parsedData = JSON.parse(jsonStr);
       
-      const iqdRateFromApi = parsedData.current?.iqdPer100Usd;
-      // Stricter validation: Check if the rate is within a plausible market range.
-      // The prompt instructs the model to return 0 if it can't find a valid rate.
-      if (!iqdRateFromApi || typeof iqdRateFromApi !== 'number' || iqdRateFromApi < 135000) {
+      let iqdRateFromApi = parsedData.current?.iqdPer100Usd;
+
+      // Logic: Ensure we have a valid number.
+      if (typeof iqdRateFromApi === 'number') {
+         // If the model returned the 1 USD rate (e.g. 1500) instead of 100 USD rate, fix it.
+         if (iqdRateFromApi > 0 && iqdRateFromApi < 5000) {
+             iqdRateFromApi = iqdRateFromApi * 100;
+         }
+      }
+      
+      // Safety Check: Rate for 100 USD should be roughly between 100,000 and 200,000.
+      if (!iqdRateFromApi || typeof iqdRateFromApi !== 'number' || iqdRateFromApi < 50000) {
+        console.error("Invalid API Response (IQD Rate invalid):", parsedData);
         throw new Error(`Invalid or out-of-range IQD rate received from API: ${iqdRateFromApi}`);
       }
       
+      // The app uses "Rate per 1 USD" internally for calculations, but displays per 100 USD.
       const iqdPerUsd = iqdRateFromApi / 100;
+      
       const eurPerUsd = (typeof parsedData.current.eurPerUsd === 'number' && parsedData.current.eurPerUsd > 0) ? parsedData.current.eurPerUsd : 0;
       const tryPerUsd = (typeof parsedData.current.tryPerUsd === 'number' && parsedData.current.tryPerUsd > 0) ? parsedData.current.tryPerUsd : 0;
       const gbpPerUsd = (typeof parsedData.current.gbpPerUsd === 'number' && parsedData.current.gbpPerUsd > 0) ? parsedData.current.gbpPerUsd : 0;
@@ -155,21 +154,42 @@ export const useExchangeRate = () => {
         updated: new Date().toISOString(),
       };
       
-      const newHistory: RateHistoryEntry[] = Array.isArray(parsedData.history) ? parsedData.history.filter(
-          (item: any) => typeof item.date === 'string' && typeof item.rate === 'number'
-        ).sort((a: RateHistoryEntry, b: RateHistoryEntry) => new Date(b.date).getTime() - new Date(a.date).getTime()) : [];
+      // Process History
+      let newHistory: RateHistoryEntry[] = [];
+      if (Array.isArray(parsedData.history)) {
+          newHistory = parsedData.history
+            .filter((item: any) => {
+                if (!item.date || typeof item.rate !== 'number') return false;
+                
+                // Fix history scaling if needed
+                if (item.rate < 5000) item.rate = item.rate * 100;
+                
+                // Ensure reasonable range (e.g. > 100,000)
+                return item.rate > 50000;
+            })
+            // Sort by date ascending for the chart
+            .sort((a: RateHistoryEntry, b: RateHistoryEntry) => new Date(a.date).getTime() - new Date(b.date).getTime());
+            
+          // Take last 7 days
+          if (newHistory.length > 7) {
+            newHistory = newHistory.slice(newHistory.length - 7);
+          }
+      }
 
       const groundingChunks: GroundingChunk[] = response.candidates?.[0]?.groundingMetadata?.groundingChunks as GroundingChunk[] ?? [];
       const uniqueChunks = Array.from(new Map(groundingChunks.filter(item => item.web?.uri).map(item => [item.web!.uri, item])).values());
 
       setRate(newRate);
       setSources(uniqueChunks);
-      setRateHistory(newHistory);
+      
+      if (newHistory.length > 0) {
+          setRateHistory(newHistory);
+          localStorage.setItem(CACHED_HISTORY_KEY, JSON.stringify(newHistory));
+      }
       
       hasInitialData.current = true;
       localStorage.setItem(CACHED_RATE_KEY, JSON.stringify(newRate));
       localStorage.setItem(CACHED_SOURCES_KEY, JSON.stringify(uniqueChunks));
-      localStorage.setItem(CACHED_HISTORY_KEY, JSON.stringify(newHistory));
 
       retryCount.current = 0;
       setError(null);
@@ -183,10 +203,6 @@ export const useExchangeRate = () => {
         setTimeout(fetchExchangeRate, RETRY_DELAY_MS);
       } else {
         setError('FAILED_AFTER_RETRIES');
-        if (!hasInitialData.current) {
-          setRate(null);
-          setRateHistory([]);
-        }
         setIsLoading(false);
       }
     }
@@ -196,8 +212,7 @@ export const useExchangeRate = () => {
     if (isManualRefresh) {
       const lastRefreshTime = getInitialState<number>(LAST_REFRESH_KEY);
       if (lastRefreshTime && (Date.now() - lastRefreshTime < REFRESH_COOLDOWN_MS)) {
-        console.log("Refresh skipped due to cooldown.");
-        updateCooldown(); // Ensure timer is accurate
+        updateCooldown(); 
         return;
       }
       localStorage.setItem(LAST_REFRESH_KEY, JSON.stringify(Date.now()));
