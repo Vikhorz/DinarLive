@@ -1,11 +1,15 @@
-
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { ExchangeRateData, GroundingChunk, ExchangeRateErrorType, RateHistoryEntry } from '../types';
-import { GoogleGenAI } from "@google/genai";
+import type {
+  ExchangeRateData,
+  GroundingChunk,
+  ExchangeRateErrorType,
+  RateHistoryEntry,
+  RatesApiResponse,
+} from '../types';
 
 const FETCH_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes
 const REFRESH_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
-const VERY_STALE_THRESHOLD_MS = 12 * 60 * 60 * 1000; // 12 Hours
+const VERY_STALE_THRESHOLD_MS = 12 * 60 * 60 * 1000; // 12 hours
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 3000;
 
@@ -14,59 +18,103 @@ const CACHED_SOURCES_KEY = 'dinarLive_cachedSources';
 const CACHED_HISTORY_KEY = 'dinarLive_cachedHistory';
 const LAST_REFRESH_KEY = 'dinarLive_lastRefresh';
 
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+const RATES_API_ENDPOINT = `${API_BASE_URL}/api/rates`;
+
 const getInitialState = <T,>(key: string): T | null => {
-    try {
-        const item = localStorage.getItem(key);
-        return item ? JSON.parse(item) : null;
-    } catch (error) {
-        console.warn(`Error reading localStorage key “${key}”:`, error);
-        return null;
-    }
+  if (typeof window === 'undefined') return null;
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : null;
+  } catch (error) {
+    console.warn(`Error reading localStorage key "${key}":`, error);
+    return null;
+  }
+};
+
+const getStoredTimestamp = (key: string): number | null => {
+  if (typeof window === 'undefined') return null;
+  const rawValue = localStorage.getItem(key);
+  if (!rawValue) return null;
+
+  try {
+    const parsedValue = JSON.parse(rawValue);
+    return typeof parsedValue === 'number' && Number.isFinite(parsedValue) ? parsedValue : null;
+  } catch {
+    const numericValue = Number(rawValue);
+    return Number.isFinite(numericValue) ? numericValue : null;
+  }
 };
 
 const isCacheValid = () => {
-    try {
-        const lastRefresh = localStorage.getItem(LAST_REFRESH_KEY);
-        if (!lastRefresh) return false;
-        const lastRefreshTime = parseInt(lastRefresh, 10);
-        return (Date.now() - lastRefreshTime) < VERY_STALE_THRESHOLD_MS;
-    } catch { return false; }
+  const lastRefreshTime = getStoredTimestamp(LAST_REFRESH_KEY);
+  return lastRefreshTime ? (Date.now() - lastRefreshTime) < VERY_STALE_THRESHOLD_MS : false;
 };
+
+const normalizeHistory = (history: unknown, currentRate: ExchangeRateData | null): RateHistoryEntry[] => {
+  const parsedHistory = Array.isArray(history)
+    ? history
+        .map((item: any) => ({
+          date: typeof item?.date === 'string' ? item.date : '',
+          rate: typeof item?.rate === 'number' ? item.rate : Number(item?.rate),
+        }))
+        .filter((entry: RateHistoryEntry) => entry.date && Number.isFinite(entry.rate) && entry.rate > 100000)
+    : [];
+
+  if (currentRate) {
+    parsedHistory.push({
+      date: currentRate.updated.slice(0, 10),
+      rate: Math.round(currentRate.iqd * 100),
+    });
+  }
+
+  const dedupedHistory = new Map<string, RateHistoryEntry>();
+  parsedHistory.forEach((entry) => {
+    dedupedHistory.set(entry.date, entry);
+  });
+
+  return Array.from(dedupedHistory.values())
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .slice(-7);
+};
+
+const isValidRate = (rate: any): rate is ExchangeRateData => (
+  rate
+  && typeof rate.iqd === 'number'
+  && typeof rate.centralBankRate === 'number'
+  && typeof rate.updated === 'string'
+);
 
 export const useExchangeRate = () => {
   const [rate, setRate] = useState<ExchangeRateData | null>(() => {
-      if (!isCacheValid()) return null;
-      return getInitialState<ExchangeRateData>(CACHED_RATE_KEY);
+    if (!isCacheValid()) return null;
+    return getInitialState<ExchangeRateData>(CACHED_RATE_KEY);
   });
-  
+
   const [sources, setSources] = useState<GroundingChunk[]>(() => {
-      if (!isCacheValid()) return [];
-      return getInitialState<GroundingChunk[]>(CACHED_SOURCES_KEY) || [];
+    if (!isCacheValid()) return [];
+    return getInitialState<GroundingChunk[]>(CACHED_SOURCES_KEY) || [];
   });
-  
+
   const [rateHistory, setRateHistory] = useState<RateHistoryEntry[]>(() => getInitialState<RateHistoryEntry[]>(CACHED_HISTORY_KEY) || []);
-  
   const [isLoading, setIsLoading] = useState<boolean>(!rate);
   const [error, setError] = useState<ExchangeRateErrorType>(null);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
-  
-  const retryCount = useRef(0);
+
   const cooldownTimerRef = useRef<number | null>(null);
+  const retryTimerRef = useRef<number | null>(null);
+  const activeFetchRef = useRef<Promise<void> | null>(null);
+  const isMountedRef = useRef(true);
 
   const updateCooldown = useCallback(() => {
-    const lastRefreshTime = getInitialState<number>(LAST_REFRESH_KEY);
+    const lastRefreshTime = getStoredTimestamp(LAST_REFRESH_KEY);
     if (!lastRefreshTime) {
       setCooldownSeconds(0);
       return;
     }
-    const timeSinceLastRefresh = Date.now() - lastRefreshTime;
-    const remainingCooldown = REFRESH_COOLDOWN_MS - timeSinceLastRefresh;
 
-    if (remainingCooldown > 0) {
-      setCooldownSeconds(Math.ceil(remainingCooldown / 1000));
-    } else {
-      setCooldownSeconds(0);
-    }
+    const remainingCooldown = REFRESH_COOLDOWN_MS - (Date.now() - lastRefreshTime);
+    setCooldownSeconds(remainingCooldown > 0 ? Math.ceil(remainingCooldown / 1000) : 0);
   }, []);
 
   useEffect(() => {
@@ -77,173 +125,142 @@ export const useExchangeRate = () => {
     };
   }, [updateCooldown]);
 
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+      if (cooldownTimerRef.current) clearInterval(cooldownTimerRef.current);
+      if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+    };
+  }, []);
+
   const fetchExchangeRate = useCallback(async () => {
-    try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const response = await fetch(RATES_API_ENDPOINT, {
+      headers: {
+        accept: 'application/json',
+      },
+    });
 
-      const prompt = `
-        **URGENT FINANCIAL DATA EXTRACTION**
-        I need the most current exchange rates for the Iraqi Dinar (IQD) vs USD. 
-        Date/Time: ${new Date().toLocaleString()}
+    if (!response.ok) {
+      throw new Error(`Rates API returned ${response.status}`);
+    }
 
-        **SOURCES:**
-        1. Telegram t.me/s/iraqborsa - Extract latest prices for Sulaymaniyah (سلێمانی), Erbil (هەولێر), Duhok (دهۆک).
-        2. Central Bank of Iraq (CBI) Official Rate.
-        3. Global rates: EUR/USD, TRY/USD, GBP/USD, IRT(Toman)/USD.
+    const payload = await response.json() as RatesApiResponse;
+    if (!isValidRate(payload?.rate)) {
+      throw new Error('Rates API returned an invalid payload');
+    }
 
-        **DATA REQUIREMENTS:**
-        - Market Rate (100 USD): usually 145,000 - 155,000 IQD.
-        - Official Rate: usually 1310 - 1320 IQD per 1 USD.
-        - Historical: 7-day Sulaymaniyah history.
+    const nextRate = payload.rate;
+    const nextSources = Array.isArray(payload.sources) ? payload.sources : [];
+    const nextHistory = normalizeHistory(payload.rateHistory, nextRate);
 
-        **OUTPUT VALID JSON ONLY:**
-        {
-          "current": {
-            "suly100Usd": number,
-            "erbil100Usd": number,
-            "duhok100Usd": number,
-            "officialRate": number,
-            "eurPerUsd": number,
-            "tryPerUsd": number,
-            "gbpPerUsd": number,
-            "irtPerUsd": number
-          },
-          "history": [
-            { "date": "YYYY-MM-DD", "rate": number }
-          ]
+    return {
+      nextRate,
+      nextSources,
+      nextHistory,
+    };
+  }, []);
+
+  const waitBeforeRetry = useCallback(() => new Promise<void>((resolve) => {
+    retryTimerRef.current = window.setTimeout(() => {
+      retryTimerRef.current = null;
+      resolve();
+    }, RETRY_DELAY_MS);
+  }), []);
+
+  const runFetchWithRetries = useCallback(async () => {
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        const { nextRate, nextSources, nextHistory } = await fetchExchangeRate();
+
+        if (!isMountedRef.current) return;
+
+        setRate(nextRate);
+        setSources(nextSources);
+        setRateHistory(nextHistory);
+        localStorage.setItem(CACHED_RATE_KEY, JSON.stringify(nextRate));
+        localStorage.setItem(CACHED_SOURCES_KEY, JSON.stringify(nextSources));
+        localStorage.setItem(CACHED_HISTORY_KEY, JSON.stringify(nextHistory));
+        localStorage.setItem(LAST_REFRESH_KEY, String(Date.now()));
+
+        setError(null);
+        setIsLoading(false);
+        updateCooldown();
+        return;
+      } catch (fetchError: unknown) {
+        console.error(`Fetch attempt ${attempt} failed:`, (fetchError as Error).message);
+
+        if (attempt < MAX_RETRIES) {
+          await waitBeforeRetry();
+          if (!isMountedRef.current) return;
+          continue;
         }
-      `;
-    
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: prompt,
-        config: {
-          tools: [{ googleSearch: {} }],
-        },
-      });
 
-      const rawText = response.text;
-      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-      
-      if (!jsonMatch) throw new Error("AI failed to return valid JSON");
-      
-      const parsedData = JSON.parse(jsonMatch[0]);
-      
-      const suly = parsedData.current?.suly100Usd || 0;
-      const erbil = parsedData.current?.erbil100Usd || 0;
-      const duhok = parsedData.current?.duhok100Usd || 0;
-      const official = parsedData.current?.officialRate || 1320;
-
-      if (suly < 100000 || suly === 141300) {
-        throw new Error("Extracted rate is either static fallback or invalid");
-      }
-      
-      const normalizedOfficial = official > 10000 ? official / 100 : official;
-
-      const newRate: ExchangeRateData = {
-        iqd: suly / 100,
-        centralBankRate: normalizedOfficial,
-        cities: {
-            sulaymaniyah: suly,
-            erbil: erbil || suly,
-            duhok: duhok || suly,
-        },
-        eurPerUsd: parsedData.current.eurPerUsd || 0,
-        tryPerUsd: parsedData.current.tryPerUsd || 0,
-        gbpPerUsd: parsedData.current.gbpPerUsd || 0,
-        irtPerUsd: parsedData.current.irtPerUsd || 0,
-        updated: new Date().toISOString(),
-      };
-      
-      let newHistory: RateHistoryEntry[] = [];
-      if (Array.isArray(parsedData.history)) {
-          newHistory = parsedData.history
-            .map((item: any) => ({
-                date: item.date,
-                rate: item.rate < 5000 ? item.rate * 100 : item.rate
-            }))
-            .filter((item: any) => item.rate > 100000)
-            .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
-            .slice(-7);
-      }
-
-      const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks as GroundingChunk[] ?? [];
-      const uniqueChunks = Array.from(new Map(groundingChunks.filter(item => item.web?.uri).map(item => [item.web!.uri, item])).values());
-
-      setRate(newRate);
-      setSources(uniqueChunks);
-      if (newHistory.length > 0) {
-          setRateHistory(newHistory);
-          localStorage.setItem(CACHED_HISTORY_KEY, JSON.stringify(newHistory));
-      }
-      
-      localStorage.setItem(CACHED_RATE_KEY, JSON.stringify(newRate));
-      localStorage.setItem(CACHED_SOURCES_KEY, JSON.stringify(uniqueChunks));
-      localStorage.setItem(LAST_REFRESH_KEY, JSON.stringify(Date.now()));
-
-      retryCount.current = 0;
-      setError(null);
-      setIsLoading(false);
-
-    } catch (e: unknown) {
-      console.error(`Fetch attempt ${retryCount.current + 1} failed:`, (e as Error).message);
-      retryCount.current++;
-      if (retryCount.current < MAX_RETRIES) {
-        setTimeout(fetchExchangeRate, RETRY_DELAY_MS);
-      } else {
+        if (!isMountedRef.current) return;
         setError('FAILED_AFTER_RETRIES');
         setIsLoading(false);
       }
     }
-  }, []);
+  }, [fetchExchangeRate, updateCooldown, waitBeforeRetry]);
 
   const startFetchCycle = useCallback(async (isManualRefresh = false) => {
+    if (activeFetchRef.current) {
+      return activeFetchRef.current;
+    }
+
     if (isManualRefresh) {
-      const lastRefreshTime = getInitialState<number>(LAST_REFRESH_KEY);
+      const lastRefreshTime = getStoredTimestamp(LAST_REFRESH_KEY);
       if (lastRefreshTime && (Date.now() - lastRefreshTime < REFRESH_COOLDOWN_MS)) {
-        updateCooldown(); 
+        updateCooldown();
         return;
       }
-      updateCooldown();
     }
-    
-    retryCount.current = 0;
-    setIsLoading(true);
-    setError(null);
-    await fetchExchangeRate();
-  }, [fetchExchangeRate, updateCooldown]);
+
+    if (isMountedRef.current) {
+      setIsLoading(true);
+      setError(null);
+    }
+
+    const fetchPromise = runFetchWithRetries().finally(() => {
+      activeFetchRef.current = null;
+    });
+
+    activeFetchRef.current = fetchPromise;
+    await fetchPromise;
+  }, [runFetchWithRetries, updateCooldown]);
 
   useEffect(() => {
-    const lastRefreshTime = getInitialState<number>(LAST_REFRESH_KEY);
+    const lastRefreshTime = getStoredTimestamp(LAST_REFRESH_KEY);
     const now = Date.now();
-    
+
     if (!rate || (lastRefreshTime && now - lastRefreshTime > FETCH_INTERVAL_MS)) {
-        startFetchCycle(false);
+      startFetchCycle(false);
     }
-    
+
     const intervalId = setInterval(() => {
-        const currentLastRefresh = getInitialState<number>(LAST_REFRESH_KEY);
-        if (!currentLastRefresh || (Date.now() - currentLastRefresh > FETCH_INTERVAL_MS)) {
-             startFetchCycle(false);
-        }
+      const currentLastRefresh = getStoredTimestamp(LAST_REFRESH_KEY);
+      if (!currentLastRefresh || (Date.now() - currentLastRefresh > FETCH_INTERVAL_MS)) {
+        startFetchCycle(false);
+      }
     }, FETCH_INTERVAL_MS);
-    
+
     return () => clearInterval(intervalId);
   }, [startFetchCycle, rate]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
-        if (document.visibilityState === 'visible') {
-            const lastRefreshTime = getInitialState<number>(LAST_REFRESH_KEY);
-            const now = Date.now();
-            
-            if (lastRefreshTime && (now - lastRefreshTime > FETCH_INTERVAL_MS)) {
-                if (now - lastRefreshTime > VERY_STALE_THRESHOLD_MS) {
-                    setRate(null);
-                }
-                startFetchCycle(false);
-            }
+      if (document.visibilityState !== 'visible') {
+        return;
+      }
+
+      const lastRefreshTime = getStoredTimestamp(LAST_REFRESH_KEY);
+      const now = Date.now();
+
+      if (lastRefreshTime && (now - lastRefreshTime > FETCH_INTERVAL_MS)) {
+        if (now - lastRefreshTime > VERY_STALE_THRESHOLD_MS) {
+          setRate(null);
         }
+        startFetchCycle(false);
+      }
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
