@@ -1,4 +1,4 @@
-import { createRatesResponse } from '../server/ratesService';
+import { createRatesResponse } from '../server/ratesService.js';
 
 export const maxDuration = 15;
 
