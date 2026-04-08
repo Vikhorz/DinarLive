@@ -1,5 +1,5 @@
 import type { ChatApiRequest } from '../types';
-import { createChatResponse } from '../server/chatService';
+import { createChatResponse } from '../server/chatService.js';
 
 export const maxDuration = 15;
 
