@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { Translation } from '../types';
 
@@ -14,11 +15,11 @@ interface ComparisonRatesProps {
 const ComparisonItem: React.FC<{label: string, value: string, description?: string, currency: string, onClick: () => void}> = ({ label, value, description, currency, onClick }) => (
     <button 
         onClick={onClick}
-        className="p-3 bg-gray-50 dark:bg-gray-900/40 rounded-lg text-center transition-all duration-300 w-full hover:bg-gray-100 dark:hover:bg-gray-700/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 hover:scale-105 active:scale-100"
+        className="p-3 bg-white/40 dark:bg-gray-800/40 backdrop-blur-sm border border-emerald-100/50 dark:border-emerald-800/30 rounded-xl text-center transition-all duration-300 w-full hover:bg-emerald-50 dark:hover:bg-emerald-900/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 hover:scale-[1.03] active:scale-95 shadow-sm"
     >
-        <p className="text-sm font-semibold text-gray-600 dark:text-gray-300">{label}</p>
-        <p className="text-lg font-bold font-mono text-gray-800 dark:text-white mt-1" dir="ltr">{value} <span className="text-xs font-sans">{currency}</span></p>
-        {description && <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{description}</p>}
+        <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-tight">{label}</p>
+        <p className="text-lg font-bold font-mono text-gray-800 dark:text-white mt-1" dir="ltr">{value} <span className="text-[10px] font-sans opacity-70">{currency}</span></p>
+        {description && <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1 truncate">{description}</p>}
     </button>
 );
 
@@ -34,8 +35,8 @@ export const ComparisonRates: React.FC<ComparisonRatesProps> = ({ iqdRate, eurRa
 
 
     return (
-        <div className="mt-6 animate-fade-in">
-            <h3 className="text-center text-base font-bold text-gray-700 dark:text-gray-200 transition-colors duration-300 mb-3">{t.comparisonRatesTitle}</h3>
+        <div className="bg-gradient-to-br from-emerald-50/30 via-white to-gray-50 dark:from-emerald-900/10 dark:via-gray-800 dark:to-gray-900 border border-emerald-100/50 dark:border-emerald-900/30 rounded-2xl p-5 shadow-lg animate-fade-in">
+            <h3 className="text-center text-sm font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-widest transition-colors duration-300 mb-4">{t.comparisonRatesTitle}</h3>
             <div className="grid grid-cols-2 gap-3 sm:gap-4">
                {eurRate > 0 && <ComparisonItem label={t.eurToIqd} value={iqdPerEur} description={t.eurRateDescription} currency={t.iqdCurrency} onClick={() => onCurrencySelect('EUR')} />}
                {tryRate > 0 && <ComparisonItem label={t.tryToIqd} value={iqdPerTry} description={t.tryRateDescription} currency={t.iqdCurrency} onClick={() => onCurrencySelect('TRY')} />}

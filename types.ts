@@ -1,9 +1,16 @@
+
 export interface ExchangeRateData {
-  iqd: number; // IQD per USD
-  eurPerUsd: number; // EUR per USD
-  tryPerUsd: number; // TRY per USD
-  gbpPerUsd: number; // GBP per USD
-  irtPerUsd: number; // IRT (Toman) per USD
+  iqd: number; // Main rate (Sulaymaniyah)
+  centralBankRate: number; // Official rate from Credit Bank of Iraq
+  cities: {
+    sulaymaniyah: number;
+    erbil: number;
+    duhok: number;
+  };
+  eurPerUsd: number;
+  tryPerUsd: number;
+  gbpPerUsd: number;
+  irtPerUsd: number;
   updated: string;
 }
 
@@ -27,7 +34,7 @@ export interface ChatMessage {
 }
 
 export interface Translation {
-  [key: string]: any; // Allow indexing with string for error messages
+  [key: string]: any;
   appName: string;
   headerTitle: string;
   headerSubtitle: string;
@@ -59,6 +66,10 @@ export interface Translation {
   invalidRateInputError: string;
   retryButton: string;
   comparisonRatesTitle: string;
+  regionalRatesTitle: string;
+  sulyName: string;
+  erbilName: string;
+  duhokName: string;
   eurToIqd: string;
   tryToIqd: string;
   gbpToIqd: string;
@@ -66,7 +77,6 @@ export interface Translation {
   tryRateDescription: string;
   eurRateDescription: string;
   gbpRateDescription: string;
-  // FIX: Corrected a typo from 'irrRateDescription' to 'irtRateDescription' to match its usage for Iranian Toman.
   irtRateDescription: string;
   updatingRates: string;
   sourcesTitle: string;
@@ -83,17 +93,14 @@ export interface Translation {
   pullToRefresh: string;
   errorAfterRetriesTitle: string;
   errorAfterRetriesMessage: string;
-  // Chat feature translations
   chatTitle: string;
   chatWelcomeMessage: string;
   chatInputPlaceholder: string;
   sendButton: string;
   assistantTyping: string;
-  // Rate History and Cooldown
   rateHistoryTitle: string;
   noHistoryData: string;
   refreshCooldown: (time: string) => string;
-  // Calculator Tooltips
   usdTooltip: string;
   iqdTooltip: string;
   eurTooltip: string;
@@ -101,7 +108,6 @@ export interface Translation {
   gbpTooltip: string;
   irtTooltip: string;
   resultTooltip: string;
-  // Currency Info Modal
   currencyInfoTitle: (name: string) => string;
   buyCurrencyTitle: (name: string) => string;
   buyButton: (code: string) => string;
@@ -110,7 +116,6 @@ export interface Translation {
   funFact: string;
   purchaseAmount: string;
   costInIqd: string;
-  // Currency Details
   usd_name: string;
   usd_description: string;
   usd_fact: string;

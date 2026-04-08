@@ -1,8 +1,9 @@
+
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
     <title>DinarLive</title>
     <link rel="icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3e%3ccircle cx='50' cy='50' r='48' fill='%23FBBF24' stroke='%23B45309' stroke-width='4'/%3e%3ctext x='50' y='60' font-family='Noto Kufi Arabic, sans-serif' font-size='40' font-weight='bold' fill='%23B45309' text-anchor='middle'%3eد.ع%3c/text%3e%3c/svg%3e" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,56 +27,69 @@
         fontFamily: {
           'noto-kufi-arabic': ['"Noto Kufi Arabic"', 'sans-serif'],
         },
+        screens: {
+          'xs': '375px',
+        },
       },
     },
   }
 </script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-  // Manual-Only Theme Initialization
   (function() {
     try {
       var storedTheme = localStorage.getItem('theme');
-      
-      // Strict Manual Logic:
-      // 1. Read localStorage
-      // 2. Default to 'light' if null
-      // 3. Do NOT check system preference (prefers-color-scheme)
-      
+      var root = document.documentElement;
       if (storedTheme === 'dark') {
-        document.documentElement.classList.add('dark');
+        root.classList.add('dark');
+        root.classList.remove('light');
       } else {
-        document.documentElement.classList.remove('dark');
+        root.classList.add('light');
+        root.classList.remove('dark');
+        if (!storedTheme) localStorage.setItem('theme', 'light');
       }
-
-      // Initialize Language Direction
       var lang = localStorage.getItem('language') || 'ku';
-      document.documentElement.lang = lang;
-      document.documentElement.dir = lang === 'en' ? 'ltr' : 'rtl';
+      root.lang = lang;
+      root.dir = lang === 'en' ? 'ltr' : 'rtl';
     } catch (e) {
       console.error('Theme initialization failed', e);
     }
   })();
 </script>
 <style>
+  html, body {
+    overflow-x: hidden;
+    position: relative;
+    width: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
   body {
     transition: background-color 0.3s ease, color 0.3s ease;
   }
-  /* Default font for RTL languages */
   html[dir="rtl"] body {
     font-family: 'Noto Kufi Arabic', sans-serif;
   }
-  /* Font for LTR languages */
+  /* Fix Kurdish letter spacing issues by forcing zero spacing in RTL mode */
+  html[dir="rtl"] * {
+    letter-spacing: 0 !important;
+    word-spacing: normal !important;
+  }
+  html[dir="rtl"] .tracking-tight, 
+  html[dir="rtl"] .tracking-tighter,
+  html[dir="rtl"] .tracking-wider,
+  html[dir="rtl"] .tracking-widest {
+    letter-spacing: 0 !important;
+  }
   html[dir="ltr"] body {
     font-family: 'Poppins', sans-serif;
   }
-  /* Ensure RTL language names in the selector use the correct font, even in LTR mode */
-  html[dir="ltr"] .font-noto-kufi-arabic {
-    font-family: 'Noto Kufi Arabic', sans-serif;
+  * {
+    box-sizing: border-box;
   }
 </style>
+<link rel="stylesheet" href="/index.css">
 </head>
-  <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+  <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300 antialiased">
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>

@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 export const RateDisplaySkeleton: React.FC = () => {
@@ -18,6 +19,14 @@ export const RateDisplaySkeleton: React.FC = () => {
             <div className={`h-8 w-28 md:h-9 md:w-32 rounded ${placeholderColor} mb-2`}></div>
             <div className={`h-4 w-12 rounded ${placeholderColor} ml-auto`}></div>
         </div>
+      </div>
+      <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700/50">
+          <div className="h-2 w-20 rounded bg-gray-200 dark:bg-gray-700 mb-3"></div>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="h-12 rounded bg-gray-200 dark:bg-gray-700/50"></div>
+            <div className="h-12 rounded bg-gray-200 dark:bg-gray-700/50"></div>
+            <div className="h-12 rounded bg-gray-200 dark:bg-gray-700/50"></div>
+          </div>
       </div>
     </div>
   );

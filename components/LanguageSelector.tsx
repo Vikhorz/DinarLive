@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import type { Language } from '../hooks/useLanguage';
 
@@ -14,7 +15,9 @@ const languages: { code: Language; name: string; isRtl?: boolean }[] = [
 
 const EarthIcon: React.FC = () => (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h8a2 2 0 002-2v-1a2 2 0 012-2h1.945M7.707 4.5l.586-.586a2 2 0 012.828 0l.586.586M12 19.5a5.5 5.5 0 100-11 5.5 5.5 0 000 11z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.6 9h16.8M3.6 15h16.8" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3a13 13 0 000 18M12 3a13 13 0 010 18" />
     </svg>
 );
 

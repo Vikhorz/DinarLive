@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useRef } from 'react';
 import { GoogleGenAI, Chat } from "@google/genai";
 import type { ChatMessage, ExchangeRateData, Translation } from '../types';
@@ -16,8 +17,7 @@ export const useChat = (rateData: ExchangeRateData | null, t: Translation) => {
         Apologize to the user and ask them to try again later. Do not attempt to provide any financial data.`;
     }
 
-    const { iqd, eurPerUsd, tryPerUsd, gbpPerUsd, irtPerUsd } = rateData;
-    const centralBankRate = 1310;
+    const { iqd, centralBankRate, eurPerUsd, tryPerUsd, gbpPerUsd, irtPerUsd } = rateData;
     const iqdPerEur = eurPerUsd > 0 ? iqd / eurPerUsd : 0;
     const iqdPerTry = tryPerUsd > 0 ? iqd / tryPerUsd : 0;
     const iqdPerGbp = gbpPerUsd > 0 ? iqd / gbpPerUsd : 0;
@@ -53,7 +53,7 @@ export const useChat = (rateData: ExchangeRateData | null, t: Translation) => {
       if (!chatRef.current) {
         const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
         chatRef.current = ai.chats.create({
-          model: 'gemini-2.5-flash',
+          model: 'gemini-3-flash-preview',
           config: {
             systemInstruction: createSystemInstruction(),
           },

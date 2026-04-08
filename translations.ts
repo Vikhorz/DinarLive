@@ -5,26 +5,22 @@ const ku: Translation = {
   appName: "دینار ڵایڤ",
   headerTitle: "گۆڕینەوەی دیناری عێراقی",
   headerSubtitle: "دینار بۆ دۆلار",
-  
+  liveRate: "نرخی ڕاستەوخۆ",
   marketRateLabel: "نرخی بازاڕی دۆلارەکە",
   marketRateDescription: "نرخی 100 دۆلار لە بازاڕ",
   centralBankRateLabel: "نرخی بانکی ناوەندی",
   centralBankRateDescription: "نرخی 100 دۆلار بە فەرمی",
-
   iqdCurrency: "دینار",
-  
   errorFetching: "هەڵە لە وەرگرتنی داتا",
   errorAfterRetriesTitle: "داتا وەرنەگیرا",
   errorAfterRetriesMessage: "دوای چەندین هەوڵ نەتوانرا نوێترین نرخەکان وەربگیرێت. تکایە لە هێڵی ئینتەرنێتەکەت دڵنیابەرەوە یان دووبارە هەوڵبدەرەوە.",
   errorFetchingOtherRates: "هەڵە لە وەرگرتنی نرخی یۆرۆ و لیرە.",
   fetchingRates: "وەرگرتنی نوێترین نرخەکان...",
-  
   updated: "نوێکرایەوە",
   justNow: "هەر ئێستا",
   secondsAgo: (seconds: number) => `${seconds} چرکە لەمەوبەر`,
   minutesAgo: (minutes: number) => `${minutes} خولەک لەمەوبەر`,
   hoursAgo: (hours: number) => `${hours} کاتژمێر لەمەوبەر`,
-  
   calculatorTitle: "ژمێرەری دراو",
   amountPlaceholder: "بڕی پارە...",
   amount: "بڕ",
@@ -37,11 +33,13 @@ const ku: Translation = {
   try: "لیرەی تورکی",
   gbp: "پاوەندی بەریتانی",
   irt: "تمەنی ئێرانی",
-
   invalidRateInputError: "تکایە نرخی دروست داخڵ بکە.",
   retryButton: "هەوڵبدەرەوە",
-
   comparisonRatesTitle: "نرخەکانی تر بە دینار",
+  regionalRatesTitle: "نرخی شارەکان",
+  sulyName: "سلێمانی",
+  erbilName: "هەولێر",
+  duhokName: "دهۆک",
   eurToIqd: "1 یۆرۆ",
   tryToIqd: "1 لیرەی تورکی",
   gbpToIqd: "1 پاوەندی بەریتانی",
@@ -52,7 +50,6 @@ const ku: Translation = {
   irtRateDescription: "نرخی راستەوخۆ لە بازاڕ",
   updatingRates: "نوێکردنەوەی نرخەکان...",
   sourcesTitle: "سەرچاوەکان",
-
   aboutButton: "دەربارە",
   sourcesButton: "سەرچاوەکان",
   shareButton: "هاوبەشی پێکردن",
@@ -64,20 +61,14 @@ const ku: Translation = {
   loadingTitle: "تکایە چاوەڕوانبە",
   loadingSubtitle: "نرخەکان نوێدەکرێنەوە...",
   pullToRefresh: "ڕابکێشە بۆ نوێکردنەوە",
-
-  // Chat feature translations
   chatTitle: "یاریدەدەری زیرەک",
   chatWelcomeMessage: "سڵاو! من یاریدەدەری زیرەکی دینار ڵایڤم. چۆن دەتوانم یارمەتیت بدەم؟",
   chatInputPlaceholder: "پرسیارێکت بنووسە...",
   sendButton: "ناردن",
   assistantTyping: "یاریدەدەر دەنووسێت...",
-
-  // Rate History and Cooldown
   rateHistoryTitle: "گۆڕانی نرخ (7 ڕۆژ)",
   noHistoryData: "هیچ داتایەکی مێژوویی نییە.",
   refreshCooldown: (time: string) => `تکایە ${time} چاوەڕێ بکە بۆ نوێکردنەوە.`,
-
-  // Calculator Tooltips
   usdTooltip: "دۆلاری ئەمریکی",
   iqdTooltip: "دیناری عێراقی",
   eurTooltip: "یۆرۆ",
@@ -85,8 +76,6 @@ const ku: Translation = {
   gbpTooltip: "پاوەندی بەریتانی",
   irtTooltip: "تمەنی ئێرانی",
   resultTooltip: "بڕی گۆڕاو بەپێی نوێترین نرخی بازاڕ.",
-
-  // Currency Info Modal
   currencyInfoTitle: (name: string) => `دەربارەی ${name}`,
   buyCurrencyTitle: (name: string) => `کڕینی ${name}`,
   buyButton: (code: string) => `کڕینی ${code}`,
@@ -95,7 +84,6 @@ const ku: Translation = {
   funFact: "زانیاری سەرنجڕاکێش",
   purchaseAmount: "بڕی کڕین",
   costInIqd: "نرخ بە دینار",
-  // Currency Details
   usd_name: "دۆلاری ئەمریکی",
   usd_description: "دراوی فەرمی ویلایەتە یەکگرتووەکانی ئەمریکا و ناوچەکانی. دراوی یەدەگی سەرەکی جیهانە.",
   usd_fact: "باوەڕ وایە هێمای دۆلار '$' لە پێسۆی ئیسپانی-ئەمریکی 'p's' وەرگیرابێت.",
@@ -107,19 +95,20 @@ const ku: Translation = {
   eur_fact: "هێمای یۆرۆ '€' لە پیتی یۆنانی ئێپسیلۆن (ε) وەرگیراوە، کە ئاماژەیە بۆ ئەوروپا.",
   try_name: "لیرەی تورکی",
   try_description: "دراوی فەرمی تورکیا و قوبرسی باکوور.",
-  try_fact: "لیرە لە مێژوودا چەندین جار بەهای سفرەکانی لابراوە، دواترینیان لە ساڵی 2005 بوو.",
+  try_fact: "لیرە لە مێژوودا چەندین جار بەهای صفرەکانی لابراوە، دواترینیان لە ساڵی 2005 بوو.",
   gbp_name: "پاوەندی بەریتانی",
   gbp_description: "دراوی فەرمی شانشینی یەکگرتوو و ناوچەکانی تاج. یەکێکە لە کۆنترین دراوەکانی جیهان.",
   gbp_fact: "پاوەند بە 'ستێرلینگ' ناسراوە بۆ جیاکردنەوەی لە دراوەکانی تری هاوناوی.",
   irt_name: "تمەنی ئێرانی",
   irt_description: "یەکەیەکی باوی ژماردنی دراوە لە ئێران. 1 تمەن = 10 ڕیاڵی ئێرانی.",
-  irt_fact: "وشەی 'تومان' لە زمانی مەغۆلی 'تومەن'ەوە هاتووە کە بە واتای '10,000' دێت.",
+  irt_fact: "وشەی 'تمەن' لە زمانی مەغۆلی 'تومەن'ەوە هاتووە کە بە واتای '10,000' دێت.",
 };
 
 const en: Translation = {
   appName: "DinarLive",
   headerTitle: "Iraqi Dinar Exchange",
   headerSubtitle: "Dinar to Dollar",
+  liveRate: "Live Rate",
   marketRateLabel: "Market Rate for the Dollar",
   marketRateDescription: "Price of 100 USD in the market",
   centralBankRateLabel: "Central Bank Rate",
@@ -150,6 +139,10 @@ const en: Translation = {
   invalidRateInputError: "Please enter a valid rate.",
   retryButton: "Retry",
   comparisonRatesTitle: "Other Rates in Dinar",
+  regionalRatesTitle: "Regional Market Rates",
+  sulyName: "Sulaymaniyah",
+  erbilName: "Erbil",
+  duhokName: "Duhok",
   eurToIqd: "1 Euro",
   tryToIqd: "1 Turkish Lira",
   gbpToIqd: "1 British Pound",
@@ -171,20 +164,14 @@ const en: Translation = {
   loadingTitle: "Please Wait",
   loadingSubtitle: "Updating rates...",
   pullToRefresh: "Pull to refresh",
-  
-  // Chat feature translations
   chatTitle: "AI Assistant",
   chatWelcomeMessage: "Hello! I'm the DinarLive AI assistant. How can I help you with exchange rates today?",
   chatInputPlaceholder: "Type a question...",
   sendButton: "Send",
   assistantTyping: "Assistant is typing...",
-
-  // Rate History and Cooldown
   rateHistoryTitle: "Rate History (7 Days)",
   noHistoryData: "No historical data available.",
   refreshCooldown: (time: string) => `Please wait ${time} to refresh.`,
-
-  // Calculator Tooltips
   usdTooltip: "US Dollar",
   iqdTooltip: "Iraqi Dinar",
   eurTooltip: "Euro",
@@ -192,8 +179,6 @@ const en: Translation = {
   gbpTooltip: "British Pound",
   irtTooltip: "Iranian Toman",
   resultTooltip: "The converted amount based on the latest market rates.",
-
-  // Currency Info Modal
   currencyInfoTitle: (name: string) => `About ${name}`,
   buyCurrencyTitle: (name: string) => `Buy ${name}`,
   buyButton: (code: string) => `Buy ${code}`,
@@ -202,7 +187,6 @@ const en: Translation = {
   funFact: "Fun Fact",
   purchaseAmount: "Amount to Buy",
   costInIqd: "Estimated Cost",
-  // Currency Details
   usd_name: "US Dollar",
   usd_description: "The official currency of the United States and its territories. It's the world's primary reserve currency.",
   usd_fact: "The dollar sign '$' is believed to have originated from the Spanish-American peso 'p's'.",
@@ -227,6 +211,7 @@ const ar: Translation = {
   appName: "دينار لايف",
   headerTitle: "صرف الدينار العراقي",
   headerSubtitle: "دينار مقابل الدولار",
+  liveRate: "السعر المباشر",
   marketRateLabel: "سعر السوق للدولار",
   marketRateDescription: "سعر 100 دولار في السوق",
   centralBankRateLabel: "سعر البنك المركزي",
@@ -257,6 +242,10 @@ const ar: Translation = {
   invalidRateInputError: "الرجاء إدخال سعر صحيح.",
   retryButton: "إعادة المحاولة",
   comparisonRatesTitle: "أسعار أخرى بالدينار",
+  regionalRatesTitle: "أسعار السوق الإقليمية",
+  sulyName: "السليمانية",
+  erbilName: "أربيل",
+  duhokName: "دهوك",
   eurToIqd: "1 يورو",
   tryToIqd: "1 ليرة تركية",
   gbpToIqd: "1 جنيه إسترليني",
@@ -278,20 +267,14 @@ const ar: Translation = {
   loadingTitle: "الرجاء الانتظار",
   loadingSubtitle: "جاري تحديث الأسعار...",
   pullToRefresh: "اسحب للتحديث",
-  
-  // Chat feature translations
   chatTitle: "المساعد الذكي",
   chatWelcomeMessage: "مرحباً! أنا مساعد دينار لايف الذكي. كيف يمكنني مساعدتك بخصوص أسعار الصرف اليوم؟",
   chatInputPlaceholder: "اكتب سؤالاً...",
   sendButton: "إرسال",
   assistantTyping: "المساعد يكتب...",
-
-  // Rate History and Cooldown
   rateHistoryTitle: "سجل الأسعار (7 أيام)",
   noHistoryData: "لا توجد بيانات تاريخية متاحة.",
   refreshCooldown: (time: string) => `يرجى الانتظار ${time} للتحديث.`,
-
-  // Calculator Tooltips
   usdTooltip: "دولار أمريكي",
   iqdTooltip: "دينار عراقي",
   eurTooltip: "يورو",
@@ -299,7 +282,6 @@ const ar: Translation = {
   gbpTooltip: "جنيه إسترليني",
   irtTooltip: "تومان إيراني",
   resultTooltip: "المبلغ المحول بناءً على أحدث أسعار السوق.",
-  // Currency Info Modal
   currencyInfoTitle: (name: string) => `حول ${name}`,
   buyCurrencyTitle: (name: string) => `شراء ${name}`,
   buyButton: (code: string) => `شراء ${code}`,
@@ -308,7 +290,6 @@ const ar: Translation = {
   funFact: "معلومة طريفة",
   purchaseAmount: "مبلغ الشراء",
   costInIqd: "التكلفة المقدرة",
-  // Currency Details
   usd_name: "الدولار الأمريكي",
   usd_description: "العملة الرسمية للولايات المتحدة وأقاليمها. وهو العملة الاحتياطية الأولى في العالم.",
   usd_fact: "يُعتقد أن علامة الدولار '$' نشأت من البيزو الإسباني الأمريكي 'p's'.",
@@ -328,7 +309,6 @@ const ar: Translation = {
   irt_description: "وحدة عملة شائعة في إيران. تومان واحد يعادل عشرة ريالات إيرانية.",
   irt_fact: "كلمة 'تومان' مشتقة من الكلمة المغولية 'تومين' التي تعني 10,000.",
 };
-
 
 export const translations: Record<string, Translation> = {
   ku,
