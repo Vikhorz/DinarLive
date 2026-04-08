@@ -15,14 +15,17 @@ const MoonIcon = () => (
 
 export const ThemeToggle: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
+  const isDarkMode = theme === 'dark';
 
   return (
     <button
       onClick={toggleTheme}
       className="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-sky-500"
-      aria-label="Toggle Dark Mode"
+      aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+      aria-pressed={isDarkMode}
+      title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
     >
-      {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+      {isDarkMode ? <SunIcon /> : <MoonIcon />}
     </button>
   );
 };
