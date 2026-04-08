@@ -26,11 +26,29 @@ export interface GroundingChunk {
   };
 }
 
+export interface RatesApiResponse {
+  rate: ExchangeRateData;
+  sources: GroundingChunk[];
+  rateHistory: RateHistoryEntry[];
+  fetchedAt: string;
+}
+
 export type ExchangeRateErrorType = 'FAILED_AFTER_RETRIES' | null;
 
 export interface ChatMessage {
   role: 'user' | 'model';
   content: string;
+}
+
+export interface ChatApiRequest {
+  message: string;
+  history: ChatMessage[];
+  rateData: ExchangeRateData | null;
+  locale: 'ku' | 'ar' | 'en';
+}
+
+export interface ChatApiResponse {
+  message: string;
 }
 
 export interface Translation {

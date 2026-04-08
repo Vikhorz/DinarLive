@@ -1,5 +1,5 @@
 
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useExchangeRate } from './hooks/useExchangeRate';
 import { Header } from './components/Header';
 import { RateDisplay } from './components/RateDisplay';
@@ -15,8 +15,8 @@ import { LanguageSelector } from './components/LanguageSelector';
 import { Dialog } from './components/Dialog';
 import { Footer } from './components/Footer';
 import { StartupLoader } from './components/StartupLoader';
-import { ChatFab } from './components/ChatFab';
 import { ChatDialog } from './components/ChatDialog';
+import { GroundingSources } from './components/GroundingSources';
 import { RateHistoryChart } from './components/RateHistoryChart';
 import { RateHistoryChartSkeleton } from './components/RateHistoryChartSkeleton';
 import { CurrencyInfoModal } from './components/CurrencyInfoModal';
@@ -46,7 +46,7 @@ const isLargeScreen = () => {
 };
 
 export default function App(): React.ReactElement {
-  const { rate, loading, error, refetch, rateHistory, cooldownSeconds } = useExchangeRate();
+  const { rate, sources, loading, error, refetch, rateHistory, cooldownSeconds } = useExchangeRate();
   
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(isLargeScreen());
   const [isChartOpen, setIsChartOpen] = useState(isLargeScreen());
@@ -54,10 +54,10 @@ export default function App(): React.ReactElement {
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [shareFeedback, setShareFeedback] = useState('');
-  const [isManualRefreshing, setIsManualRefreshing] = useState(false);
   const [cooldownMessage, setCooldownMessage] = useState<string | null>(null);
   const [modalState, setModalState] = useState<{ currency: string | null; view: 'info' | 'buy' }>({ currency: null, view: 'info' });
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const cooldownMessageTimerRef = useRef<number | null>(null);
   const t = translations[language];
 
   const iqdRateValue = useMemo(() => rate?.iqd ?? 0, [rate]);
@@ -72,10 +72,17 @@ export default function App(): React.ReactElement {
   // Scroll visibility handler
   useEffect(() => {
     const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 400);
+      const shouldShow = window.scrollY > 400;
+      setShowScrollTop(prev => (prev === shouldShow ? prev : shouldShow));
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => () => {
+    if (cooldownMessageTimerRef.current) {
+      clearTimeout(cooldownMessageTimerRef.current);
+    }
   }, []);
 
   const scrollToTop = () => {
@@ -117,21 +124,23 @@ export default function App(): React.ReactElement {
   }), [iqdRateValue, eurPerUsdValue, tryPerUsdValue, gbpPerUsdValue, irtPerUsdValue]);
 
   const isCompletelyEmpty = loading && !rate && rateHistory.length === 0 && !error;
-  const showFullScreenLoader = isCompletelyEmpty || isManualRefreshing;
+  const showFullScreenLoader = isCompletelyEmpty;
+  const hasUsableData = Boolean(rate);
   
   const handleManualRefresh = async () => {
     if (loading) return;
     if (cooldownSeconds > 0) {
         setCooldownMessage(t.refreshCooldown(`${cooldownSeconds}s`));
-        setTimeout(() => setCooldownMessage(null), 2500);
+        if (cooldownMessageTimerRef.current) {
+          clearTimeout(cooldownMessageTimerRef.current);
+        }
+        cooldownMessageTimerRef.current = window.setTimeout(() => {
+          setCooldownMessage(null);
+          cooldownMessageTimerRef.current = null;
+        }, 2500);
         return;
     }
-    setIsManualRefreshing(true);
-    try {
-        await refetch();
-    } finally {
-        setIsManualRefreshing(false);
-    }
+    await refetch();
   };
   
   const handleShare = async () => {
@@ -229,7 +238,7 @@ export default function App(): React.ReactElement {
             </div>
           )}
 
-          {!error && (
+          {(hasUsableData || !error) && (
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10">
               <div className="lg:col-span-2 space-y-8">
                 <div className="space-y-8">
@@ -283,6 +292,14 @@ export default function App(): React.ReactElement {
                 {rate && (
                     <div className="bg-white dark:bg-gray-800/80 rounded-3xl shadow-2xl p-6 sm:p-8 animate-fade-in border border-gray-100 dark:border-gray-700/50">
                         <LastUpdated date={rate.updated} loading={loading} t={t} onRefresh={handleManualRefresh} cooldownSeconds={cooldownSeconds} />
+                        {sources.length > 0 && (
+                          <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 transition-colors duration-300">
+                            <p className="mb-3 text-center text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
+                              {t.sourcesTitle}
+                            </p>
+                            <GroundingSources sources={sources} t={t} />
+                          </div>
+                        )}
                         <Footer onAboutClick={() => setIsAboutOpen(true)} onShareClick={handleShare} shareFeedback={shareFeedback} t={t} />
                     </div>
                 )}

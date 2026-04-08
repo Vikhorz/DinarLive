@@ -1,0 +1,55 @@
+:root {
+  color-scheme: light;
+  --app-bg: #f8fafc;
+  --app-bg-accent: rgba(14, 165, 233, 0.1);
+  --app-bg-warm: rgba(251, 191, 36, 0.12);
+  --app-text: #0f172a;
+}
+
+html.dark {
+  color-scheme: dark;
+  --app-bg: #020617;
+  --app-bg-accent: rgba(56, 189, 248, 0.14);
+  --app-bg-warm: rgba(245, 158, 11, 0.12);
+  --app-text: #e2e8f0;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--app-text);
+  background:
+    radial-gradient(circle at top, var(--app-bg-accent), transparent 35%),
+    radial-gradient(circle at bottom right, var(--app-bg-warm), transparent 28%),
+    var(--app-bg);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(circle at center, black 35%, transparent 85%);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}

@@ -9,16 +9,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.27.0"
-  }
-}
-</script>
 <script>
   tailwind.config = {
     darkMode: 'class',
@@ -40,14 +30,19 @@
     try {
       var storedTheme = localStorage.getItem('theme');
       var root = document.documentElement;
-      if (storedTheme === 'dark') {
+      var systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var resolvedTheme = storedTheme === 'dark' || storedTheme === 'light'
+        ? storedTheme
+        : (systemPrefersDark ? 'dark' : 'light');
+
+      if (resolvedTheme === 'dark') {
         root.classList.add('dark');
         root.classList.remove('light');
       } else {
         root.classList.add('light');
         root.classList.remove('dark');
-        if (!storedTheme) localStorage.setItem('theme', 'light');
       }
+      root.style.colorScheme = resolvedTheme;
       var lang = localStorage.getItem('language') || 'ku';
       root.lang = lang;
       root.dir = lang === 'en' ? 'ltr' : 'rtl';

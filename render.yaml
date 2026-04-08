@@ -1,0 +1,29 @@
+services:
+  - type: web
+    runtime: node
+    name: dinarlive-api
+    plan: free
+    buildCommand: npm install
+    startCommand: npm run start:backend
+    envVars:
+      - key: FRONTEND_ORIGIN
+        sync: false
+      - key: TELEGRAM_MARKET_SOURCES
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_CHAT_MODEL
+        value: gemini-2.5-flash
+
+  - type: web
+    runtime: static
+    name: dinarlive-web
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_BASE_URL
+        sync: false
