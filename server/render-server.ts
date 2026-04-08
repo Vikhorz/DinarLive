@@ -1,6 +1,6 @@
 import express from 'express';
-import { createRatesResponse } from './ratesService';
-import { createChatResponse } from './chatService';
+import { createRatesResponse } from './ratesService.js';
+import { createChatResponse } from './chatService.js';
 import type { ChatApiRequest } from '../types';
 
 const app = express();
