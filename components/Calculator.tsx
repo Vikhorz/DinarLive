@@ -98,10 +98,10 @@ export const Calculator: React.FC<CalculatorProps> = ({ rates, t, onCurrencySele
     'w-full appearance-none rounded-2xl border px-4 py-3 text-sm font-black text-slate-900 shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:text-white sm:text-base';
   const selectorStateClass = isSwapping
     ? 'border-sky-300 bg-sky-50 ring-2 ring-sky-200 dark:border-sky-500/30 dark:bg-sky-500/10 dark:ring-sky-500/20'
-    : 'border-slate-200 bg-white/85 hover:border-slate-300 dark:border-white/10 dark:bg-white/5 dark:hover:border-white/20';
+    : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700';
 
   return (
-    <div className="flex w-full max-w-full flex-col gap-5 overflow-hidden rounded-[1.7rem] border border-white/65 bg-[linear-gradient(145deg,rgba(255,255,255,0.94),rgba(248,250,252,0.82))] p-5 shadow-[0_24px_70px_-40px_rgba(15,23,42,0.75)] backdrop-blur-xl dark:border-white/10 dark:bg-[linear-gradient(145deg,rgba(15,23,42,0.82),rgba(2,6,23,0.9))] sm:gap-6 sm:p-6">
+    <div className="flex w-full max-w-full flex-col gap-5 overflow-hidden rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-950 sm:gap-6 sm:p-6">
       <div className="relative">
         <label htmlFor="amount" className="mb-2 block text-xs font-black uppercase text-slate-500 dark:text-slate-400">
           {t.amount}
@@ -113,7 +113,7 @@ export const Calculator: React.FC<CalculatorProps> = ({ rates, t, onCurrencySele
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           placeholder={t.amountPlaceholder}
-          className="w-full rounded-[1.4rem] border border-slate-200 bg-white/90 px-4 py-4 text-xl font-black text-slate-900 shadow-sm outline-none transition-all placeholder:text-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-slate-600 sm:px-5 sm:text-3xl"
+          className="w-full rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 text-xl font-black text-slate-900 shadow-sm outline-none transition-all placeholder:text-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-600 sm:px-5 sm:text-3xl"
           dir="ltr"
         />
       </div>
@@ -157,8 +157,7 @@ export const Calculator: React.FC<CalculatorProps> = ({ rates, t, onCurrencySele
       </div>
 
       <Tooltip text={t.resultTooltip} className="w-full">
-        <div className="relative overflow-hidden rounded-[1.6rem] border border-emerald-200/70 bg-[linear-gradient(145deg,rgba(236,253,245,0.92),rgba(255,255,255,0.82))] p-5 text-center shadow-[0_24px_60px_-34px_rgba(16,185,129,0.42)] dark:border-emerald-500/15 dark:bg-[linear-gradient(145deg,rgba(16,185,129,0.08),rgba(15,23,42,0.88))] sm:p-6">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.45),transparent_36%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.04),transparent_32%)]" />
+        <div className="relative overflow-hidden rounded-[1.6rem] border border-emerald-200 bg-emerald-50 p-5 text-center shadow-sm dark:border-emerald-500/15 dark:bg-slate-900 sm:p-6">
           <div className="relative">
             <p className="text-xs font-black uppercase text-emerald-700 dark:text-emerald-300">{t.result}</p>
             <p className="mt-3 break-words font-mono text-3xl font-black leading-tight text-emerald-950 dark:text-emerald-100 sm:text-5xl" dir="ltr">
@@ -167,7 +166,7 @@ export const Calculator: React.FC<CalculatorProps> = ({ rates, t, onCurrencySele
 
             {directRate > 0 && fromCurrency !== toCurrency && (
               <div className="mt-5 flex flex-col items-center gap-3">
-                <div className="max-w-full rounded-full border border-emerald-200 bg-white/70 px-4 py-2 dark:border-emerald-500/15 dark:bg-black/20">
+                <div className="max-w-full rounded-full border border-emerald-200 bg-white px-4 py-2 dark:border-emerald-500/15 dark:bg-slate-950">
                   <p className="truncate text-xs font-mono font-black text-emerald-800 dark:text-emerald-200" dir="ltr">
                     1{' '}
                     <button
