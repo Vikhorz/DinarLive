@@ -2,7 +2,7 @@
 
 <img width="1772" height="1264" alt="image" src="https://github.com/user-attachments/assets/7de19f47-f448-478a-af2d-16f741660b45" />
 
-This contains everything you need to run your app locally.
+This contains everything you need to run your app either locally or deploying it.
 
 ## Run Locally
 
