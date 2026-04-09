@@ -20,7 +20,7 @@ const ComparisonItem: React.FC<{ label: string; value: string; description?: str
 }) => (
   <button
     onClick={onClick}
-    className="group w-full rounded-[1.5rem] border border-emerald-200/70 bg-white/80 p-4 text-center shadow-[0_20px_40px_-28px_rgba(16,185,129,0.45)] backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:bg-emerald-50 dark:border-emerald-500/15 dark:bg-white/5 dark:hover:bg-emerald-500/10"
+    className="group w-full rounded-[1.5rem] border border-emerald-200 bg-white p-4 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-emerald-50 dark:border-emerald-500/15 dark:bg-slate-950 dark:hover:bg-slate-900"
   >
     <p className="text-xs font-black uppercase text-emerald-700 dark:text-emerald-300">{label}</p>
     <p className="mt-3 font-mono text-2xl font-black text-slate-900 dark:text-white" dir="ltr">
@@ -41,7 +41,7 @@ export const ComparisonRates: React.FC<ComparisonRatesProps> = ({ iqdRate, eurRa
   const iqdPerIrt = irtRate ? (iqdRate / irtRate).toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) : '---';
 
   return (
-    <div className="rounded-[1.8rem] border border-emerald-200/70 bg-[linear-gradient(145deg,rgba(236,253,245,0.92),rgba(255,255,255,0.82))] p-5 shadow-[0_30px_80px_-42px_rgba(16,185,129,0.38)] backdrop-blur-xl dark:border-emerald-500/15 dark:bg-[linear-gradient(145deg,rgba(16,185,129,0.08),rgba(15,23,42,0.88))] sm:p-6">
+    <div className="rounded-[1.8rem] border border-emerald-200 bg-emerald-50 p-5 shadow-sm dark:border-emerald-500/15 dark:bg-slate-900 sm:p-6">
       <div className="mb-5 flex items-center justify-between gap-3">
         <div>
           <p className="text-[11px] font-black uppercase text-emerald-600/80 dark:text-emerald-300/80">DinarLive</p>
