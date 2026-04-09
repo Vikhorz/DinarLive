@@ -81,16 +81,15 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
   }, [value]);
 
   const shellClass = isHero
-    ? 'border-amber-200/70 bg-[linear-gradient(135deg,rgba(255,251,235,0.95),rgba(255,255,255,0.82))] dark:border-amber-500/20 dark:bg-[linear-gradient(135deg,rgba(251,191,36,0.08),rgba(15,23,42,0.88))]'
-    : 'border-sky-200/70 bg-[linear-gradient(135deg,rgba(239,246,255,0.92),rgba(255,255,255,0.82))] dark:border-sky-500/20 dark:bg-[linear-gradient(135deg,rgba(14,165,233,0.08),rgba(15,23,42,0.88))]';
+    ? 'border-amber-200 bg-amber-50 dark:border-amber-500/20 dark:bg-slate-900'
+    : 'border-sky-200 bg-sky-50 dark:border-sky-500/20 dark:bg-slate-900';
 
   const iconClasses = iconHighlightClass || (isHero
     ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
     : 'bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300');
 
   return (
-    <div className={`relative overflow-hidden rounded-[1.8rem] border p-5 shadow-[0_30px_80px_-42px_rgba(15,23,42,0.78)] backdrop-blur-xl transition-all duration-300 sm:p-6 ${shellClass}`}>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.45),transparent_35%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.05),transparent_32%)]" />
+    <div className={`relative overflow-hidden rounded-[1.8rem] border p-5 shadow-sm transition-all duration-300 sm:p-6 ${shellClass}`}>
       <div className="relative">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-start gap-3">
@@ -111,7 +110,7 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
                   ? 'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300'
                   : trend.direction === 'down'
                     ? 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300'
-                    : 'bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-300'
+                    : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
               }`}
             >
               <TrendIcon direction={trend.direction} />
@@ -136,11 +135,11 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
 
           {isHero && highLow && (
             <div className="grid grid-cols-2 gap-3 sm:min-w-[180px]">
-              <div className="rounded-2xl border border-white/60 bg-white/60 p-3 text-center dark:border-white/10 dark:bg-white/5">
+              <div className="rounded-2xl border border-slate-200 bg-white p-3 text-center dark:border-slate-800 dark:bg-slate-950">
                 <p className="text-[11px] font-bold uppercase text-slate-400 dark:text-slate-500">H</p>
                 <p className="mt-1 font-mono text-sm font-black text-slate-800 dark:text-slate-100" dir="ltr">{highLow.high.toLocaleString()}</p>
               </div>
-              <div className="rounded-2xl border border-white/60 bg-white/60 p-3 text-center dark:border-white/10 dark:bg-white/5">
+              <div className="rounded-2xl border border-slate-200 bg-white p-3 text-center dark:border-slate-800 dark:bg-slate-950">
                 <p className="text-[11px] font-bold uppercase text-slate-400 dark:text-slate-500">L</p>
                 <p className="mt-1 font-mono text-sm font-black text-slate-800 dark:text-slate-100" dir="ltr">{highLow.low.toLocaleString()}</p>
               </div>
@@ -149,7 +148,7 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
         </div>
 
         {cities && cityLabels && (
-          <div className="mt-6 border-t border-white/70 pt-4 dark:border-white/10">
+          <div className="mt-6 border-t border-slate-200 pt-4 dark:border-slate-800">
             <p className="mb-3 text-[11px] font-black uppercase text-slate-400 dark:text-slate-500">{cityLabels.regional}</p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               {[
@@ -161,8 +160,8 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
                   key={city.id}
                   className={`rounded-2xl border p-3 transition-all ${
                     city.isBase
-                      ? 'border-amber-200/70 bg-amber-50/80 dark:border-amber-500/20 dark:bg-amber-500/10'
-                      : 'border-white/70 bg-white/60 dark:border-white/10 dark:bg-white/5'
+                      ? 'border-amber-200 bg-white dark:border-amber-500/20 dark:bg-slate-950'
+                      : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950'
                   }`}
                 >
                   <p className={`text-xs font-black ${city.isBase ? 'text-amber-800 dark:text-amber-200' : 'text-slate-500 dark:text-slate-400'}`}>{city.label}</p>
