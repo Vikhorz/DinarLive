@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import type { Translation } from '../types';
 
@@ -16,16 +15,14 @@ const SwapIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = 
   </svg>
 );
 
-const Tooltip: React.FC<{ text: string; children: React.ReactNode; className?: string }> = ({ text, children, className }) => {
-  return (
-    <div className={`group relative ${className}`}>
-      {children}
-      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 dark:bg-gray-100 text-white dark:text-black text-[10px] sm:text-xs font-semibold rounded-md shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-30">
-        {text}
-      </div>
+const Tooltip: React.FC<{ text: string; children: React.ReactNode; className?: string }> = ({ text, children, className }) => (
+  <div className={`group relative ${className}`}>
+    {children}
+    <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2 rounded-xl bg-slate-950 px-2.5 py-1 text-[10px] font-semibold text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100 dark:bg-white dark:text-slate-900 sm:text-xs">
+      {text}
     </div>
-  );
-};
+  </div>
+);
 
 export const Calculator: React.FC<CalculatorProps> = ({ rates, t, onCurrencySelect }) => {
   const [amount, setAmount] = useState('');
@@ -34,30 +31,38 @@ export const Calculator: React.FC<CalculatorProps> = ({ rates, t, onCurrencySele
   const [rotation, setRotation] = useState(0);
   const [isSwapping, setIsSwapping] = useState(false);
 
-  const currencies = useMemo(() => [
-    { code: 'USD', name: t.usd },
-    { code: 'IQD', name: t.iqd },
-    { code: 'EUR', name: t.eur },
-    { code: 'TRY', name: t.try },
-    { code: 'GBP', name: t.gbp },
-    { code: 'IRT', name: t.irt },
-  ], [t]);
+  const currencies = useMemo(
+    () => [
+      { code: 'USD', name: t.usd },
+      { code: 'IQD', name: t.iqd },
+      { code: 'EUR', name: t.eur },
+      { code: 'TRY', name: t.try },
+      { code: 'GBP', name: t.gbp },
+      { code: 'IRT', name: t.irt },
+    ],
+    [t],
+  );
 
-  const currencyTooltips: { [key: string]: keyof Translation } = useMemo(() => ({
-    USD: 'usdTooltip',
-    IQD: 'iqdTooltip',
-    EUR: 'eurTooltip',
-    TRY: 'tryTooltip',
-    GBP: 'gbpTooltip',
-    IRT: 'irtTooltip',
-  }), []);
+  const currencyTooltips: { [key: string]: keyof Translation } = useMemo(
+    () => ({
+      USD: 'usdTooltip',
+      IQD: 'iqdTooltip',
+      EUR: 'eurTooltip',
+      TRY: 'tryTooltip',
+      GBP: 'gbpTooltip',
+      IRT: 'irtTooltip',
+    }),
+    [],
+  );
 
   const directRate = useMemo(() => {
     const fromRate = rates[fromCurrency];
     const toRate = rates[toCurrency];
+
     if (typeof fromRate !== 'number' || typeof toRate !== 'number' || fromRate <= 0) {
       return 0;
     }
+
     return toRate / fromRate;
   }, [fromCurrency, toCurrency, rates]);
 
@@ -66,19 +71,22 @@ export const Calculator: React.FC<CalculatorProps> = ({ rates, t, onCurrencySele
     if (isNaN(numericAmount) || numericAmount <= 0 || directRate <= 0) {
       return '0';
     }
+
     const result = numericAmount * directRate;
     const formatOptions: Intl.NumberFormatOptions = {};
+
     if (toCurrency === 'IQD' || toCurrency === 'IRT') {
-        formatOptions.maximumFractionDigits = 0;
+      formatOptions.maximumFractionDigits = 0;
     } else {
-        formatOptions.minimumFractionDigits = 2;
-        formatOptions.maximumFractionDigits = 2;
+      formatOptions.minimumFractionDigits = 2;
+      formatOptions.maximumFractionDigits = 2;
     }
+
     return result.toLocaleString('en-US', formatOptions);
   }, [amount, toCurrency, directRate]);
 
   const handleSwap = () => {
-    setRotation(prev => prev + 180);
+    setRotation((prev) => prev + 180);
     setIsSwapping(true);
     const tempFrom = fromCurrency;
     setFromCurrency(toCurrency);
@@ -86,129 +94,109 @@ export const Calculator: React.FC<CalculatorProps> = ({ rates, t, onCurrencySele
     setTimeout(() => setIsSwapping(false), 300);
   };
 
-  const selectorBaseClass = "w-full appearance-none border rounded-xl py-2.5 sm:py-3 px-2 sm:px-4 text-center font-bold text-sm sm:text-base cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all duration-300 shadow-sm";
-  const selectorStateClass = isSwapping 
-    ? "bg-sky-50 dark:bg-sky-900/40 border-sky-300 dark:border-sky-600 text-sky-700 dark:text-sky-300 transform scale-105 ring-2 ring-sky-200 dark:ring-sky-800" 
-    : "bg-gray-50 dark:bg-gray-800/40 border-transparent hover:border-gray-300 dark:hover:border-gray-500 text-gray-800 dark:text-white";
+  const selectorBaseClass =
+    'w-full appearance-none rounded-2xl border px-4 py-3 text-sm font-black text-slate-900 shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:text-white sm:text-base';
+  const selectorStateClass = isSwapping
+    ? 'border-sky-300 bg-sky-50 ring-2 ring-sky-200 dark:border-sky-500/30 dark:bg-sky-500/10 dark:ring-sky-500/20'
+    : 'border-slate-200 bg-white/85 hover:border-slate-300 dark:border-white/10 dark:bg-white/5 dark:hover:border-white/20';
 
   return (
-    <div className="flex flex-col gap-4 sm:gap-6 w-full max-w-full overflow-hidden bg-gradient-to-br from-white via-white to-gray-50/50 dark:from-gray-900 dark:via-gray-900 dark:to-sky-950/20 p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm transition-all duration-300">
-      {/* Amount Input Section */}
+    <div className="flex w-full max-w-full flex-col gap-5 overflow-hidden rounded-[1.7rem] border border-white/65 bg-[linear-gradient(145deg,rgba(255,255,255,0.94),rgba(248,250,252,0.82))] p-5 shadow-[0_24px_70px_-40px_rgba(15,23,42,0.75)] backdrop-blur-xl dark:border-white/10 dark:bg-[linear-gradient(145deg,rgba(15,23,42,0.82),rgba(2,6,23,0.9))] sm:gap-6 sm:p-6">
       <div className="relative">
-        <label htmlFor="amount" className="block text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wider">{t.amount}</label>
-        <div className="relative">
-           <input
-            id="amount"
-            type="number"
-            inputMode="decimal"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder={t.amountPlaceholder}
-            className="w-full p-3 sm:p-4 pl-4 pr-12 text-lg sm:text-2xl font-bold bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border-2 border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600 shadow-sm"
-            dir="ltr"
-          />
-        </div>
+        <label htmlFor="amount" className="mb-2 block text-xs font-black uppercase text-slate-500 dark:text-slate-400">
+          {t.amount}
+        </label>
+        <input
+          id="amount"
+          type="number"
+          inputMode="decimal"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          placeholder={t.amountPlaceholder}
+          className="w-full rounded-[1.4rem] border border-slate-200 bg-white/90 px-4 py-4 text-xl font-black text-slate-900 shadow-sm outline-none transition-all placeholder:text-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-slate-600 sm:px-5 sm:text-3xl"
+          dir="ltr"
+        />
       </div>
 
-      {/* Currency Selection Grid */}
-      <div className="relative grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-end gap-2 sm:gap-4">
-        {/* FROM Currency */}
-        <div className="flex flex-col gap-1.5 min-w-0">
-          <label className="text-[10px] sm:text-sm font-semibold text-gray-500 dark:text-gray-400 truncate uppercase tracking-wider">{t.from}</label>
+      <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-end">
+        <div className="flex min-w-0 flex-col gap-2">
+          <label className="text-xs font-black uppercase text-slate-500 dark:text-slate-400">{t.from}</label>
           <Tooltip text={t[currencyTooltips[fromCurrency]]} className="w-full">
-            <div className="relative w-full">
-              <select 
-                value={fromCurrency} 
-                onChange={e => setFromCurrency(e.target.value)} 
-                className={`${selectorBaseClass} ${selectorStateClass}`}
-              >
-                {currencies.map(c => (
-                  <option key={c.code} value={c.code} className="text-gray-900 dark:text-white bg-white dark:bg-gray-800">
-                    {c.code} - {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <select value={fromCurrency} onChange={(e) => setFromCurrency(e.target.value)} className={`${selectorBaseClass} ${selectorStateClass}`}>
+              {currencies.map((currency) => (
+                <option key={currency.code} value={currency.code} className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
+                  {currency.code} - {currency.name}
+                </option>
+              ))}
+            </select>
           </Tooltip>
         </div>
 
-        {/* Swap Button */}
-        <div className="flex flex-col justify-end pb-0.5 flex-shrink-0">
-            <button 
-                onClick={handleSwap} 
-                className="p-2 sm:p-3 bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 rounded-full hover:bg-sky-200 dark:hover:bg-sky-800 active:bg-sky-300 dark:active:bg-sky-700 transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-sky-500 z-10"
-                aria-label="Swap currencies"
-            >
-                <SwapIcon 
-                  className="w-5 h-5 sm:w-6 sm:h-6 transition-transform duration-500 ease-in-out" 
-                  style={{ transform: `rotate(${rotation}deg)` }}
-                />
-            </button>
+        <div className="flex items-center justify-center sm:pb-1">
+          <button
+            onClick={handleSwap}
+            className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-100 text-sky-700 shadow-md transition-all hover:-translate-y-0.5 hover:bg-sky-200 dark:bg-sky-500/10 dark:text-sky-300 dark:hover:bg-sky-500/20"
+            aria-label="Swap currencies"
+          >
+            <SwapIcon className="h-6 w-6 transition-transform duration-500 ease-in-out" style={{ transform: `rotate(${rotation}deg)` }} />
+          </button>
         </div>
 
-        {/* TO Currency */}
-        <div className="flex flex-col gap-1.5 min-w-0">
-          <label className="text-[10px] sm:text-sm font-semibold text-gray-500 dark:text-gray-400 truncate uppercase tracking-wider">{t.to}</label>
+        <div className="flex min-w-0 flex-col gap-2">
+          <label className="text-xs font-black uppercase text-slate-500 dark:text-slate-400">{t.to}</label>
           <Tooltip text={t[currencyTooltips[toCurrency]]} className="w-full">
-            <div className="relative w-full">
-              <select 
-                value={toCurrency} 
-                onChange={e => setToCurrency(e.target.value)} 
-                className={`${selectorBaseClass} ${selectorStateClass}`}
-              >
-                 {currencies.map(c => (
-                  <option key={c.code} value={c.code} className="text-gray-900 dark:text-white bg-white dark:bg-gray-800">
-                    {c.code} - {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <select value={toCurrency} onChange={(e) => setToCurrency(e.target.value)} className={`${selectorBaseClass} ${selectorStateClass}`}>
+              {currencies.map((currency) => (
+                <option key={currency.code} value={currency.code} className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">
+                  {currency.code} - {currency.name}
+                </option>
+              ))}
+            </select>
           </Tooltip>
         </div>
       </div>
 
-      {/* Result Card */}
       <Tooltip text={t.resultTooltip} className="w-full">
-        <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/10 dark:to-emerald-900/10 border border-green-100 dark:border-green-800/50 rounded-2xl p-5 sm:p-6 text-center shadow-sm w-full overflow-hidden relative">
-          <p className="text-[10px] sm:text-sm font-medium text-green-600 dark:text-green-400 mb-2 uppercase tracking-widest">{t.result}</p>
-          <p className="text-2xl sm:text-4xl font-extrabold font-mono text-green-800 dark:text-green-100 break-words leading-tight" dir="ltr">
-             {calculatedResult}
-          </p>
-          
-          {directRate > 0 && fromCurrency !== toCurrency && (
-              <div className="mt-4 flex flex-col items-center gap-1.5">
-                  <div className="inline-block bg-white/50 dark:bg-black/30 px-3 py-1 rounded-full border border-green-100 dark:border-green-800/30 max-w-full">
-                      <p className="text-[10px] sm:text-xs text-green-700 dark:text-green-300 font-mono truncate" dir="ltr">
-                        1{' '}
-                        <button 
-                            onClick={() => onCurrencySelect(fromCurrency)}
-                            className="font-bold hover:underline cursor-pointer focus:outline-none focus:text-green-800 dark:focus:text-green-200"
-                        >
-                            {fromCurrency}
-                        </button>
-                        {' '}≈{' '}
-                        {directRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
-                        {' '}
-                        <button 
-                            onClick={() => onCurrencySelect(toCurrency)}
-                            className="font-bold hover:underline cursor-pointer focus:outline-none focus:text-green-800 dark:focus:text-green-200"
-                        >
-                            {toCurrency}
-                        </button>
-                      </p>
-                  </div>
-                  
-                  {/* Localized Live Rate Text */}
-                  <div className="flex items-center gap-2 text-[10px] text-gray-400 dark:text-gray-500 font-medium">
-                      <span className="flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                          <span>{t.liveRate}</span>
-                      </span>
-                      <span>•</span>
-                      <span>{new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                  </div>
+        <div className="relative overflow-hidden rounded-[1.6rem] border border-emerald-200/70 bg-[linear-gradient(145deg,rgba(236,253,245,0.92),rgba(255,255,255,0.82))] p-5 text-center shadow-[0_24px_60px_-34px_rgba(16,185,129,0.42)] dark:border-emerald-500/15 dark:bg-[linear-gradient(145deg,rgba(16,185,129,0.08),rgba(15,23,42,0.88))] sm:p-6">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.45),transparent_36%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.04),transparent_32%)]" />
+          <div className="relative">
+            <p className="text-xs font-black uppercase text-emerald-700 dark:text-emerald-300">{t.result}</p>
+            <p className="mt-3 break-words font-mono text-3xl font-black leading-tight text-emerald-950 dark:text-emerald-100 sm:text-5xl" dir="ltr">
+              {calculatedResult}
+            </p>
+
+            {directRate > 0 && fromCurrency !== toCurrency && (
+              <div className="mt-5 flex flex-col items-center gap-3">
+                <div className="max-w-full rounded-full border border-emerald-200 bg-white/70 px-4 py-2 dark:border-emerald-500/15 dark:bg-black/20">
+                  <p className="truncate text-xs font-mono font-black text-emerald-800 dark:text-emerald-200" dir="ltr">
+                    1{' '}
+                    <button
+                      onClick={() => onCurrencySelect(fromCurrency)}
+                      className="font-black hover:underline focus:outline-none focus:text-emerald-900 dark:focus:text-emerald-100"
+                    >
+                      {fromCurrency}
+                    </button>{' '}
+                    ≈ {directRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}{' '}
+                    <button
+                      onClick={() => onCurrencySelect(toCurrency)}
+                      className="font-black hover:underline focus:outline-none focus:text-emerald-900 dark:focus:text-emerald-100"
+                    >
+                      {toCurrency}
+                    </button>
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-center gap-2 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                  <span className="flex items-center gap-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>{t.liveRate}</span>
+                  </span>
+                  <span className="hidden sm:inline">•</span>
+                  <span>{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
               </div>
-          )}
+            )}
+          </div>
         </div>
       </Tooltip>
     </div>
