@@ -27,7 +27,7 @@ export const Header: React.FC<HeaderProps> = ({ t }) => {
         {t.headerTitle}
       </h1>
 
-      <div className="relative mt-5 flex h-14 w-full max-w-xl items-center justify-center overflow-hidden rounded-full border border-white/75 bg-white/85 px-5 shadow-[0_16px_40px_-28px_rgba(15,23,42,0.8)] backdrop-blur-md dark:border-white/10 dark:bg-white/5 xl:justify-start">
+      <div className="relative mt-5 flex h-14 w-full max-w-xl items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-50 px-5 shadow-sm dark:border-slate-800 dark:bg-slate-950 xl:justify-start">
         <p key={activeIdx} className="text-sm font-black text-sky-700 dark:text-sky-300 sm:text-lg animate-slide-fade">
           {conversions[activeIdx]}
         </p>
