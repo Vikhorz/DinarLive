@@ -53,7 +53,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ currentLang,
         <div ref={wrapperRef} className="relative z-20">
             <button
                 onClick={() => setIsOpen(prev => !prev)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-700/70 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-800"
+                className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-slate-700 transition-colors duration-200 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus-visible:ring-offset-slate-900"
                 aria-haspopup="true"
                 aria-expanded={isOpen}
                 aria-label="Select language"
@@ -66,7 +66,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ currentLang,
 
             {isOpen && (
                 <div
-                    className="absolute right-0 mt-2 w-40 origin-top-right rounded-lg bg-white dark:bg-gray-800 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-150 ease-out animate-scale-in"
+                    className="absolute right-0 mt-2 w-40 origin-top-right rounded-lg border border-slate-200 bg-white shadow-xl focus:outline-none transition-all duration-150 ease-out animate-scale-in dark:border-slate-800 dark:bg-slate-900"
                     role="menu"
                     aria-orientation="vertical"
                 >
@@ -79,7 +79,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ currentLang,
                                     currentLang === code
                                         ? 'font-bold text-sky-600 dark:text-sky-400'
                                         : 'text-gray-700 dark:text-gray-200'
-                                } hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150 ${isRtl ? 'font-noto-kufi-arabic' : ''}`}
+                                } hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-150 ${isRtl ? 'font-noto-kufi-arabic' : ''}`}
                                 role="menuitem"
                             >
                                 <span>{name}</span>
