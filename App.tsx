@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useExchangeRate } from './hooks/useExchangeRate';
 import { Header } from './components/Header';
@@ -22,6 +21,8 @@ import { RateHistoryChartSkeleton } from './components/RateHistoryChartSkeleton'
 import { CurrencyInfoModal } from './components/CurrencyInfoModal';
 import { BuyCurrencyModal } from './components/BuyCurrencyModal';
 
+const CHAT_ENABLED = false;
+
 const ChevronIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -29,9 +30,9 @@ const ChevronIcon: React.FC<{ className?: string }> = ({ className }) => (
 );
 
 const RefreshIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-    </svg>
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+  </svg>
 );
 
 const ArrowUpIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -40,18 +41,66 @@ const ArrowUpIcon: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
+const PulseIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 12h4l2.5-6 4 12 2.5-6H21" />
+  </svg>
+);
+
+const SourcesIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+  </svg>
+);
+
 const isLargeScreen = () => {
-    if (typeof window === 'undefined') return false;
-    return window.matchMedia('(min-width: 1024px)').matches;
+  if (typeof window === 'undefined') return false;
+  return window.matchMedia('(min-width: 1024px)').matches;
 };
+
+const snapshotToneClasses = {
+  amber: 'border-amber-200/80 bg-amber-50/80 text-amber-950 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-100',
+  sky: 'border-sky-200/80 bg-sky-50/80 text-sky-950 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-100',
+};
+
+const SnapshotCard: React.FC<{ title: string; value: string; subtitle: string; tone: keyof typeof snapshotToneClasses }> = ({ title, value, subtitle, tone }) => (
+  <div className={`rounded-[1.6rem] border p-5 shadow-[0_18px_50px_-32px_rgba(15,23,42,0.65)] backdrop-blur-md ${snapshotToneClasses[tone]}`}>
+    <p className="text-xs font-bold uppercase text-gray-500 dark:text-gray-300">{title}</p>
+    <p className="mt-3 text-3xl font-black tracking-tight sm:text-[2.35rem]" dir="ltr">
+      {value}
+    </p>
+    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{subtitle}</p>
+  </div>
+);
+
+const SectionCard: React.FC<{ title: string; isOpen: boolean; onToggle: () => void; children: React.ReactNode }> = ({ title, isOpen, onToggle, children }) => (
+  <section className="overflow-hidden rounded-[1.8rem] border border-white/65 bg-white/75 shadow-[0_30px_80px_-42px_rgba(15,23,42,0.78)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/72">
+    <button
+      onClick={onToggle}
+      className="flex w-full items-center justify-between gap-4 px-5 py-5 text-start transition-all duration-300 hover:bg-white/60 dark:hover:bg-white/5 sm:px-6"
+    >
+      <div>
+        <p className="text-[11px] font-bold uppercase text-sky-600/80 dark:text-sky-300/80">DinarLive</p>
+        <h2 className="mt-1 text-xl font-black text-slate-900 dark:text-white sm:text-2xl">{title}</h2>
+      </div>
+      <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-sky-500/10 text-sky-600 dark:bg-sky-400/10 dark:text-sky-300">
+        <ChevronIcon className={`h-6 w-6 transition-transform duration-500 ${isOpen ? 'rotate-180' : ''}`} />
+      </span>
+    </button>
+    <div className={`overflow-hidden transition-all duration-700 ease-in-out ${isOpen ? 'max-h-[960px] opacity-100' : 'max-h-0 opacity-0'}`}>
+      <div className="px-4 pb-4 sm:px-6 sm:pb-6">{children}</div>
+    </div>
+  </section>
+);
 
 export default function App(): React.ReactElement {
   const { rate, sources, loading, error, refetch, rateHistory, cooldownSeconds } = useExchangeRate();
-  
+
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(isLargeScreen());
   const [isChartOpen, setIsChartOpen] = useState(isLargeScreen());
   const [language, setLanguage] = useLanguage();
   const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isSourcesOpen, setIsSourcesOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [shareFeedback, setShareFeedback] = useState('');
   const [cooldownMessage, setCooldownMessage] = useState<string | null>(null);
@@ -69,269 +118,322 @@ export default function App(): React.ReactElement {
   const rateForDisplay = iqdRateValue * 100;
   const centralBankRateForDisplay = officialRateValue * 100;
 
-  // Scroll visibility handler
   useEffect(() => {
     const handleScroll = () => {
-      const shouldShow = window.scrollY > 400;
-      setShowScrollTop(prev => (prev === shouldShow ? prev : shouldShow));
+      const shouldShow = window.scrollY > 360;
+      setShowScrollTop((prev) => (prev === shouldShow ? prev : shouldShow));
     };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => () => {
-    if (cooldownMessageTimerRef.current) {
-      clearTimeout(cooldownMessageTimerRef.current);
-    }
-  }, []);
+  useEffect(
+    () => () => {
+      if (cooldownMessageTimerRef.current) {
+        clearTimeout(cooldownMessageTimerRef.current);
+      }
+    },
+    [],
+  );
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const validSources = useMemo(
+    () => sources.filter((source) => source.web?.uri && source.web?.title),
+    [sources],
+  );
+
   const marketTrend = useMemo(() => {
     if (!rateHistory || rateHistory.length < 2) return undefined;
+
     const sortedHistory = [...rateHistory].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     const latestHistory = sortedHistory[sortedHistory.length - 1];
-    const prevHistory = sortedHistory[sortedHistory.length - 2]; 
+    const prevHistory = sortedHistory[sortedHistory.length - 2];
     let comparisonRate = latestHistory.rate;
+
     if (Math.abs(comparisonRate - rateForDisplay) < 1 && sortedHistory.length > 1) {
-         comparisonRate = prevHistory.rate;
+      comparisonRate = prevHistory.rate;
     }
+
     const diff = rateForDisplay - comparisonRate;
     const percentage = ((diff / comparisonRate) * 100).toFixed(2);
+
     return {
-        direction: diff > 0 ? 'up' as const : diff < 0 ? 'down' as const : 'neutral' as const,
-        percentage: Math.abs(parseFloat(percentage)).toString()
+      direction: diff > 0 ? ('up' as const) : diff < 0 ? ('down' as const) : ('neutral' as const),
+      percentage: Math.abs(parseFloat(percentage)).toString(),
     };
   }, [rateHistory, rateForDisplay]);
 
   const marketHighLow = useMemo(() => {
-      if (!rateHistory || rateHistory.length === 0) return undefined;
-      const rates = rateHistory.map(r => r.rate);
-      if (rateForDisplay > 0) rates.push(rateForDisplay);
-      return { high: Math.max(...rates), low: Math.min(...rates) };
+    if (!rateHistory || rateHistory.length === 0) return undefined;
+    const rates = rateHistory.map((entry) => entry.rate);
+    if (rateForDisplay > 0) rates.push(rateForDisplay);
+    return { high: Math.max(...rates), low: Math.min(...rates) };
   }, [rateHistory, rateForDisplay]);
 
-  // Fix: Corrected typo '1rtPerUsdValue' to 'irtPerUsdValue'
-  const allRates = useMemo(() => ({
-    IQD: iqdRateValue,
-    USD: 1,
-    EUR: eurPerUsdValue,
-    TRY: tryPerUsdValue,
-    GBP: gbpPerUsdValue,
-    IRT: irtPerUsdValue,
-  }), [iqdRateValue, eurPerUsdValue, tryPerUsdValue, gbpPerUsdValue, irtPerUsdValue]);
+  const allRates = useMemo(
+    () => ({
+      IQD: iqdRateValue,
+      USD: 1,
+      EUR: eurPerUsdValue,
+      TRY: tryPerUsdValue,
+      GBP: gbpPerUsdValue,
+      IRT: irtPerUsdValue,
+    }),
+    [iqdRateValue, eurPerUsdValue, tryPerUsdValue, gbpPerUsdValue, irtPerUsdValue],
+  );
 
   const isCompletelyEmpty = loading && !rate && rateHistory.length === 0 && !error;
   const showFullScreenLoader = isCompletelyEmpty;
   const hasUsableData = Boolean(rate);
-  
+
   const handleManualRefresh = async () => {
     if (loading) return;
+
     if (cooldownSeconds > 0) {
-        setCooldownMessage(t.refreshCooldown(`${cooldownSeconds}s`));
-        if (cooldownMessageTimerRef.current) {
-          clearTimeout(cooldownMessageTimerRef.current);
-        }
-        cooldownMessageTimerRef.current = window.setTimeout(() => {
-          setCooldownMessage(null);
-          cooldownMessageTimerRef.current = null;
-        }, 2500);
-        return;
+      setCooldownMessage(t.refreshCooldown(`${cooldownSeconds}s`));
+      if (cooldownMessageTimerRef.current) {
+        clearTimeout(cooldownMessageTimerRef.current);
+      }
+      cooldownMessageTimerRef.current = window.setTimeout(() => {
+        setCooldownMessage(null);
+        cooldownMessageTimerRef.current = null;
+      }, 2500);
+      return;
     }
+
     await refetch();
   };
-  
+
   const handleShare = async () => {
     if (!rate) return;
+
     const shareText = t.shareMessage(Math.floor(rateForDisplay).toLocaleString(), centralBankRateForDisplay.toLocaleString());
     const shareData: ShareData = { title: t.headerTitle, text: shareText };
     const isShareableUrl = window.location.protocol.startsWith('http');
+
     if (isShareableUrl) shareData.url = window.location.href;
 
     if (navigator.share) {
-      try { await navigator.share(shareData); } catch (err) { if ((err as Error).name !== 'AbortError') console.error('Error sharing:', err); }
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') console.error('Error sharing:', err);
+      }
     } else {
       try {
         const clipboardText = isShareableUrl ? `${shareText}\n\n${window.location.href}` : shareText;
         await navigator.clipboard.writeText(clipboardText);
         setShareFeedback(t.copiedToClipboard);
         setTimeout(() => setShareFeedback(''), 2000);
-      } catch (err) { console.error('Error copying to clipboard:', err); }
+      } catch (err) {
+        console.error('Error copying to clipboard:', err);
+      }
     }
   };
-  
+
   const handleCurrencySelect = (currencyCode: string) => {
     setModalState({ currency: currencyCode, view: 'info' });
   };
-  const handleBuyClick = () => setModalState(prev => ({ ...prev, view: 'buy' }));
+
+  const handleBuyClick = () => setModalState((prev) => ({ ...prev, view: 'buy' }));
   const handleCloseModals = () => setModalState({ currency: null, view: 'info' });
 
-  const cityLabels = useMemo(() => ({
-    suly: t.sulyName,
-    erbil: t.erbilName,
-    duhok: t.duhokName,
-    regional: t.regionalRatesTitle
-  }), [t]);
+  const cityLabels = useMemo(
+    () => ({
+      suly: t.sulyName,
+      erbil: t.erbilName,
+      duhok: t.duhokName,
+      regional: t.regionalRatesTitle,
+    }),
+    [t],
+  );
 
   return (
     <>
       {showFullScreenLoader && <StartupLoader t={t} />}
 
-      {/* Sticky Top Navbar with Glass Effect */}
-      <div className="fixed top-0 left-0 right-0 z-[50] flex items-center justify-center pointer-events-none">
-        <nav className="w-full max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 pointer-events-auto">
-          <div className="flex justify-between items-center bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 p-2.5 sm:p-3 rounded-2xl shadow-2xl transition-all duration-300">
-            <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-                <img src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3e%3ccircle cx='50' cy='50' r='48' fill='%23FBBF24' stroke='%23B45309' stroke-width='4'/%3e%3ctext x='50' y='60' font-family='Noto Kufi Arabic, sans-serif' font-size='40' font-weight='bold' fill='%23B45309' text-anchor='middle'%3eد.ع%3c/text%3e%3c/svg%3e" alt="DinarLive Logo" className="h-7 w-7 sm:h-10 sm:w-10" />
-                <span className="text-base sm:text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight">{t.appName}</span>
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute left-[-12rem] top-[-10rem] h-[26rem] w-[26rem] rounded-full bg-sky-400/12 blur-3xl dark:bg-sky-500/14" />
+        <div className="absolute right-[-10rem] top-[8rem] h-[24rem] w-[24rem] rounded-full bg-amber-300/10 blur-3xl dark:bg-amber-400/10" />
+        <div className="absolute bottom-[-12rem] left-[18%] h-[24rem] w-[24rem] rounded-full bg-emerald-300/10 blur-3xl dark:bg-emerald-400/10" />
+      </div>
+
+      <div className="pointer-events-none fixed left-0 right-0 top-0 z-[50] flex items-center justify-center">
+        <nav className="pointer-events-auto w-full max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between gap-3 rounded-[1.6rem] border border-white/70 bg-white/72 p-2.5 shadow-[0_18px_50px_-30px_rgba(15,23,42,0.7)] backdrop-blur-2xl transition-all duration-300 dark:border-white/10 dark:bg-slate-950/68 sm:p-3">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-300 to-amber-500 shadow-lg shadow-amber-500/25">
+                <img
+                  src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3e%3ccircle cx='50' cy='50' r='48' fill='%23FBBF24' stroke='%23B45309' stroke-width='4'/%3e%3ctext x='50' y='60' font-family='Noto Kufi Arabic, sans-serif' font-size='40' font-weight='bold' fill='%23B45309' text-anchor='middle'%3eد.ع%3c/text%3e%3c/svg%3e"
+                  alt="DinarLive Logo"
+                  className="h-8 w-8"
+                />
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-lg font-black tracking-tight text-slate-900 dark:text-white sm:text-xl">{t.appName}</p>
+                <p className="truncate text-[11px] font-semibold uppercase text-sky-700/80 dark:text-sky-300/80">{t.liveRate}</p>
+              </div>
             </div>
-            
+
             <div className="flex items-center gap-1.5 sm:gap-3">
               <ThemeToggle />
               <LanguageSelector currentLang={language} onChangeLang={setLanguage} />
-              <div className="w-[1px] h-6 sm:h-8 bg-gray-200 dark:bg-gray-700 mx-0.5 sm:mx-1"></div>
+              <div className="mx-0.5 h-7 w-px bg-slate-200 dark:bg-slate-700 sm:mx-1" />
               <div className="relative">
-                  <button 
-                    onClick={handleManualRefresh} 
-                    className={`p-2 sm:p-2.5 rounded-xl transition-all duration-300 shadow-sm flex items-center justify-center ${loading ? 'bg-sky-50 dark:bg-sky-900/40 text-sky-500' : cooldownSeconds > 0 ? 'bg-gray-100 dark:bg-gray-700 text-gray-400' : 'bg-sky-600 text-white hover:bg-sky-700 active:scale-95 shadow-md'}`}
-                    aria-label="Refresh rates"
-                  >
-                  <RefreshIcon className={`w-5 h-5 sm:w-6 sm:h-6 ${loading ? 'animate-spin' : ''}`} />
-                  </button>
-                  {cooldownMessage && (
-                      <div className="absolute top-full right-0 mt-3 px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-black text-[10px] sm:text-xs font-bold rounded-xl shadow-2xl whitespace-nowrap animate-fade-in z-50 border border-gray-700 dark:border-gray-300">
-                          {cooldownMessage}
-                      </div>
-                  )}
+                <button
+                  onClick={handleManualRefresh}
+                  className={`flex items-center justify-center rounded-2xl p-2.5 transition-all duration-300 shadow-sm ${
+                    loading
+                      ? 'bg-sky-50 text-sky-500 dark:bg-sky-900/40'
+                      : cooldownSeconds > 0
+                        ? 'bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500'
+                        : 'bg-sky-600 text-white shadow-lg shadow-sky-600/25 hover:bg-sky-700 active:scale-95'
+                  }`}
+                  aria-label="Refresh rates"
+                >
+                  <RefreshIcon className={`h-5 w-5 sm:h-6 sm:w-6 ${loading ? 'animate-spin' : ''}`} />
+                </button>
+                {cooldownMessage && (
+                  <div className="absolute right-0 top-full z-50 mt-3 rounded-2xl border border-slate-200 bg-slate-950 px-4 py-2 text-[10px] font-bold text-white shadow-2xl dark:border-slate-700 dark:bg-white dark:text-slate-900 sm:text-xs">
+                    {cooldownMessage}
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </nav>
       </div>
 
-      <div className={`min-h-screen w-full transition-filter duration-500 pt-20 ${showFullScreenLoader ? 'blur-sm' : ''}`}>
-        <main className="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-          
-          <header className="mb-10 flex flex-col gap-6">
-            <div className="flex items-center justify-center">
-                 {loading && !isCompletelyEmpty && (
-                     <div className="flex items-center gap-2.5 px-6 py-2 bg-white/80 dark:bg-sky-900/20 rounded-full border border-sky-100 dark:border-sky-800 shadow-lg animate-pulse backdrop-blur-sm">
-                        <span className="relative flex h-2.5 w-2.5">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-sky-500"></span>
-                        </span>
-                        <span className="text-[10px] sm:text-xs font-black text-sky-700 dark:text-sky-300 uppercase tracking-[0.2em]">{t.updatingRates}</span>
-                     </div>
-                 )}
+      <div className={`min-h-screen w-full pt-24 transition-filter duration-500 ${showFullScreenLoader ? 'blur-sm' : ''}`}>
+        <main className="relative mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 pb-10 sm:px-6 lg:px-8">
+          <section className="relative overflow-hidden rounded-[2rem] border border-white/70 bg-white/76 px-5 py-6 shadow-[0_35px_90px_-45px_rgba(15,23,42,0.85)] backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/72 sm:px-8 sm:py-8 lg:px-10 lg:py-10">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.16),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(251,191,36,0.14),transparent_28%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.2),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(245,158,11,0.14),transparent_30%)]" />
+            <div className="relative grid gap-6 xl:grid-cols-12 xl:items-center">
+              <div className="xl:col-span-7">
+                <div className="mb-5 flex flex-wrap items-center justify-center gap-3 xl:justify-start">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-sky-200/80 bg-sky-50/90 px-4 py-2 text-xs font-bold uppercase text-sky-700 shadow-sm dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-200">
+                    <PulseIcon className="h-4 w-4" />
+                    {t.liveRate}
+                  </span>
+                  {loading && !isCompletelyEmpty && (
+                    <span className="inline-flex items-center gap-2 rounded-full border border-amber-200/80 bg-amber-50/90 px-4 py-2 text-xs font-bold text-amber-700 shadow-sm dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
+                      <span className="relative flex h-2.5 w-2.5">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
+                        <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-amber-500" />
+                      </span>
+                      {t.updatingRates}
+                    </span>
+                  )}
+                </div>
+                <Header t={t} />
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2 xl:col-span-5">
+                <SnapshotCard
+                  title={t.marketRateLabel}
+                  value={rate ? Math.floor(rateForDisplay).toLocaleString() : '--'}
+                  subtitle={t.marketRateDescription}
+                  tone="amber"
+                />
+                <SnapshotCard
+                  title={t.centralBankRateLabel}
+                  value={rate ? Math.floor(centralBankRateForDisplay).toLocaleString() : '--'}
+                  subtitle={t.centralBankRateDescription}
+                  tone="sky"
+                />
+              </div>
             </div>
-          </header>
+          </section>
 
           {error && (
-            <div className="my-6 text-center text-red-500 bg-red-100 dark:bg-red-900/50 p-6 rounded-2xl animate-fade-in max-w-2xl mx-auto shadow-lg">
-                <p className="text-lg font-semibold">{t.errorAfterRetriesTitle}</p>
-                <p className="mt-2">{t.errorAfterRetriesMessage}</p>
-                <button onClick={() => refetch()} className="mt-6 px-6 py-2.5 rounded-lg bg-sky-600 text-white font-semibold hover:bg-sky-700 transition-colors">
-                    {t.retryButton}
-                </button>
+            <div className="rounded-[1.8rem] border border-red-200 bg-red-50/90 p-6 text-center shadow-[0_24px_60px_-36px_rgba(239,68,68,0.65)] dark:border-red-500/20 dark:bg-red-500/10">
+              <p className="text-lg font-black text-red-700 dark:text-red-200">{t.errorAfterRetriesTitle}</p>
+              <p className="mx-auto mt-2 max-w-2xl text-sm text-red-600 dark:text-red-100/80">{t.errorAfterRetriesMessage}</p>
+              <button
+                onClick={() => refetch()}
+                className="mt-6 rounded-2xl bg-red-600 px-6 py-3 font-bold text-white transition-colors hover:bg-red-700"
+              >
+                {t.retryButton}
+              </button>
             </div>
           )}
 
           {(hasUsableData || !error) && (
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10">
-              <div className="lg:col-span-2 space-y-8">
-                <div className="space-y-8">
-                    <Header t={t} />
-                    {(loading && !rate) ? (
-                        <div className="space-y-4">
-                            <RateDisplaySkeleton />
-                            <RateDisplaySkeleton />
-                        </div>
-                    ) : rate && (
-                        <div className="space-y-8 animate-fade-in">
-                            <RateDisplay
-                                value={rateForDisplay}
-                                loading={loading}
-                                label={t.marketRateLabel}
-                                description={t.marketRateDescription}
-                                currency={t.iqdCurrency}
-                                cities={rate.cities}
-                                cityLabels={cityLabels}
-                                trend={marketTrend}
-                                highLow={marketHighLow}
-                                isHero={true}
-                            />
-                            <RateDisplay
-                                value={centralBankRateForDisplay}
-                                loading={loading}
-                                label={t.centralBankRateLabel}
-                                description={t.centralBankRateDescription}
-                                currency={t.iqdCurrency}
-                            />
-                        </div>
-                    )}
-                </div>
-                
-                <div>
-                    {(loading && !rate) ? (
-                        <ComparisonRatesSkeleton />
-                    ) : rate && (
-                        <ComparisonRates 
-                            iqdRate={iqdRateValue}
-                            eurRate={eurPerUsdValue}
-                            tryRate={tryPerUsdValue}
-                            gbpRate={gbpPerUsdValue}
-                            irtRate={irtPerUsdValue}
-                            t={t}
-                            onCurrencySelect={handleCurrencySelect}
-                        />
-                    )}
-                </div>
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-12 xl:items-start">
+              <aside className="order-1 space-y-6 xl:col-span-5 xl:sticky xl:top-28">
+                {(loading && !rate) ? (
+                  <div className="space-y-4">
+                    <RateDisplaySkeleton />
+                    <RateDisplaySkeleton />
+                  </div>
+                ) : rate ? (
+                  <div className="space-y-5 animate-fade-in">
+                    <RateDisplay
+                      value={rateForDisplay}
+                      loading={loading}
+                      label={t.marketRateLabel}
+                      description={t.marketRateDescription}
+                      currency={t.iqdCurrency}
+                      cities={rate.cities}
+                      cityLabels={cityLabels}
+                      trend={marketTrend}
+                      highLow={marketHighLow}
+                      isHero={true}
+                    />
+                    <RateDisplay
+                      value={centralBankRateForDisplay}
+                      loading={loading}
+                      label={t.centralBankRateLabel}
+                      description={t.centralBankRateDescription}
+                      currency={t.iqdCurrency}
+                    />
+                  </div>
+                ) : null}
+
+                {(loading && !rate) ? (
+                  <ComparisonRatesSkeleton />
+                ) : rate ? (
+                  <ComparisonRates
+                    iqdRate={iqdRateValue}
+                    eurRate={eurPerUsdValue}
+                    tryRate={tryPerUsdValue}
+                    gbpRate={gbpPerUsdValue}
+                    irtRate={irtPerUsdValue}
+                    t={t}
+                    onCurrencySelect={handleCurrencySelect}
+                  />
+                ) : null}
 
                 {rate && (
-                    <div className="bg-white dark:bg-gray-800/80 rounded-3xl shadow-2xl p-6 sm:p-8 animate-fade-in border border-gray-100 dark:border-gray-700/50">
-                        <LastUpdated date={rate.updated} loading={loading} t={t} onRefresh={handleManualRefresh} cooldownSeconds={cooldownSeconds} />
-                        {sources.length > 0 && (
-                          <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 transition-colors duration-300">
-                            <p className="mb-3 text-center text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
-                              {t.sourcesTitle}
-                            </p>
-                            <GroundingSources sources={sources} t={t} />
-                          </div>
-                        )}
-                        <Footer onAboutClick={() => setIsAboutOpen(true)} onShareClick={handleShare} shareFeedback={shareFeedback} t={t} />
+                  <div className="rounded-[1.8rem] border border-white/65 bg-white/76 p-5 shadow-[0_30px_80px_-42px_rgba(15,23,42,0.78)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/72 sm:p-6">
+                    <div className="rounded-[1.5rem] border border-slate-200/70 bg-slate-50/85 p-4 dark:border-white/10 dark:bg-slate-950/35">
+                      <LastUpdated date={rate.updated} loading={loading} t={t} onRefresh={handleManualRefresh} cooldownSeconds={cooldownSeconds} />
                     </div>
+
+                    <Footer
+                      onAboutClick={() => setIsAboutOpen(true)}
+                      onSourcesClick={validSources.length > 0 ? () => setIsSourcesOpen(true) : undefined}
+                      onShareClick={handleShare}
+                      shareFeedback={shareFeedback}
+                      t={t}
+                    />
+                  </div>
                 )}
-              </div>
+              </aside>
 
-              <div className="lg:col-span-3 space-y-10">
-                <div className="space-y-4">
-                    <button 
-                        onClick={() => setIsChartOpen(prev => !prev)} 
-                        className="w-full flex items-center justify-between p-5 px-6 rounded-2xl bg-gray-200/50 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all border border-gray-300/30 dark:border-gray-700 shadow-sm"
-                    >
-                        <h2 className="text-xl md:text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight">{t.rateHistoryTitle}</h2>
-                        <ChevronIcon className={`w-6 h-6 text-sky-500 transition-transform duration-500 ${isChartOpen ? 'rotate-180' : ''}`} />
-                    </button>
-                    <div className={`transition-all duration-700 ease-in-out overflow-hidden ${isChartOpen ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                        {(loading && rateHistory.length === 0) ? <RateHistoryChartSkeleton /> : <RateHistoryChart history={rateHistory} t={t} />}
-                    </div>
-                </div>
+              <div className="order-2 space-y-6 xl:col-span-7">
+                <SectionCard title={t.rateHistoryTitle} isOpen={isChartOpen} onToggle={() => setIsChartOpen((prev) => !prev)}>
+                  {(loading && rateHistory.length === 0) ? <RateHistoryChartSkeleton /> : <RateHistoryChart history={rateHistory} t={t} />}
+                </SectionCard>
 
                 {rate && (
-                    <div className="space-y-4 animate-fade-in">
-                        <button 
-                            onClick={() => setIsCalculatorOpen(prev => !prev)} 
-                            className="w-full flex items-center justify-between p-5 px-6 rounded-2xl bg-gray-200/50 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all border border-gray-300/30 dark:border-gray-700 shadow-sm"
-                        >
-                            <h2 className="text-xl md:text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight">{t.calculatorTitle}</h2>
-                            <ChevronIcon className={`w-6 h-6 text-sky-500 transition-transform duration-500 ${isCalculatorOpen ? 'rotate-180' : ''}`} />
-                        </button>
-                        <div className={`transition-all duration-700 ease-in-out overflow-hidden ${isCalculatorOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                            <Calculator rates={allRates} t={t} onCurrencySelect={handleCurrencySelect} />
-                        </div>
-                    </div>
+                  <SectionCard title={t.calculatorTitle} isOpen={isCalculatorOpen} onToggle={() => setIsCalculatorOpen((prev) => !prev)}>
+                    <Calculator rates={allRates} t={t} onCurrencySelect={handleCurrencySelect} />
+                  </SectionCard>
                 )}
               </div>
             </div>
@@ -339,44 +441,77 @@ export default function App(): React.ReactElement {
         </main>
       </div>
 
-      {/* Floating Buttons: Scroll Top & Chat */}
-      <div className="fixed bottom-6 flex flex-col items-center gap-4 z-40 transition-all duration-500" style={{ right: language === 'en' ? '1.5rem' : 'auto', left: language !== 'en' ? '1.5rem' : 'auto' }}>
+      <div
+        className="fixed bottom-6 z-40 flex flex-col items-center gap-4 transition-all duration-500"
+        style={{ right: language === 'en' ? '1.5rem' : 'auto', left: language !== 'en' ? '1.5rem' : 'auto' }}
+      >
         <button
           onClick={scrollToTop}
-          className={`p-4 rounded-full bg-white dark:bg-gray-800 text-gray-700 dark:text-white shadow-xl hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95 transition-all duration-300 border border-gray-200 dark:border-gray-700 ${showScrollTop ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-10 pointer-events-none'}`}
+          className={`rounded-full border border-white/70 bg-white/85 p-4 text-slate-700 shadow-[0_18px_48px_-24px_rgba(15,23,42,0.75)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:bg-white dark:border-white/10 dark:bg-slate-900/85 dark:text-white dark:hover:bg-slate-900 ${
+            showScrollTop ? 'pointer-events-auto translate-y-0 opacity-100' : 'pointer-events-none translate-y-10 opacity-0'
+          }`}
           aria-label="Scroll to top"
         >
           <ArrowUpIcon className="h-6 w-6" />
         </button>
-        
-        <button
-          onClick={() => setIsChatOpen(true)}
-          className={`p-4 rounded-full bg-sky-600 text-white shadow-xl hover:bg-sky-700 active:bg-sky-800 transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 ${isCompletelyEmpty ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
-          aria-label="Open chat assistant"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-          </svg>
-        </button>
+
+        {CHAT_ENABLED && (
+          <button
+            onClick={() => setIsChatOpen(true)}
+            className={`rounded-full bg-sky-600 p-4 text-white shadow-xl transition-all duration-300 hover:scale-110 hover:bg-sky-700 ${
+              isCompletelyEmpty ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'
+            }`}
+            aria-label="Open chat assistant"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+          </button>
+        )}
       </div>
 
-      <Dialog isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} title={t.aboutDialogTitle} t={t}>
-        <p className="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-line text-center leading-relaxed">{t.aboutDialogContent}</p>
+      <Dialog isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} title={t.aboutDialogTitle} t={t} size="md">
+        <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">{t.aboutDialogContent}</p>
       </Dialog>
-      
+
+      <Dialog isOpen={isSourcesOpen} onClose={() => setIsSourcesOpen(false)} title={t.sourcesTitle} t={t} size="lg">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 rounded-[1.4rem] border border-slate-200 bg-slate-50/90 p-4 dark:border-white/10 dark:bg-white/5">
+            <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-sky-500/10 text-sky-600 dark:bg-sky-400/10 dark:text-sky-300">
+              <SourcesIcon className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="text-sm font-black text-slate-900 dark:text-white">{t.sourcesButton}</p>
+              <div className="mt-1 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                <span className="font-black text-slate-900 dark:text-white" dir="ltr">{validSources.length}</span>
+                <span>{t.sourcesTitle}</span>
+              </div>
+            </div>
+          </div>
+          <GroundingSources sources={validSources} t={t} />
+        </div>
+      </Dialog>
+
       {modalState.currency && (
         <>
           <CurrencyInfoModal isOpen={modalState.view === 'info'} onClose={handleCloseModals} onBuy={handleBuyClick} currencyCode={modalState.currency} t={t} />
           <BuyCurrencyModal isOpen={modalState.view === 'buy'} onClose={handleCloseModals} currencyCode={modalState.currency} rates={allRates} t={t} />
         </>
       )}
-      {!isCompletelyEmpty && (
+
+      {CHAT_ENABLED && !isCompletelyEmpty && (
         <ChatDialog isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} rate={rate} t={t} />
       )}
 
       <style>{`
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        .animate-fade-in {
+          animation: fadeIn 0.4s ease-out forwards;
+        }
       `}</style>
     </>
   );
