@@ -59,12 +59,12 @@ const isLargeScreen = () => {
 };
 
 const snapshotToneClasses = {
-  amber: 'border-amber-200/80 bg-amber-50/80 text-amber-950 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-100',
-  sky: 'border-sky-200/80 bg-sky-50/80 text-sky-950 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-100',
+  amber: 'border-amber-200 bg-amber-50 text-amber-950 dark:border-amber-500/20 dark:bg-slate-900 dark:text-amber-100',
+  sky: 'border-sky-200 bg-sky-50 text-sky-950 dark:border-sky-500/20 dark:bg-slate-900 dark:text-sky-100',
 };
 
 const SnapshotCard: React.FC<{ title: string; value: string; subtitle: string; tone: keyof typeof snapshotToneClasses }> = ({ title, value, subtitle, tone }) => (
-  <div className={`rounded-[1.6rem] border p-5 shadow-[0_18px_50px_-32px_rgba(15,23,42,0.65)] backdrop-blur-md ${snapshotToneClasses[tone]}`}>
+  <div className={`rounded-[1.6rem] border p-5 shadow-sm ${snapshotToneClasses[tone]}`}>
     <p className="text-xs font-bold uppercase text-gray-500 dark:text-gray-300">{title}</p>
     <p className="mt-3 text-3xl font-black tracking-tight sm:text-[2.35rem]" dir="ltr">
       {value}
@@ -74,16 +74,16 @@ const SnapshotCard: React.FC<{ title: string; value: string; subtitle: string; t
 );
 
 const SectionCard: React.FC<{ title: string; isOpen: boolean; onToggle: () => void; children: React.ReactNode }> = ({ title, isOpen, onToggle, children }) => (
-  <section className="overflow-hidden rounded-[1.8rem] border border-white/65 bg-white/75 shadow-[0_30px_80px_-42px_rgba(15,23,42,0.78)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/72">
+  <section className="overflow-hidden rounded-[1.8rem] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
     <button
       onClick={onToggle}
-      className="flex w-full items-center justify-between gap-4 px-5 py-5 text-start transition-all duration-300 hover:bg-white/60 dark:hover:bg-white/5 sm:px-6"
+      className="flex w-full items-center justify-between gap-4 px-5 py-5 text-start transition-all duration-300 hover:bg-slate-50 dark:hover:bg-slate-800 sm:px-6"
     >
       <div>
         <p className="text-[11px] font-bold uppercase text-sky-600/80 dark:text-sky-300/80">DinarLive</p>
         <h2 className="mt-1 text-xl font-black text-slate-900 dark:text-white sm:text-2xl">{title}</h2>
       </div>
-      <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-sky-500/10 text-sky-600 dark:bg-sky-400/10 dark:text-sky-300">
+      <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-600 dark:bg-sky-500/10 dark:text-sky-300">
         <ChevronIcon className={`h-6 w-6 transition-transform duration-500 ${isOpen ? 'rotate-180' : ''}`} />
       </span>
     </button>
@@ -256,15 +256,9 @@ export default function App(): React.ReactElement {
     <>
       {showFullScreenLoader && <StartupLoader t={t} />}
 
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute left-[-12rem] top-[-10rem] h-[26rem] w-[26rem] rounded-full bg-sky-400/12 blur-3xl dark:bg-sky-500/14" />
-        <div className="absolute right-[-10rem] top-[8rem] h-[24rem] w-[24rem] rounded-full bg-amber-300/10 blur-3xl dark:bg-amber-400/10" />
-        <div className="absolute bottom-[-12rem] left-[18%] h-[24rem] w-[24rem] rounded-full bg-emerald-300/10 blur-3xl dark:bg-emerald-400/10" />
-      </div>
-
       <div className="pointer-events-none fixed left-0 right-0 top-0 z-[50] flex items-center justify-center">
         <nav className="pointer-events-auto w-full max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-3 rounded-[1.6rem] border border-white/70 bg-white/72 p-2.5 shadow-[0_18px_50px_-30px_rgba(15,23,42,0.7)] backdrop-blur-2xl transition-all duration-300 dark:border-white/10 dark:bg-slate-950/68 sm:p-3">
+          <div className="flex items-center justify-between gap-3 rounded-[1.6rem] border border-slate-200 bg-white p-2.5 shadow-lg transition-all duration-300 dark:border-slate-800 dark:bg-slate-950 sm:p-3">
             <div className="flex min-w-0 items-center gap-3">
               <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-300 to-amber-500 shadow-lg shadow-amber-500/25">
                 <img
@@ -310,17 +304,16 @@ export default function App(): React.ReactElement {
 
       <div className={`min-h-screen w-full pt-24 transition-filter duration-500 ${showFullScreenLoader ? 'blur-sm' : ''}`}>
         <main className="relative mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 pb-10 sm:px-6 lg:px-8">
-          <section className="relative overflow-hidden rounded-[2rem] border border-white/70 bg-white/76 px-5 py-6 shadow-[0_35px_90px_-45px_rgba(15,23,42,0.85)] backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/72 sm:px-8 sm:py-8 lg:px-10 lg:py-10">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.16),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(251,191,36,0.14),transparent_28%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.2),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(245,158,11,0.14),transparent_30%)]" />
-            <div className="relative grid gap-6 xl:grid-cols-12 xl:items-center">
+          <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white px-5 py-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:px-8 sm:py-8 lg:px-10 lg:py-10">
+            <div className="grid gap-6 xl:grid-cols-12 xl:items-center">
               <div className="xl:col-span-7">
                 <div className="mb-5 flex flex-wrap items-center justify-center gap-3 xl:justify-start">
-                  <span className="inline-flex items-center gap-2 rounded-full border border-sky-200/80 bg-sky-50/90 px-4 py-2 text-xs font-bold uppercase text-sky-700 shadow-sm dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-200">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-xs font-bold uppercase text-sky-700 shadow-sm dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-200">
                     <PulseIcon className="h-4 w-4" />
                     {t.liveRate}
                   </span>
                   {loading && !isCompletelyEmpty && (
-                    <span className="inline-flex items-center gap-2 rounded-full border border-amber-200/80 bg-amber-50/90 px-4 py-2 text-xs font-bold text-amber-700 shadow-sm dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-bold text-amber-700 shadow-sm dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
                       <span className="relative flex h-2.5 w-2.5">
                         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
                         <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-amber-500" />
@@ -350,7 +343,7 @@ export default function App(): React.ReactElement {
           </section>
 
           {error && (
-            <div className="rounded-[1.8rem] border border-red-200 bg-red-50/90 p-6 text-center shadow-[0_24px_60px_-36px_rgba(239,68,68,0.65)] dark:border-red-500/20 dark:bg-red-500/10">
+            <div className="rounded-[1.8rem] border border-red-200 bg-red-50/90 p-6 text-center shadow-sm dark:border-red-500/20 dark:bg-red-500/10">
               <p className="text-lg font-black text-red-700 dark:text-red-200">{t.errorAfterRetriesTitle}</p>
               <p className="mx-auto mt-2 max-w-2xl text-sm text-red-600 dark:text-red-100/80">{t.errorAfterRetriesMessage}</p>
               <button
@@ -409,8 +402,8 @@ export default function App(): React.ReactElement {
                 ) : null}
 
                 {rate && (
-                  <div className="rounded-[1.8rem] border border-white/65 bg-white/76 p-5 shadow-[0_30px_80px_-42px_rgba(15,23,42,0.78)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/72 sm:p-6">
-                    <div className="rounded-[1.5rem] border border-slate-200/70 bg-slate-50/85 p-4 dark:border-white/10 dark:bg-slate-950/35">
+                  <div className="rounded-[1.8rem] border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+                    <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950">
                       <LastUpdated date={rate.updated} loading={loading} t={t} onRefresh={handleManualRefresh} cooldownSeconds={cooldownSeconds} />
                     </div>
 
@@ -447,7 +440,7 @@ export default function App(): React.ReactElement {
       >
         <button
           onClick={scrollToTop}
-          className={`rounded-full border border-white/70 bg-white/85 p-4 text-slate-700 shadow-[0_18px_48px_-24px_rgba(15,23,42,0.75)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:bg-white dark:border-white/10 dark:bg-slate-900/85 dark:text-white dark:hover:bg-slate-900 ${
+          className={`rounded-full border border-slate-200 bg-white p-4 text-slate-700 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800 ${
             showScrollTop ? 'pointer-events-auto translate-y-0 opacity-100' : 'pointer-events-none translate-y-10 opacity-0'
           }`}
           aria-label="Scroll to top"
@@ -476,8 +469,8 @@ export default function App(): React.ReactElement {
 
       <Dialog isOpen={isSourcesOpen} onClose={() => setIsSourcesOpen(false)} title={t.sourcesTitle} t={t} size="lg">
         <div className="space-y-4">
-          <div className="flex items-center gap-3 rounded-[1.4rem] border border-slate-200 bg-slate-50/90 p-4 dark:border-white/10 dark:bg-white/5">
-            <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-sky-500/10 text-sky-600 dark:bg-sky-400/10 dark:text-sky-300">
+          <div className="flex items-center gap-3 rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950">
+            <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-600 dark:bg-sky-400/10 dark:text-sky-300">
               <SourcesIcon className="h-5 w-5" />
             </span>
             <div>
