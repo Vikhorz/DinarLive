@@ -31,7 +31,7 @@ const FooterButton: React.FC<{ onClick: () => void; children: React.ReactNode; a
   <button
     onClick={onClick}
     aria-label={ariaLabel}
-    className="flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200/80 bg-slate-50/85 px-4 py-3 text-sm font-black text-slate-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
+    className="flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-white dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-900"
   >
     {children}
   </button>
@@ -41,7 +41,7 @@ export const Footer: React.FC<FooterProps> = ({ onAboutClick, onShareClick, onSo
   const columnsClass = onSourcesClick ? 'sm:grid-cols-3' : 'sm:grid-cols-2';
 
   return (
-    <div className="mt-6 border-t border-slate-200/80 pt-4 transition-colors duration-300 dark:border-white/10">
+    <div className="mt-6 border-t border-slate-200 pt-4 transition-colors duration-300 dark:border-slate-800">
       <div className={`grid grid-cols-1 gap-3 ${columnsClass}`}>
         <FooterButton onClick={onAboutClick} ariaLabel={t.aboutButton}>
           <InfoIcon />
