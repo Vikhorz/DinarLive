@@ -40,7 +40,7 @@ export const GroundingSources: React.FC<GroundingSourcesProps> = ({ sources, t }
             href={source.web!.uri}
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex h-full flex-col justify-between rounded-[1.5rem] border border-slate-200 bg-slate-50/90 p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-sky-300 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:border-sky-400/30 dark:hover:bg-white/10"
+            className="group flex h-full flex-col justify-between rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-sky-300 hover:bg-white dark:border-slate-800 dark:bg-slate-950 dark:hover:border-sky-400/30 dark:hover:bg-slate-900"
             aria-label={`${t.sourcesTitle}: ${source.web!.title}`}
           >
             <div className="flex items-start justify-between gap-3">
