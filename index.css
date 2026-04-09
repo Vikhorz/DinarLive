@@ -1,17 +1,23 @@
 :root {
   color-scheme: light;
-  --app-bg: #f8fafc;
-  --app-bg-accent: rgba(14, 165, 233, 0.1);
-  --app-bg-warm: rgba(251, 191, 36, 0.12);
+  --app-bg: #eff4fb;
+  --app-bg-secondary: #f8fbff;
+  --app-bg-accent: rgba(14, 165, 233, 0.16);
+  --app-bg-warm: rgba(245, 158, 11, 0.14);
+  --app-bg-fresh: rgba(16, 185, 129, 0.1);
   --app-text: #0f172a;
+  --app-grid: rgba(148, 163, 184, 0.08);
 }
 
 html.dark {
   color-scheme: dark;
   --app-bg: #020617;
-  --app-bg-accent: rgba(56, 189, 248, 0.14);
-  --app-bg-warm: rgba(245, 158, 11, 0.12);
+  --app-bg-secondary: #0b1120;
+  --app-bg-accent: rgba(56, 189, 248, 0.16);
+  --app-bg-warm: rgba(251, 191, 36, 0.1);
+  --app-bg-fresh: rgba(16, 185, 129, 0.08);
   --app-text: #e2e8f0;
+  --app-grid: rgba(148, 163, 184, 0.08);
 }
 
 html,
@@ -20,13 +26,18 @@ body,
   min-height: 100%;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   color: var(--app-text);
   background:
-    radial-gradient(circle at top, var(--app-bg-accent), transparent 35%),
-    radial-gradient(circle at bottom right, var(--app-bg-warm), transparent 28%),
-    var(--app-bg);
+    radial-gradient(circle at top left, var(--app-bg-accent), transparent 32%),
+    radial-gradient(circle at top right, var(--app-bg-warm), transparent 28%),
+    radial-gradient(circle at bottom center, var(--app-bg-fresh), transparent 34%),
+    linear-gradient(180deg, var(--app-bg-secondary), var(--app-bg));
 }
 
 body::before {
@@ -35,10 +46,22 @@ body::before {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+    linear-gradient(var(--app-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--app-grid) 1px, transparent 1px);
   background-size: 32px 32px;
-  mask-image: radial-gradient(circle at center, black 35%, transparent 85%);
+  mask-image: radial-gradient(circle at center, black 42%, transparent 88%);
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 20% 18%, rgba(255, 255, 255, 0.32), transparent 18%),
+    radial-gradient(circle at 82% 22%, rgba(255, 255, 255, 0.18), transparent 16%),
+    radial-gradient(circle at 50% 82%, rgba(255, 255, 255, 0.12), transparent 18%);
+  opacity: 0.55;
 }
 
 button,
@@ -52,4 +75,15 @@ img,
 svg {
   display: block;
   max-width: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: rgba(14, 165, 233, 0.25);
+  color: inherit;
 }
