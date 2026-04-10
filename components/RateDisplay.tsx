@@ -98,8 +98,8 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
             </div>
 
             <div>
-              <p className={`font-black text-slate-900 dark:text-white ${isHero ? 'text-lg sm:text-xl' : 'text-base sm:text-lg'}`}>{label}</p>
-              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 sm:text-sm">{description}</p>
+              <p className={`font-black leading-tight text-slate-900 dark:text-white ${isHero ? 'text-lg sm:text-xl' : 'text-base sm:text-lg'}`}>{label}</p>
+              <p className="mt-1.5 text-xs leading-5 text-slate-500 dark:text-slate-400 sm:text-sm">{description}</p>
             </div>
           </div>
 
@@ -130,7 +130,7 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
                 </span>
               )}
             </p>
-            <p className="mt-2 text-sm font-semibold text-slate-400 dark:text-slate-500">{currency}</p>
+            <p className="mt-2 text-sm font-bold text-slate-400 dark:text-slate-500">{currency}</p>
           </div>
 
           {isHero && highLow && (
@@ -149,7 +149,7 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
 
         {cities && cityLabels && (
           <div className="mt-6 border-t border-slate-200 pt-4 dark:border-slate-800">
-            <p className="mb-3 text-[11px] font-black uppercase text-slate-400 dark:text-slate-500">{cityLabels.regional}</p>
+            <p className="mb-3 text-[11px] font-black text-slate-400 dark:text-slate-500">{cityLabels.regional}</p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               {[
                 { id: 'suly', label: cityLabels.suly, val: cities.sulaymaniyah, isBase: true },

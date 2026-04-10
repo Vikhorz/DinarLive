@@ -125,10 +125,10 @@ export const RateHistoryChart: React.FC<RateHistoryChartProps> = ({ history, t }
     };
 
     return (
-        <div className="relative w-full overflow-hidden bg-gradient-to-br from-white via-white to-sky-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-sky-950/20 p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm transition-all duration-300">
-             <div className="flex justify-between px-2 mb-2">
-                <span className="text-[10px] text-gray-400 font-mono">High: <span className="text-gray-600 dark:text-gray-300 font-bold">{scales?.realMax.toLocaleString()}</span></span>
-                <span className="text-[10px] text-gray-400 font-mono">Low: <span className="text-gray-600 dark:text-gray-300 font-bold">{scales?.realMin.toLocaleString()}</span></span>
+        <div className="relative w-full overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 dark:border-slate-800 dark:bg-slate-950">
+             <div className="mb-2 flex justify-between px-2">
+                <span className="text-[10px] font-mono text-slate-500">High: <span className="font-bold text-slate-700 dark:text-slate-300">{scales?.realMax.toLocaleString()}</span></span>
+                <span className="text-[10px] font-mono text-slate-500">Low: <span className="font-bold text-slate-700 dark:text-slate-300">{scales?.realMin.toLocaleString()}</span></span>
              </div>
             <svg 
                 ref={svgRef} 
@@ -148,13 +148,13 @@ export const RateHistoryChart: React.FC<RateHistoryChartProps> = ({ history, t }
                 {/* Grid Lines */}
                 {yAxisLabels.map(({ y, label }) => (
                     <g key={label}>
-                        <line x1={PADDING.left} y1={y} x2={SVG_WIDTH - PADDING.right} y2={y} className="stroke-gray-100 dark:stroke-gray-800" strokeWidth="1" strokeDasharray="4,4" />
-                        <text x={PADDING.left - 8} y={y + 4} textAnchor="end" className="text-[9px] fill-gray-400 dark:fill-gray-500 font-mono">{label.toLocaleString()}</text>
+                        <line x1={PADDING.left} y1={y} x2={SVG_WIDTH - PADDING.right} y2={y} className="stroke-slate-200 dark:stroke-slate-800" strokeWidth="1" strokeDasharray="4,4" />
+                        <text x={PADDING.left - 8} y={y + 4} textAnchor="end" className="fill-slate-500 text-[9px] font-mono dark:fill-slate-500">{label.toLocaleString()}</text>
                     </g>
                 ))}
                 
                 {xAxisLabels.map(({ x, label }) => (
-                    <text key={label} x={x} y={SVG_HEIGHT - PADDING.bottom + 15} textAnchor="middle" className="text-[10px] fill-gray-500 dark:fill-gray-400 font-medium">{label}</text>
+                    <text key={label} x={x} y={SVG_HEIGHT - PADDING.bottom + 15} textAnchor="middle" className="fill-slate-500 text-[10px] font-medium dark:fill-slate-400">{label}</text>
                 ))}
 
                 <path d={areaPathD} fill="url(#areaGradient)" />
@@ -162,15 +162,15 @@ export const RateHistoryChart: React.FC<RateHistoryChartProps> = ({ history, t }
 
                 {tooltip && (
                     <g>
-                        <line x1={tooltip.x} y1={PADDING.top} x2={tooltip.x} y2={SVG_HEIGHT - PADDING.bottom} className="stroke-gray-300 dark:stroke-gray-600" strokeWidth="1" strokeDasharray="3,3" />
-                        <circle cx={tooltip.x} cy={tooltip.y} r="5" className="fill-sky-500 stroke-white dark:stroke-gray-800" strokeWidth="2" />
+                        <line x1={tooltip.x} y1={PADDING.top} x2={tooltip.x} y2={SVG_HEIGHT - PADDING.bottom} className="stroke-slate-300 dark:stroke-slate-600" strokeWidth="1" strokeDasharray="3,3" />
+                        <circle cx={tooltip.x} cy={tooltip.y} r="5" className="fill-sky-500 stroke-white dark:stroke-slate-900" strokeWidth="2" />
                     </g>
                 )}
             </svg>
             
             {tooltip && (
                  <div 
-                    className="absolute p-2 text-center bg-gray-900/95 backdrop-blur-sm text-white rounded-lg shadow-xl pointer-events-none transition-transform duration-75 ease-out border border-gray-700"
+                    className="pointer-events-none absolute rounded-lg border border-slate-700 bg-slate-950 p-2 text-center text-white shadow-xl transition-transform duration-75 ease-out"
                     style={getTooltipStyles()}
                 >
                     <p className="text-xs font-bold font-mono tracking-tighter">{tooltip.rate.toLocaleString()}</p>

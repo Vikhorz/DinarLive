@@ -64,12 +64,12 @@ const snapshotToneClasses = {
 };
 
 const SnapshotCard: React.FC<{ title: string; value: string; subtitle: string; tone: keyof typeof snapshotToneClasses }> = ({ title, value, subtitle, tone }) => (
-  <div className={`rounded-[1.6rem] border p-5 shadow-sm ${snapshotToneClasses[tone]}`}>
-    <p className="text-xs font-bold uppercase text-gray-500 dark:text-gray-300">{title}</p>
-    <p className="mt-3 text-3xl font-black tracking-tight sm:text-[2.35rem]" dir="ltr">
+  <div className={`rounded-[1.6rem] border p-5 shadow-sm sm:p-6 ${snapshotToneClasses[tone]}`}>
+    <p className="text-[11px] font-black text-slate-500 dark:text-slate-300">{title}</p>
+    <p className="mt-2 text-3xl font-black tracking-tight sm:mt-3 sm:text-[2.35rem]" dir="ltr">
       {value}
     </p>
-    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{subtitle}</p>
+    <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">{subtitle}</p>
   </div>
 );
 
@@ -80,8 +80,8 @@ const SectionCard: React.FC<{ title: string; isOpen: boolean; onToggle: () => vo
       className="flex w-full items-center justify-between gap-4 px-5 py-5 text-start transition-all duration-300 hover:bg-slate-50 dark:hover:bg-slate-800 sm:px-6"
     >
       <div>
-        <p className="text-[11px] font-bold uppercase text-sky-600/80 dark:text-sky-300/80">DinarLive</p>
-        <h2 className="mt-1 text-xl font-black text-slate-900 dark:text-white sm:text-2xl">{title}</h2>
+        <p className="text-[10px] font-black tracking-[0.12em] text-sky-600/80 dark:text-sky-300/80">DinarLive</p>
+        <h2 className="mt-1.5 text-xl font-black text-slate-900 dark:text-white sm:text-2xl">{title}</h2>
       </div>
       <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-600 dark:bg-sky-500/10 dark:text-sky-300">
         <ChevronIcon className={`h-6 w-6 transition-transform duration-500 ${isOpen ? 'rotate-180' : ''}`} />
@@ -259,7 +259,7 @@ export default function App(): React.ReactElement {
       <div className="pointer-events-none fixed left-0 right-0 top-0 z-[50] flex items-center justify-center">
         <nav className="pointer-events-auto w-full max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-3 rounded-[1.6rem] border border-slate-200 bg-white p-2.5 shadow-lg transition-all duration-300 dark:border-slate-800 dark:bg-slate-950 sm:p-3">
-            <div className="flex min-w-0 items-center gap-3">
+            <div className="flex min-w-0 items-center gap-3 sm:gap-4">
               <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-300 to-amber-500 shadow-lg shadow-amber-500/25">
                 <img
                   src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3e%3ccircle cx='50' cy='50' r='48' fill='%23FBBF24' stroke='%23B45309' stroke-width='4'/%3e%3ctext x='50' y='60' font-family='Noto Kufi Arabic, sans-serif' font-size='40' font-weight='bold' fill='%23B45309' text-anchor='middle'%3eد.ع%3c/text%3e%3c/svg%3e"
@@ -269,7 +269,7 @@ export default function App(): React.ReactElement {
               </div>
               <div className="min-w-0">
                 <p className="truncate text-lg font-black tracking-tight text-slate-900 dark:text-white sm:text-xl">{t.appName}</p>
-                <p className="truncate text-[11px] font-semibold uppercase text-sky-700/80 dark:text-sky-300/80">{t.liveRate}</p>
+                <p className="truncate text-[10px] font-bold tracking-[0.08em] text-sky-700/80 dark:text-sky-300/80">{t.liveRate}</p>
               </div>
             </div>
 
@@ -305,9 +305,9 @@ export default function App(): React.ReactElement {
       <div className={`min-h-screen w-full pt-24 transition-filter duration-500 ${showFullScreenLoader ? 'blur-sm' : ''}`}>
         <main className="relative mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 pb-10 sm:px-6 lg:px-8">
           <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white px-5 py-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:px-8 sm:py-8 lg:px-10 lg:py-10">
-            <div className="grid gap-6 xl:grid-cols-12 xl:items-center">
+            <div className="grid gap-8 xl:grid-cols-12 xl:items-center">
               <div className="xl:col-span-7">
-                <div className="mb-5 flex flex-wrap items-center justify-center gap-3 xl:justify-start">
+                <div className="mb-6 flex flex-wrap items-center justify-center gap-3 xl:justify-start">
                   <span className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-xs font-bold uppercase text-sky-700 shadow-sm dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-200">
                     <PulseIcon className="h-4 w-4" />
                     {t.liveRate}

@@ -103,7 +103,7 @@ export const Calculator: React.FC<CalculatorProps> = ({ rates, t, onCurrencySele
   return (
     <div className="flex w-full max-w-full flex-col gap-5 overflow-hidden rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-950 sm:gap-6 sm:p-6">
       <div className="relative">
-        <label htmlFor="amount" className="mb-2 block text-xs font-black uppercase text-slate-500 dark:text-slate-400">
+        <label htmlFor="amount" className="mb-2 block text-xs font-black text-slate-500 dark:text-slate-400">
           {t.amount}
         </label>
         <input
@@ -120,7 +120,7 @@ export const Calculator: React.FC<CalculatorProps> = ({ rates, t, onCurrencySele
 
       <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-end">
         <div className="flex min-w-0 flex-col gap-2">
-          <label className="text-xs font-black uppercase text-slate-500 dark:text-slate-400">{t.from}</label>
+          <label className="text-xs font-black text-slate-500 dark:text-slate-400">{t.from}</label>
           <Tooltip text={t[currencyTooltips[fromCurrency]]} className="w-full">
             <select value={fromCurrency} onChange={(e) => setFromCurrency(e.target.value)} className={`${selectorBaseClass} ${selectorStateClass}`}>
               {currencies.map((currency) => (
@@ -143,7 +143,7 @@ export const Calculator: React.FC<CalculatorProps> = ({ rates, t, onCurrencySele
         </div>
 
         <div className="flex min-w-0 flex-col gap-2">
-          <label className="text-xs font-black uppercase text-slate-500 dark:text-slate-400">{t.to}</label>
+          <label className="text-xs font-black text-slate-500 dark:text-slate-400">{t.to}</label>
           <Tooltip text={t[currencyTooltips[toCurrency]]} className="w-full">
             <select value={toCurrency} onChange={(e) => setToCurrency(e.target.value)} className={`${selectorBaseClass} ${selectorStateClass}`}>
               {currencies.map((currency) => (
@@ -159,7 +159,7 @@ export const Calculator: React.FC<CalculatorProps> = ({ rates, t, onCurrencySele
       <Tooltip text={t.resultTooltip} className="w-full">
         <div className="relative overflow-hidden rounded-[1.6rem] border border-emerald-200 bg-emerald-50 p-5 text-center shadow-sm dark:border-emerald-500/15 dark:bg-slate-900 sm:p-6">
           <div className="relative">
-            <p className="text-xs font-black uppercase text-emerald-700 dark:text-emerald-300">{t.result}</p>
+            <p className="text-xs font-black text-emerald-700 dark:text-emerald-300">{t.result}</p>
             <p className="mt-3 break-words font-mono text-3xl font-black leading-tight text-emerald-950 dark:text-emerald-100 sm:text-5xl" dir="ltr">
               {calculatedResult}
             </p>

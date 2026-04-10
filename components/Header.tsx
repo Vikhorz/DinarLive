@@ -23,17 +23,17 @@ export const Header: React.FC<HeaderProps> = ({ t }) => {
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col items-center text-center xl:mx-0 xl:items-start xl:text-start">
-      <h1 className="max-w-2xl text-4xl font-black leading-[1.1] text-slate-900 dark:text-white sm:text-5xl lg:text-6xl">
+      <h1 className="max-w-2xl text-4xl font-black leading-[1.08] text-slate-900 dark:text-white sm:text-5xl lg:text-6xl">
         {t.headerTitle}
       </h1>
 
-      <div className="relative mt-5 flex h-14 w-full max-w-xl items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-50 px-5 shadow-sm dark:border-slate-800 dark:bg-slate-950 xl:justify-start">
-        <p key={activeIdx} className="text-sm font-black text-sky-700 dark:text-sky-300 sm:text-lg animate-slide-fade">
+      <div className="relative mt-5 flex h-12 w-full max-w-xl items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-50 px-5 shadow-sm dark:border-slate-800 dark:bg-slate-950 sm:h-14 xl:justify-start">
+        <p key={activeIdx} className="text-sm font-black text-sky-700 dark:text-sky-300 sm:text-base animate-slide-fade lg:text-lg">
           {conversions[activeIdx]}
         </p>
       </div>
 
-      <p className="mt-4 text-base font-medium text-slate-600 dark:text-slate-300 sm:text-lg">{t.headerSubtitle}</p>
+      <p className="mt-4 text-base font-semibold text-slate-600 dark:text-slate-300 sm:text-lg">{t.headerSubtitle}</p>
 
       <style>{`
         @keyframes slideFade {
