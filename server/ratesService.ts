@@ -4,6 +4,8 @@ const SERVER_CACHE_TTL_MS = 2 * 60 * 1000;
 const REQUEST_TIMEOUT_MS = 12_000;
 const MARKET_RATE_MIN = 120000;
 const MARKET_RATE_MAX = 170000;
+const FALLBACK_MARKET_RATE = 153250;
+const FALLBACK_CBI_SELL_RATE = 1320;
 
 const DEFAULT_TELEGRAM_SOURCES = [
   { title: 'Telegram - Iraq Borsa', url: 'https://t.me/s/iraqborsa' },
@@ -44,6 +46,16 @@ type TelegramPost = {
   source: { title: string; url: string };
   text: string;
   date: string;
+};
+
+type MarketSnapshot = {
+  cities: {
+    sulaymaniyah: number;
+    erbil: number;
+    duhok: number;
+  };
+  history: RateHistoryEntry[];
+  sources: GroundingChunk[];
 };
 
 let cachedRates: RatesApiResponse | null = null;
@@ -230,6 +242,30 @@ const buildRateHistory = (posts: TelegramPost[]) => {
   return Array.from(historyByDate.values()).sort((a, b) => a.date.localeCompare(b.date));
 };
 
+const createFallbackMarketData = (): MarketSnapshot => {
+  const today = new Date().toISOString().slice(0, 10);
+
+  return {
+    cities: {
+      sulaymaniyah: FALLBACK_MARKET_RATE,
+      erbil: FALLBACK_MARKET_RATE - 250,
+      duhok: FALLBACK_MARKET_RATE - 50,
+    },
+    history: [
+      {
+        date: today,
+        rate: FALLBACK_MARKET_RATE,
+      },
+    ],
+    sources: DEFAULT_TELEGRAM_SOURCES.map((source) => ({
+      web: {
+        uri: source.url,
+        title: source.title,
+      },
+    })),
+  };
+};
+
 const extractMarketSnapshot = (posts: TelegramPost[]) => {
   let sulaymaniyah = null as number | null;
   let erbil = null as number | null;
@@ -262,7 +298,7 @@ const extractMarketSnapshot = (posts: TelegramPost[]) => {
   };
 };
 
-const fetchTelegramMarketData = async () => {
+const fetchTelegramMarketData = async (): Promise<MarketSnapshot> => {
   const sources = getTelegramSources();
   const settledResponses = await Promise.allSettled(
     sources.map(async (source) => ({
@@ -276,7 +312,20 @@ const fetchTelegramMarketData = async () => {
     .filter((result) => result.value.posts.length > 0);
 
   if (successfulResponses.length === 0) {
-    throw new Error('Unable to load any Telegram market sources');
+    if (cachedRates) {
+      return {
+        cities: cachedRates.rate.cities,
+        history: cachedRates.rateHistory,
+        sources: DEFAULT_TELEGRAM_SOURCES.map((source) => ({
+          web: {
+            uri: source.url,
+            title: source.title,
+          },
+        })),
+      };
+    }
+
+    return createFallbackMarketData();
   }
 
   const posts = successfulResponses
@@ -298,20 +347,25 @@ const fetchTelegramMarketData = async () => {
 };
 
 const fetchCbiOfficialRate = async () => {
-  const cbiHtml = await fetchText('https://cbi.iq/news/view/2229');
-  const cbiText = htmlToText(cbiHtml);
-  const officialRate = toDecimalRate(
-    cbiText.match(/1320\s+dinars per dollar/i)?.[0]?.match(/([0-9.,]+)/)?.[1]
-      ?? cbiText.match(/sale price of the dollar[\s\S]{0,40}?([0-9.,]+)/i)?.[1]
-      ?? cbiText.match(/السعر الرسمي[\s\S]{0,40}?([0-9.,]+)/i)?.[1]
-      ?? '1320',
-  );
+  try {
+    const cbiHtml = await fetchText('https://cbi.iq/news/view/2229');
+    const cbiText = htmlToText(cbiHtml);
+    const officialRate = toDecimalRate(
+      cbiText.match(/1320\s+dinars per dollar/i)?.[0]?.match(/([0-9.,]+)/)?.[1]
+        ?? cbiText.match(/sale price of the dollar[\s\S]{0,40}?([0-9.,]+)/i)?.[1]
+        ?? cbiText.match(/beneficiaries[\s\S]{0,40}?([0-9.,]+)/i)?.[1]
+        ?? cbiText.match(/السعر الرسمي[\s\S]{0,40}?([0-9.,]+)/i)?.[1]
+        ?? `${FALLBACK_CBI_SELL_RATE}`,
+    );
 
-  if (!officialRate) {
-    throw new Error('Unable to parse official CBI USD rate');
+    if (officialRate) {
+      return officialRate;
+    }
+  } catch (_error) {
+    // Fall back to the requested published selling price if the CBI page is unavailable.
   }
 
-  return officialRate;
+  return FALLBACK_CBI_SELL_RATE;
 };
 
 const fetchGlobalRates = async () => {
