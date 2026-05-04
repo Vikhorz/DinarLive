@@ -307,7 +307,7 @@ export default function App(): React.ReactElement {
           <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white px-5 py-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:px-8 sm:py-8 lg:px-10 lg:py-10">
             <div className="grid gap-8 xl:grid-cols-12 xl:items-center">
               <div className="xl:col-span-7">
-                <div className="mb-6 flex flex-wrap items-center justify-center gap-3 xl:justify-start">
+                <div className="mb-4 flex flex-wrap items-center justify-center gap-3 sm:mb-6 xl:justify-start">
                   <span className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-xs font-bold uppercase text-sky-700 shadow-sm dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-200">
                     <PulseIcon className="h-4 w-4" />
                     {t.liveRate}
