@@ -33,17 +33,10 @@ const applyTheme = (theme: Theme) => {
   }
 
   const root = document.documentElement;
-  const body = document.body;
   root.classList.toggle('dark', theme === 'dark');
   root.classList.toggle('light', theme === 'light');
   root.dataset.theme = theme;
   root.style.colorScheme = theme;
-
-  if (body) {
-    body.classList.toggle('dark', theme === 'dark');
-    body.classList.toggle('light', theme === 'light');
-    body.dataset.theme = theme;
-  }
 };
 
 const emitThemeChange = () => {
