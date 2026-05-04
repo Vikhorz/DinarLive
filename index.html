@@ -86,20 +86,6 @@
 <link rel="stylesheet" href="/index.css">
 </head>
   <body class="transition-colors duration-300 antialiased">
-    <script>
-      (function() {
-        try {
-          var body = document.body;
-          var root = document.documentElement;
-          var theme = root.dataset.theme || (root.classList.contains('dark') ? 'dark' : 'light');
-          body.classList.toggle('dark', theme === 'dark');
-          body.classList.toggle('light', theme === 'light');
-          body.dataset.theme = theme;
-        } catch (e) {
-          console.error('Body theme initialization failed', e);
-        }
-      })();
-    </script>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
