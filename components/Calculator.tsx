@@ -9,6 +9,49 @@ interface CalculatorProps {
   onCurrencySelect: (currencyCode: string) => void;
 }
 
+const MAX_INTEGER_DIGITS = 12;
+const MAX_DECIMAL_DIGITS = 4;
+const MAX_SAFE_AMOUNT = 999999999999.9999;
+
+const normalizeNumericInput = (value: string) =>
+  value
+    .replace(/[٠-٩]/g, (char) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(char)))
+    .replace(/[۰-۹]/g, (char) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(char)));
+
+const sanitizeAmountInput = (rawValue: string) => {
+  const normalized = normalizeNumericInput(rawValue).replace(/,/g, '').trim();
+  const digitsAndDotOnly = normalized.replace(/[^\d.]/g, '');
+  const firstDotIndex = digitsAndDotOnly.indexOf('.');
+  const collapsed =
+    firstDotIndex === -1
+      ? digitsAndDotOnly
+      : `${digitsAndDotOnly.slice(0, firstDotIndex + 1)}${digitsAndDotOnly.slice(firstDotIndex + 1).replace(/\./g, '')}`;
+
+  const [integerPartRaw = '', decimalPartRaw = ''] = collapsed.split('.');
+  const integerPart = integerPartRaw.replace(/^0+(?=\d)/, '').slice(0, MAX_INTEGER_DIGITS);
+  const decimalPart = decimalPartRaw.slice(0, MAX_DECIMAL_DIGITS);
+  const candidate = collapsed.includes('.') ? `${integerPart || '0'}.${decimalPart}` : integerPart;
+
+  if (!candidate) {
+    return '';
+  }
+
+  const numericValue = Number(candidate);
+  if (!Number.isFinite(numericValue)) {
+    return '';
+  }
+
+  if (numericValue > MAX_SAFE_AMOUNT) {
+    return MAX_SAFE_AMOUNT.toFixed(MAX_DECIMAL_DIGITS).replace(/\.?0+$/, '');
+  }
+
+  if (collapsed.endsWith('.') && !decimalPartRaw) {
+    return `${integerPart || '0'}.`;
+  }
+
+  return candidate;
+};
+
 const SwapIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} style={style} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
@@ -94,6 +137,22 @@ export const Calculator: React.FC<CalculatorProps> = ({ rates, t, onCurrencySele
     setTimeout(() => setIsSwapping(false), 300);
   };
 
+  const handleAmountChange = (value: string) => {
+    setAmount(sanitizeAmountInput(value));
+  };
+
+  const handleAmountKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (['-', '+', 'e', 'E'].includes(event.key)) {
+      event.preventDefault();
+    }
+  };
+
+  const handleAmountPaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const pastedText = event.clipboardData.getData('text');
+    handleAmountChange(pastedText);
+  };
+
   const selectorBaseClass =
     'w-full appearance-none rounded-2xl border px-4 py-3 text-sm font-black text-slate-900 shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:text-white sm:text-base';
   const selectorStateClass = isSwapping
@@ -108,11 +167,14 @@ export const Calculator: React.FC<CalculatorProps> = ({ rates, t, onCurrencySele
         </label>
         <input
           id="amount"
-          type="number"
+          type="text"
           inputMode="decimal"
           value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          onChange={(e) => handleAmountChange(e.target.value)}
+          onKeyDown={handleAmountKeyDown}
+          onPaste={handleAmountPaste}
           placeholder={t.amountPlaceholder}
+          autoComplete="off"
           className="w-full rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 text-xl font-black text-slate-900 shadow-sm outline-none transition-all placeholder:text-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-600 sm:px-5 sm:text-3xl"
           dir="ltr"
         />
