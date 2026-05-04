@@ -14,7 +14,7 @@ This contains everything you need to run your app either locally or deploying it
 3. Run the app:
    `npm run dev`
 
-The live exchange rates now come from a backend `/api/rates` endpoint, not from Gemini. The frontend no longer needs any secret key.
+The live exchange rates come from a backend `/api/rates` endpoint.
 
 ## Data Sources
 
