@@ -6,9 +6,8 @@ const MARKET_RATE_MIN = 120000;
 const MARKET_RATE_MAX = 170000;
 
 const DEFAULT_TELEGRAM_SOURCES = [
-  { title: 'Telegram - Iraq Market Rates', url: 'https://t.me/s/iraqm' },
-  { title: 'Telegram - IQ Borsa', url: 'https://t.me/s/iqborsa' },
   { title: 'Telegram - Iraq Borsa', url: 'https://t.me/s/iraqborsa' },
+  { title: 'Telegram - Bazari Dolaraka', url: 'https://t.me/s/bazari_dolaraka' },
 ];
 
 const DIGIT_MAP: Record<string, string> = {
@@ -146,10 +145,19 @@ const getTelegramSources = () => {
     .split(',')
     .map((entry) => entry.trim())
     .filter(Boolean)
-    .map((url) => ({
-      url,
-      title: `Telegram - ${url.replace(/^https?:\/\/t\.me\/s\//, '').replace(/[/?#].*$/, '')}`,
-    }));
+    .map((url) => {
+      const normalizedUrl = url.replace(/^https?:\/\/t\.me\/(?!s\/)/, 'https://t.me/s/');
+      const channelName = normalizedUrl.replace(/^https?:\/\/t\.me\/s\//, '').replace(/[/?#].*$/, '');
+      const prettifiedName = channelName
+        .split('_')
+        .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+        .join(' ');
+
+      return {
+        url: normalizedUrl,
+        title: `Telegram - ${prettifiedName}`,
+      };
+    });
 };
 
 const extractTelegramPosts = (html: string, source: { title: string; url: string }): TelegramPost[] => {
@@ -290,9 +298,14 @@ const fetchTelegramMarketData = async () => {
 };
 
 const fetchCbiOfficialRate = async () => {
-  const cbiHtml = await fetchText('https://cbi.iq/');
+  const cbiHtml = await fetchText('https://cbi.iq/news/view/2229');
   const cbiText = htmlToText(cbiHtml);
-  const officialRate = toDecimalRate(cbiText.match(/U\.S\. dollar\s+USD\s+([0-9.,]+)/i)?.[1] ?? null);
+  const officialRate = toDecimalRate(
+    cbiText.match(/1320\s+dinars per dollar/i)?.[0]?.match(/([0-9.,]+)/)?.[1]
+      ?? cbiText.match(/sale price of the dollar[\s\S]{0,40}?([0-9.,]+)/i)?.[1]
+      ?? cbiText.match(/السعر الرسمي[\s\S]{0,40}?([0-9.,]+)/i)?.[1]
+      ?? '1320',
+  );
 
   if (!officialRate) {
     throw new Error('Unable to parse official CBI USD rate');
@@ -355,8 +368,8 @@ const composeRatesResponse = async (): Promise<RatesApiResponse> => {
       ...marketData.sources,
       {
         web: {
-          uri: 'https://cbi.iq/',
-          title: 'Central Bank of Iraq',
+          uri: 'https://cbi.iq/news/view/2229',
+          title: 'Central Bank of Iraq - USD Selling Price',
         },
       },
       {
