@@ -20,13 +20,13 @@ const ComparisonItem: React.FC<{ label: string; value: string; description?: str
 }) => (
   <button
     onClick={onClick}
-    className="group w-full rounded-[1.5rem] border border-emerald-200 bg-white p-4 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-emerald-50 dark:border-emerald-500/15 dark:bg-slate-950 dark:hover:bg-slate-900"
+    className="theme-tone-emerald group w-full rounded-[1.5rem] border p-4 text-center shadow-sm transition-all duration-300 hover:-translate-y-1"
   >
-    <p className="text-xs font-black uppercase text-emerald-700 dark:text-emerald-300">{label}</p>
-    <p className="mt-3 font-mono text-2xl font-black text-slate-900 dark:text-white" dir="ltr">
+    <p className="theme-tone-emerald-text text-xs font-black uppercase">{label}</p>
+    <p className="theme-text-primary mt-3 font-mono text-2xl font-black" dir="ltr">
       {value} <span className="text-[11px] font-semibold opacity-70">{currency}</span>
     </p>
-    {description && <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{description}</p>}
+    {description && <p className="theme-text-secondary mt-2 text-xs">{description}</p>}
   </button>
 );
 
@@ -41,11 +41,11 @@ export const ComparisonRates: React.FC<ComparisonRatesProps> = ({ iqdRate, eurRa
   const iqdPerIrt = irtRate ? (iqdRate / irtRate).toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) : '---';
 
   return (
-    <div className="rounded-[1.8rem] border border-emerald-200 bg-emerald-50 p-5 shadow-sm dark:border-emerald-500/15 dark:bg-slate-900 sm:p-6">
+    <div className="theme-surface-card theme-border rounded-[1.8rem] border p-5 shadow-sm sm:p-6">
       <div className="mb-5 flex items-center justify-between gap-3">
         <div>
-          <p className="text-[11px] font-black uppercase text-emerald-600/80 dark:text-emerald-300/80">DinarLive</p>
-          <h3 className="mt-1 text-lg font-black text-emerald-950 dark:text-emerald-100 sm:text-xl">{t.comparisonRatesTitle}</h3>
+          <p className="theme-tone-emerald-text text-[11px] font-black uppercase">DinarLive</p>
+          <h3 className="theme-text-primary mt-1 text-lg font-black sm:text-xl">{t.comparisonRatesTitle}</h3>
         </div>
       </div>
 
