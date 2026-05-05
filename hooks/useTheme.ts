@@ -1,4 +1,3 @@
-
 import { useCallback, useEffect, useSyncExternalStore } from 'react';
 
 type Theme = 'light' | 'dark';
@@ -17,15 +16,7 @@ const getStoredTheme = (): Theme | null => {
   return isTheme(storedTheme) ? storedTheme : null;
 };
 
-const getSystemTheme = (): Theme => {
-  if (typeof window === 'undefined') {
-    return 'light';
-  }
-
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-};
-
-const getThemeSnapshot = (): Theme => getStoredTheme() ?? getSystemTheme();
+const getThemeSnapshot = (): Theme => getStoredTheme() ?? 'light';
 
 const applyTheme = (theme: Theme) => {
   if (typeof document === 'undefined') {
@@ -51,28 +42,19 @@ export const useTheme = () => {
       return () => undefined;
     }
 
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleThemeEvent = () => onStoreChange();
     const handleStorage = (event: StorageEvent) => {
       if (event.key === null || event.key === THEME_STORAGE_KEY) {
         onStoreChange();
       }
     };
-    const handleSystemThemeChange = () => {
-      if (!getStoredTheme()) {
-        applyTheme(getSystemTheme());
-        onStoreChange();
-      }
-    };
 
     window.addEventListener(THEME_EVENT, handleThemeEvent);
     window.addEventListener('storage', handleStorage);
-    mediaQuery.addEventListener('change', handleSystemThemeChange);
 
     return () => {
       window.removeEventListener(THEME_EVENT, handleThemeEvent);
       window.removeEventListener('storage', handleStorage);
-      mediaQuery.removeEventListener('change', handleSystemThemeChange);
     };
   }, []);
 
