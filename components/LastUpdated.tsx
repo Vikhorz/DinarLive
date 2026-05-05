@@ -45,7 +45,7 @@ export const LastUpdated: React.FC<LastUpdatedProps> = ({ date, loading, t }) =>
 
   return (
     <div className="mt-4 flex flex-col items-center justify-center gap-1 transition-colors duration-300">
-        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+        <div className="theme-text-secondary flex items-center gap-2 text-sm">
             {loading ? (
                 <div className="flex items-center gap-2">
                     <span className="relative flex h-2 w-2">
@@ -67,11 +67,11 @@ export const LastUpdated: React.FC<LastUpdatedProps> = ({ date, loading, t }) =>
                     )}
                 </div>
                 <span>{t.updated} {timeAgo}</span>
-                {isCached && <span className="text-xs bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-gray-500">Cached</span>}
+                {isCached && <span className="theme-surface-strong theme-text-secondary rounded px-1.5 py-0.5 text-xs">Cached</span>}
                 </>
             )}
         </div>
-        <div className="text-[10px] md:text-xs text-gray-400 dark:text-gray-500 font-mono tracking-wider">
+        <div className="theme-text-secondary text-[10px] font-mono tracking-wider md:text-xs">
             {formattedDate}
         </div>
     </div>
