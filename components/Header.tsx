@@ -23,11 +23,11 @@ export const Header: React.FC<HeaderProps> = ({ t }) => {
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col items-center text-center xl:mx-0 xl:items-end xl:text-right">
-      <h1 className="theme-text-primary max-w-[10.8ch] text-balance text-[2.25rem] font-black leading-[1.24] sm:max-w-[11.5ch] sm:text-[3rem] lg:max-w-[12.5ch] lg:text-[3.8rem] xl:text-[4.25rem]">
+      <h1 className="theme-text-primary max-w-[10.8ch] text-balance text-[2.25rem] font-black leading-[1.32] sm:max-w-[11.5ch] sm:text-[3rem] lg:max-w-[12.5ch] lg:text-[3.8rem] xl:text-[4.25rem]">
         {t.headerTitle}
       </h1>
 
-      <div className="theme-surface-muted theme-border relative mt-5 flex h-12 w-full max-w-md items-center justify-center overflow-hidden rounded-full border px-5 shadow-sm sm:mt-6 sm:h-14 sm:max-w-xl xl:justify-end">
+      <div className="theme-surface-muted theme-border relative mt-5 flex h-12 w-full max-w-md items-center justify-center overflow-hidden rounded-full border px-5 shadow-sm sm:mt-6 sm:h-14 sm:max-w-xl">
         <p key={activeIdx} className="theme-text-accent animate-slide-fade text-[0.92rem] font-black leading-none sm:text-base lg:text-lg">
           {conversions[activeIdx]}
         </p>
