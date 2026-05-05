@@ -30,10 +30,9 @@
     try {
       var storedTheme = localStorage.getItem('theme');
       var root = document.documentElement;
-      var systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
       var resolvedTheme = storedTheme === 'dark' || storedTheme === 'light'
         ? storedTheme
-        : (systemPrefersDark ? 'dark' : 'light');
+        : 'light';
 
       if (resolvedTheme === 'dark') {
         root.classList.add('dark');
@@ -41,6 +40,7 @@
       } else {
         root.classList.add('light');
         root.classList.remove('dark');
+        if (!storedTheme) localStorage.setItem('theme', 'light');
       }
       root.dataset.theme = resolvedTheme;
       root.style.colorScheme = resolvedTheme;
