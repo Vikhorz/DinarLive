@@ -31,7 +31,7 @@ const FooterButton: React.FC<{ onClick: () => void; children: React.ReactNode; a
   <button
     onClick={onClick}
     aria-label={ariaLabel}
-    className="flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-white dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-900"
+    className="theme-surface-muted theme-border theme-text-primary flex w-full items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-black shadow-sm transition-all duration-200 hover:-translate-y-0.5"
   >
     {children}
   </button>
@@ -41,7 +41,7 @@ export const Footer: React.FC<FooterProps> = ({ onAboutClick, onShareClick, onSo
   const columnsClass = onSourcesClick ? 'sm:grid-cols-3' : 'sm:grid-cols-2';
 
   return (
-    <div className="mt-6 border-t border-slate-200 pt-4 transition-colors duration-300 dark:border-slate-800">
+    <div className="theme-border mt-6 border-t pt-4 transition-colors duration-300">
       <div className={`grid grid-cols-1 gap-3 ${columnsClass}`}>
         <FooterButton onClick={onAboutClick} ariaLabel={t.aboutButton}>
           <InfoIcon />
@@ -61,7 +61,7 @@ export const Footer: React.FC<FooterProps> = ({ onAboutClick, onShareClick, onSo
             {t.shareButton}
           </FooterButton>
           {shareFeedback && (
-            <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 rounded-xl bg-slate-950 px-3 py-1 text-xs font-bold text-white shadow-lg dark:bg-white dark:text-slate-900 animate-fade-in-out">
+            <div className="theme-tooltip absolute bottom-full left-1/2 mb-2 -translate-x-1/2 rounded-xl border px-3 py-1 text-xs font-bold shadow-lg animate-fade-in-out">
               {shareFeedback}
             </div>
           )}
