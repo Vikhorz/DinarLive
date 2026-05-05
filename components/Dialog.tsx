@@ -56,20 +56,20 @@ export const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, title, children
     >
       <div
         ref={dialogRef}
-        className={`relative w-full ${sizeClasses[size]} overflow-hidden rounded-[1.9rem] border border-slate-200 bg-white p-6 shadow-2xl animate-scale-in dark:border-slate-800 dark:bg-slate-900 sm:p-7`}
+        className={`theme-surface-card theme-border relative w-full ${sizeClasses[size]} overflow-hidden rounded-[1.9rem] border p-6 shadow-2xl animate-scale-in sm:p-7`}
         onClick={(e) => e.stopPropagation()}
         tabIndex={-1}
       >
         <div className="mb-5 flex items-start justify-between gap-4">
           <div>
-            <p className="text-[11px] font-black uppercase text-sky-600/80 dark:text-sky-300/80">DinarLive</p>
-            <h2 id="dialog-title" className="mt-1 text-xl font-black text-slate-900 dark:text-white sm:text-2xl">
+            <p className="theme-text-accent text-[11px] font-black uppercase">DinarLive</p>
+            <h2 id="dialog-title" className="theme-text-primary mt-1 text-xl font-black sm:text-2xl">
               {title}
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="rounded-2xl p-2 text-slate-500 transition-colors hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+            className="theme-text-secondary theme-hover-soft rounded-2xl p-2 transition-colors"
             aria-label={t.closeButton}
           >
             <CloseIcon />
