@@ -65,11 +65,11 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
       return;
     }
 
-    setIconHighlightClass('scale-110 bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300');
+    setIconHighlightClass('scale-110 bg-green-100 text-green-700');
     const iconTimer = setTimeout(() => setIconHighlightClass(''), 500);
 
-    if (value > prevValueRef.current) setRateChangeClass('text-green-600 dark:text-green-400');
-    else if (value < prevValueRef.current) setRateChangeClass('text-red-600 dark:text-red-400');
+    if (value > prevValueRef.current) setRateChangeClass('text-green-600');
+    else if (value < prevValueRef.current) setRateChangeClass('text-red-600');
 
     const rateTimer = setTimeout(() => setRateChangeClass(''), 500);
 
@@ -81,15 +81,15 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
   }, [value]);
 
   const shellClass = isHero
-    ? 'border-amber-200 bg-amber-50 dark:border-amber-500/20 dark:bg-slate-900'
-    : 'border-sky-200 bg-sky-50 dark:border-sky-500/20 dark:bg-slate-900';
+    ? 'theme-tone-amber'
+    : 'theme-tone-sky';
 
   const iconClasses = iconHighlightClass || (isHero
-    ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
-    : 'bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300');
+    ? 'theme-tone-amber theme-tone-amber-text'
+    : 'theme-tone-sky theme-tone-sky-text');
 
   return (
-    <div className={`relative overflow-hidden rounded-[1.8rem] border p-5 shadow-sm transition-all duration-300 sm:p-6 ${shellClass}`}>
+    <div className={`theme-border relative overflow-hidden rounded-[1.8rem] border p-5 shadow-sm transition-all duration-300 sm:p-6 ${shellClass}`}>
       <div className="relative">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-start gap-3">
@@ -98,8 +98,8 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
             </div>
 
             <div>
-              <p className={`font-black leading-tight text-slate-900 dark:text-white ${isHero ? 'text-lg sm:text-xl' : 'text-base sm:text-lg'}`}>{label}</p>
-              <p className="mt-1.5 text-xs leading-5 text-slate-500 dark:text-slate-400 sm:text-sm">{description}</p>
+              <p className={`theme-text-primary font-black leading-tight ${isHero ? 'text-lg sm:text-xl' : 'text-base sm:text-lg'}`}>{label}</p>
+              <p className="theme-text-secondary mt-1.5 text-xs leading-5 sm:text-sm">{description}</p>
             </div>
           </div>
 
@@ -107,10 +107,10 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
             <div
               className={`inline-flex items-center gap-1.5 self-start rounded-full px-3 py-1.5 text-xs font-black ${
                 trend.direction === 'up'
-                  ? 'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300'
+                  ? 'bg-green-100 text-green-700'
                   : trend.direction === 'down'
-                    ? 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300'
-                    : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                    ? 'bg-red-100 text-red-700'
+                    : 'theme-surface-muted theme-text-secondary'
               }`}
             >
               <TrendIcon direction={trend.direction} />
@@ -121,7 +121,7 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
 
         <div className="mt-6 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className={`relative font-black tracking-tight transition-colors duration-300 text-slate-900 dark:text-white ${isHero ? 'text-4xl sm:text-5xl' : 'text-3xl sm:text-4xl'} ${rateChangeClass}`} dir="ltr">
+            <p className={`theme-text-primary relative font-black tracking-tight transition-colors duration-300 ${isHero ? 'text-4xl sm:text-5xl' : 'text-3xl sm:text-4xl'} ${rateChangeClass}`} dir="ltr">
               {Math.floor(value).toLocaleString()}
               {loading && (
                 <span className="absolute -right-4 top-1 h-3 w-3">
@@ -130,26 +130,26 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
                 </span>
               )}
             </p>
-            <p className="mt-2 text-sm font-bold text-slate-400 dark:text-slate-500">{currency}</p>
+            <p className="theme-text-secondary mt-2 text-sm font-bold">{currency}</p>
           </div>
 
           {isHero && highLow && (
             <div className="grid grid-cols-2 gap-3 sm:min-w-[180px]">
-              <div className="rounded-2xl border border-slate-200 bg-white p-3 text-center dark:border-slate-800 dark:bg-slate-950">
-                <p className="text-[11px] font-bold uppercase text-slate-400 dark:text-slate-500">H</p>
-                <p className="mt-1 font-mono text-sm font-black text-slate-800 dark:text-slate-100" dir="ltr">{highLow.high.toLocaleString()}</p>
+              <div className="theme-surface-muted theme-border rounded-2xl border p-3 text-center">
+                <p className="theme-text-secondary text-[11px] font-bold uppercase">H</p>
+                <p className="theme-text-primary mt-1 font-mono text-sm font-black" dir="ltr">{highLow.high.toLocaleString()}</p>
               </div>
-              <div className="rounded-2xl border border-slate-200 bg-white p-3 text-center dark:border-slate-800 dark:bg-slate-950">
-                <p className="text-[11px] font-bold uppercase text-slate-400 dark:text-slate-500">L</p>
-                <p className="mt-1 font-mono text-sm font-black text-slate-800 dark:text-slate-100" dir="ltr">{highLow.low.toLocaleString()}</p>
+              <div className="theme-surface-muted theme-border rounded-2xl border p-3 text-center">
+                <p className="theme-text-secondary text-[11px] font-bold uppercase">L</p>
+                <p className="theme-text-primary mt-1 font-mono text-sm font-black" dir="ltr">{highLow.low.toLocaleString()}</p>
               </div>
             </div>
           )}
         </div>
 
         {cities && cityLabels && (
-          <div className="mt-6 border-t border-slate-200 pt-4 dark:border-slate-800">
-            <p className="mb-3 text-[11px] font-black text-slate-400 dark:text-slate-500">{cityLabels.regional}</p>
+          <div className="theme-border mt-6 border-t pt-4">
+            <p className="theme-text-secondary mb-3 text-[11px] font-black">{cityLabels.regional}</p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               {[
                 { id: 'suly', label: cityLabels.suly, val: cities.sulaymaniyah, isBase: true },
@@ -160,12 +160,12 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
                   key={city.id}
                   className={`rounded-2xl border p-3 transition-all ${
                     city.isBase
-                      ? 'border-amber-200 bg-white dark:border-amber-500/20 dark:bg-slate-950'
-                      : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950'
+                      ? 'theme-tone-amber'
+                      : 'theme-surface-muted theme-border'
                   }`}
                 >
-                  <p className={`text-xs font-black ${city.isBase ? 'text-amber-800 dark:text-amber-200' : 'text-slate-500 dark:text-slate-400'}`}>{city.label}</p>
-                  <p className={`mt-2 font-mono text-lg font-black ${city.isBase ? 'text-amber-950 dark:text-amber-100' : 'text-slate-900 dark:text-white'}`} dir="ltr">
+                  <p className={`text-xs font-black ${city.isBase ? 'theme-tone-amber-text' : 'theme-text-secondary'}`}>{city.label}</p>
+                  <p className={`mt-2 font-mono text-lg font-black ${city.isBase ? 'theme-tone-amber-text' : 'theme-text-primary'}`} dir="ltr">
                     {city.val.toLocaleString()}
                   </p>
                 </div>
