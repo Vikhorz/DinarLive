@@ -59,36 +59,36 @@ const isLargeScreen = () => {
 };
 
 const snapshotToneClasses = {
-  amber: 'theme-tone-amber',
-  sky: 'theme-tone-sky',
+  amber: 'theme-surface-inverted theme-border-strong',
+  sky: 'theme-surface-card theme-border',
 };
 
 const snapshotToneTextClasses = {
-  amber: 'theme-tone-amber-text',
-  sky: 'theme-tone-sky-text',
+  amber: '',
+  sky: 'theme-text-primary',
 };
 
 const SnapshotCard: React.FC<{ title: string; value: string; subtitle: string; tone: keyof typeof snapshotToneClasses }> = ({ title, value, subtitle, tone }) => (
-  <div className={`rounded-[1.6rem] border p-5 shadow-sm sm:p-6 ${snapshotToneClasses[tone]}`}>
+  <div className={`theme-shadow-soft rounded-lg border p-5 transition-transform duration-200 hover:-translate-y-0.5 sm:p-6 ${snapshotToneClasses[tone]}`}>
     <p className={`text-[11px] font-black ${snapshotToneTextClasses[tone]}`}>{title}</p>
-    <p className={`mt-2 text-3xl font-black tracking-tight sm:mt-3 sm:text-[2.35rem] ${snapshotToneTextClasses[tone]}`} dir="ltr">
+    <p className={`font-data mt-2 text-3xl font-black tracking-tight sm:mt-3 sm:text-[2.35rem] ${snapshotToneTextClasses[tone]}`} dir="ltr">
       {value}
     </p>
-    <p className="theme-text-secondary mt-2 text-sm leading-6">{subtitle}</p>
+    <p className={`mt-2 text-sm leading-6 ${tone === 'amber' ? 'opacity-70' : 'theme-text-secondary'}`}>{subtitle}</p>
   </div>
 );
 
 const SectionCard: React.FC<{ title: string; isOpen: boolean; onToggle: () => void; children: React.ReactNode }> = ({ title, isOpen, onToggle, children }) => (
-  <section className="theme-surface-card theme-border overflow-hidden rounded-[1.8rem] border shadow-sm">
+  <section className="theme-surface-card theme-border theme-shadow-soft overflow-hidden rounded-lg border transition-transform duration-200 hover:-translate-y-0.5">
     <button
       onClick={onToggle}
       className="theme-hover-soft flex w-full items-center justify-between gap-4 px-5 py-5 text-start transition-all duration-300 sm:px-6"
     >
       <div>
-        <p className="theme-text-accent text-[10px] font-black tracking-[0.12em]">DinarLive</p>
+        <p className="theme-text-secondary font-data text-[10px] font-black uppercase">DinarLive</p>
         <h2 className="theme-text-primary mt-1.5 text-xl font-black sm:text-2xl">{title}</h2>
       </div>
-      <span className="theme-surface-strong theme-text-accent flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl">
+      <span className="theme-surface-muted theme-border theme-text-primary flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg border">
         <ChevronIcon className={`h-6 w-6 transition-transform duration-500 ${isOpen ? 'rotate-180' : ''}`} />
       </span>
     </button>
@@ -263,18 +263,14 @@ export default function App(): React.ReactElement {
 
       <div className="pointer-events-none fixed left-0 right-0 top-0 z-[50] flex items-center justify-center">
         <nav className="pointer-events-auto w-full max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
-          <div className="theme-surface-card theme-border flex items-center justify-between gap-3 rounded-[1.6rem] border p-2.5 shadow-lg transition-all duration-300 sm:p-3">
+          <div className="theme-surface-card theme-border theme-shadow-soft flex items-center justify-between gap-3 rounded-lg border p-2.5 transition-all duration-300 sm:p-3">
             <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-              <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-300 to-amber-500 shadow-lg shadow-amber-500/25">
-                <img
-                  src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3e%3ccircle cx='50' cy='50' r='48' fill='%23FBBF24' stroke='%23B45309' stroke-width='4'/%3e%3ctext x='50' y='60' font-family='Noto Kufi Arabic, sans-serif' font-size='40' font-weight='bold' fill='%23B45309' text-anchor='middle'%3eد.ع%3c/text%3e%3c/svg%3e"
-                  alt="DinarLive Logo"
-                  className="h-8 w-8"
-                />
+              <div className="theme-surface-inverted theme-border-strong flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg border text-sm font-black">
+                د.ع
               </div>
               <div className="min-w-0">
                 <p className="theme-text-primary truncate text-lg font-black tracking-tight sm:text-xl">{t.appName}</p>
-                <p className="theme-text-accent truncate text-[10px] font-bold tracking-[0.08em]">{t.liveRate}</p>
+                <p className="theme-text-secondary truncate text-[10px] font-bold tracking-[0.08em]">{t.liveRate}</p>
               </div>
             </div>
 
@@ -287,10 +283,10 @@ export default function App(): React.ReactElement {
                   onClick={handleManualRefresh}
                   className={`flex items-center justify-center rounded-2xl p-2.5 transition-all duration-300 shadow-sm ${
                     loading
-                      ? 'theme-tone-sky theme-tone-sky-text'
+                      ? 'theme-surface-muted theme-text-primary'
                       : cooldownSeconds > 0
                         ? 'theme-surface-muted theme-text-secondary'
-                        : 'bg-sky-600 text-white shadow-lg shadow-sky-600/25 hover:bg-sky-700 active:scale-95'
+                        : 'theme-surface-inverted theme-border-strong border active:scale-95'
                   }`}
                   aria-label="Refresh rates"
                 >
@@ -309,19 +305,19 @@ export default function App(): React.ReactElement {
 
       <div className={`min-h-screen w-full pt-24 transition-filter duration-500 ${showFullScreenLoader ? 'blur-sm' : ''}`}>
         <main className="relative mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 pb-10 sm:px-6 lg:px-8">
-          <section className="theme-surface-card theme-border overflow-hidden rounded-[2rem] border px-5 py-6 shadow-sm sm:px-8 sm:py-8 lg:px-10 lg:py-10">
+          <section className="theme-surface-card theme-border theme-shadow-soft overflow-hidden rounded-lg border px-5 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-10">
             <div className="grid gap-8 xl:grid-cols-12 xl:items-center">
               <div className="xl:col-span-7">
                 <div className="mb-4 flex flex-wrap items-center justify-center gap-3 sm:mb-6 xl:justify-start">
-                  <span className="theme-tone-sky theme-tone-sky-text inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold uppercase shadow-sm">
+                  <span className="theme-surface-muted theme-border theme-text-primary inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-xs font-bold uppercase shadow-sm">
                     <PulseIcon className="h-4 w-4" />
+                    <span className="theme-live-dot h-2 w-2 rounded-full" />
                     {t.liveRate}
                   </span>
                   {loading && !isCompletelyEmpty && (
-                    <span className="theme-tone-amber theme-tone-amber-text inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold shadow-sm">
+                    <span className="theme-surface-muted theme-border theme-text-primary inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-xs font-bold shadow-sm">
                       <span className="relative flex h-2.5 w-2.5">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
-                        <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-amber-500" />
+                        <span className="theme-live-dot relative inline-flex h-2.5 w-2.5 rounded-full" />
                       </span>
                       {t.updatingRates}
                     </span>
@@ -348,12 +344,12 @@ export default function App(): React.ReactElement {
           </section>
 
           {error && (
-            <div className="rounded-[1.8rem] border border-red-200 bg-red-50/90 p-6 text-center shadow-sm dark:border-red-500/20 dark:bg-red-500/10">
-              <p className="text-lg font-black text-red-700 dark:text-red-200">{t.errorAfterRetriesTitle}</p>
-              <p className="mx-auto mt-2 max-w-2xl text-sm text-red-600 dark:text-red-100/80">{t.errorAfterRetriesMessage}</p>
+            <div className="theme-surface-card theme-border rounded-lg border p-6 text-center shadow-sm">
+              <p className="theme-text-primary text-lg font-black">{t.errorAfterRetriesTitle}</p>
+              <p className="theme-text-secondary mx-auto mt-2 max-w-2xl text-sm">{t.errorAfterRetriesMessage}</p>
               <button
                 onClick={() => refetch()}
-                className="mt-6 rounded-2xl bg-red-600 px-6 py-3 font-bold text-white transition-colors hover:bg-red-700"
+                className="theme-surface-inverted theme-border-strong mt-6 rounded-lg border px-6 py-3 font-bold transition-colors"
               >
                 {t.retryButton}
               </button>
@@ -407,8 +403,8 @@ export default function App(): React.ReactElement {
                 ) : null}
 
                 {rate && (
-                  <div className="theme-surface-card theme-border rounded-[1.8rem] border p-5 shadow-sm sm:p-6">
-                    <div className="theme-surface-muted theme-border rounded-[1.5rem] border p-4">
+                  <div className="theme-surface-card theme-border theme-shadow-soft rounded-lg border p-5 sm:p-6">
+                    <div className="theme-surface-muted theme-border rounded-lg border p-4">
                       <LastUpdated date={rate.updated} loading={loading} t={t} onRefresh={handleManualRefresh} cooldownSeconds={cooldownSeconds} />
                     </div>
 
@@ -445,7 +441,7 @@ export default function App(): React.ReactElement {
       >
         <button
           onClick={scrollToTop}
-          className={`theme-surface-card theme-border theme-text-primary rounded-full border p-4 shadow-lg transition-all duration-300 hover:-translate-y-1 ${
+          className={`theme-surface-card theme-border theme-text-primary rounded-lg border p-4 shadow-lg transition-all duration-300 hover:-translate-y-1 ${
             showScrollTop ? 'pointer-events-auto translate-y-0 opacity-100' : 'pointer-events-none translate-y-10 opacity-0'
           }`}
           aria-label="Scroll to top"
@@ -456,7 +452,7 @@ export default function App(): React.ReactElement {
         {CHAT_ENABLED && (
           <button
             onClick={() => setIsChatOpen(true)}
-            className={`rounded-full bg-sky-600 p-4 text-white shadow-xl transition-all duration-300 hover:scale-110 hover:bg-sky-700 ${
+            className={`theme-surface-inverted rounded-lg p-4 shadow-xl transition-all duration-300 hover:scale-110 ${
               isCompletelyEmpty ? 'pointer-events-none opacity-0' : 'pointer-events-auto opacity-100'
             }`}
             aria-label="Open chat assistant"
