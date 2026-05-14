@@ -22,7 +22,7 @@ const EarthIcon: React.FC = () => (
 );
 
 const CheckIcon: React.FC = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <svg xmlns="http://www.w3.org/2000/svg" className="theme-text-primary h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
     </svg>
 );
@@ -53,7 +53,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ currentLang,
         <div ref={wrapperRef} className="relative z-20">
             <button
                 onClick={() => setIsOpen(prev => !prev)}
-                className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-slate-700 transition-colors duration-200 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus-visible:ring-offset-slate-900"
+                className="theme-surface-muted theme-border theme-text-primary flex items-center gap-2 rounded-lg border px-3 py-1.5 transition-colors duration-200 focus:outline-none"
                 aria-haspopup="true"
                 aria-expanded={isOpen}
                 aria-label="Select language"
@@ -66,7 +66,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ currentLang,
 
             {isOpen && (
                 <div
-                    className="absolute right-0 mt-2 w-40 origin-top-right rounded-lg border border-slate-200 bg-white shadow-xl focus:outline-none transition-all duration-150 ease-out animate-scale-in dark:border-slate-800 dark:bg-slate-900"
+                    className="theme-surface-card theme-border absolute right-0 mt-2 w-40 origin-top-right rounded-lg border shadow-xl focus:outline-none transition-all duration-150 ease-out animate-scale-in"
                     role="menu"
                     aria-orientation="vertical"
                 >
@@ -77,9 +77,9 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ currentLang,
                                 onClick={() => handleLanguageSelect(code)}
                                 className={`w-full text-left flex items-center justify-between px-4 py-2 text-sm ${
                                     currentLang === code
-                                        ? 'font-bold text-sky-600 dark:text-sky-400'
-                                        : 'text-gray-700 dark:text-gray-200'
-                                } hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-150 ${isRtl ? 'font-noto-kufi-arabic' : ''}`}
+                                        ? 'font-bold theme-text-primary'
+                                        : 'theme-text-primary'
+                                } transition-colors duration-150 ${isRtl ? 'font-noto-kufi-arabic' : ''}`}
                                 role="menuitem"
                             >
                                 <span>{name}</span>
