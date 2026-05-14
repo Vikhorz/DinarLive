@@ -20,10 +20,10 @@ const ComparisonItem: React.FC<{ label: string; value: string; description?: str
 }) => (
   <button
     onClick={onClick}
-    className="theme-tone-emerald group w-full rounded-[1.5rem] border p-4 text-center shadow-sm transition-all duration-300 hover:-translate-y-1"
+    className="theme-surface-muted theme-border group w-full rounded-lg border p-4 text-center shadow-sm transition-all duration-300 hover:-translate-y-1"
   >
-    <p className="theme-tone-emerald-text text-xs font-black uppercase">{label}</p>
-    <p className="theme-text-primary mt-3 font-mono text-2xl font-black" dir="ltr">
+    <p className="theme-text-secondary text-xs font-black uppercase">{label}</p>
+    <p className="theme-text-primary font-data mt-3 text-2xl font-black" dir="ltr">
       {value} <span className="text-[11px] font-semibold opacity-70">{currency}</span>
     </p>
     {description && <p className="theme-text-secondary mt-2 text-xs">{description}</p>}
@@ -41,10 +41,10 @@ export const ComparisonRates: React.FC<ComparisonRatesProps> = ({ iqdRate, eurRa
   const iqdPerIrt = irtRate ? (iqdRate / irtRate).toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) : '---';
 
   return (
-    <div className="theme-surface-card theme-border rounded-[1.8rem] border p-5 shadow-sm sm:p-6">
+    <div className="theme-surface-card theme-border theme-shadow-soft rounded-lg border p-5 shadow-sm sm:p-6">
       <div className="mb-5 flex items-center justify-between gap-3">
         <div>
-          <p className="theme-tone-emerald-text text-[11px] font-black uppercase">DinarLive</p>
+          <p className="theme-text-secondary font-data text-[11px] font-black uppercase">DinarLive</p>
           <h3 className="theme-text-primary mt-1 text-lg font-black sm:text-xl">{t.comparisonRatesTitle}</h3>
         </div>
       </div>
