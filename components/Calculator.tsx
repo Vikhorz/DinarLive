@@ -154,13 +154,13 @@ export const Calculator: React.FC<CalculatorProps> = ({ rates, t, onCurrencySele
   };
 
   const selectorBaseClass =
-    'theme-surface-muted theme-border theme-text-primary w-full appearance-none rounded-2xl border px-4 py-3 text-sm font-black shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-sky-500 sm:text-base';
+    'theme-surface-muted theme-border theme-text-primary theme-focus w-full appearance-none rounded-lg border px-4 py-3 text-sm font-black shadow-sm transition-all duration-300 sm:text-base';
   const selectorStateClass = isSwapping
-    ? 'theme-tone-sky ring-2 ring-sky-200'
-    : 'hover:border-sky-300';
+    ? 'theme-border-strong'
+    : 'hover:opacity-80';
 
   return (
-    <div className="theme-surface-card theme-border flex w-full max-w-full flex-col gap-5 overflow-hidden rounded-[1.7rem] border p-5 shadow-sm sm:gap-6 sm:p-6">
+    <div className="theme-surface-card theme-border theme-shadow-soft flex w-full max-w-full flex-col gap-5 overflow-hidden rounded-lg border p-5 shadow-sm sm:gap-6 sm:p-6">
       <div className="relative">
         <label htmlFor="amount" className="theme-text-secondary mb-2 block text-xs font-black">
           {t.amount}
@@ -175,7 +175,7 @@ export const Calculator: React.FC<CalculatorProps> = ({ rates, t, onCurrencySele
           onPaste={handleAmountPaste}
           placeholder={t.amountPlaceholder}
           autoComplete="off"
-          className="theme-surface-muted theme-border theme-text-primary w-full rounded-[1.4rem] border px-4 py-4 text-xl font-black shadow-sm outline-none transition-all placeholder:text-slate-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-500 sm:px-5 sm:text-3xl"
+          className="theme-surface-muted theme-border theme-text-primary theme-focus font-data w-full rounded-lg border px-4 py-4 text-xl font-black shadow-sm outline-none transition-all placeholder:opacity-50 sm:px-5 sm:text-3xl"
           dir="ltr"
         />
       </div>
@@ -197,7 +197,7 @@ export const Calculator: React.FC<CalculatorProps> = ({ rates, t, onCurrencySele
         <div className="flex items-center justify-center sm:pb-1">
           <button
             onClick={handleSwap}
-            className="theme-tone-sky theme-tone-sky-text flex h-12 w-12 items-center justify-center rounded-2xl border shadow-md transition-all hover:-translate-y-0.5"
+            className="theme-surface-inverted theme-border-strong flex h-12 w-12 items-center justify-center rounded-lg border shadow-md transition-all hover:-translate-y-0.5 hover:rotate-180"
             aria-label="Swap currencies"
           >
             <SwapIcon className="h-6 w-6 transition-transform duration-500 ease-in-out" style={{ transform: `rotate(${rotation}deg)` }} />
@@ -219,17 +219,17 @@ export const Calculator: React.FC<CalculatorProps> = ({ rates, t, onCurrencySele
       </div>
 
       <Tooltip text={t.resultTooltip} className="w-full">
-        <div className="theme-tone-emerald relative overflow-hidden rounded-[1.6rem] border p-5 text-center shadow-sm sm:p-6">
+        <div className="theme-surface-muted theme-border relative overflow-hidden rounded-lg border p-5 text-center shadow-sm sm:p-6">
           <div className="relative">
-            <p className="theme-tone-emerald-text text-xs font-black">{t.result}</p>
-            <p className="theme-text-primary mt-3 break-words font-mono text-3xl font-black leading-tight sm:text-5xl" dir="ltr">
+            <p className="theme-text-secondary text-xs font-black">{t.result}</p>
+            <p className="theme-text-primary font-data mt-3 break-words text-3xl font-black leading-tight sm:text-5xl" dir="ltr">
               {calculatedResult}
             </p>
 
             {directRate > 0 && fromCurrency !== toCurrency && (
               <div className="mt-5 flex flex-col items-center gap-3">
-                <div className="theme-surface-card theme-border max-w-full rounded-full border px-4 py-2">
-                  <p className="theme-tone-emerald-text truncate text-xs font-mono font-black" dir="ltr">
+                <div className="theme-surface-card theme-border max-w-full rounded-lg border px-4 py-2">
+                  <p className="theme-text-primary font-data truncate text-xs font-black" dir="ltr">
                     1{' '}
                     <button
                       onClick={() => onCurrencySelect(fromCurrency)}
@@ -249,7 +249,7 @@ export const Calculator: React.FC<CalculatorProps> = ({ rates, t, onCurrencySele
 
                 <div className="theme-text-secondary flex flex-wrap items-center justify-center gap-2 text-[11px] font-semibold">
                   <span className="flex items-center gap-1">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="theme-live-dot h-1.5 w-1.5 rounded-full" />
                     <span>{t.liveRate}</span>
                   </span>
                   <span className="hidden sm:inline">•</span>
