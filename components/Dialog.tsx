@@ -48,7 +48,7 @@ export const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, title, children
 
   return (
     <div
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/72 p-4 animate-fade-in"
+      className="theme-backdrop fixed inset-0 z-[70] flex items-center justify-center p-4 animate-fade-in"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -56,20 +56,20 @@ export const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, title, children
     >
       <div
         ref={dialogRef}
-        className={`theme-surface-card theme-border relative w-full ${sizeClasses[size]} overflow-hidden rounded-[1.9rem] border p-6 shadow-2xl animate-scale-in sm:p-7`}
+        className={`theme-surface-card theme-border relative w-full ${sizeClasses[size]} overflow-hidden rounded-lg border p-6 shadow-2xl animate-scale-in sm:p-7`}
         onClick={(e) => e.stopPropagation()}
         tabIndex={-1}
       >
         <div className="mb-5 flex items-start justify-between gap-4">
           <div>
-            <p className="theme-text-accent text-[11px] font-black uppercase">DinarLive</p>
+            <p className="theme-text-secondary font-data text-[11px] font-black uppercase">DinarLive</p>
             <h2 id="dialog-title" className="theme-text-primary mt-1 text-xl font-black sm:text-2xl">
               {title}
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="theme-text-secondary theme-hover-soft rounded-2xl p-2 transition-colors"
+            className="theme-text-secondary theme-hover-soft rounded-lg p-2 transition-colors"
             aria-label={t.closeButton}
           >
             <CloseIcon />
@@ -82,7 +82,7 @@ export const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, title, children
           <div className="mt-6 text-center">
             <button
               onClick={onClose}
-              className="w-full rounded-2xl bg-sky-600 px-4 py-3 font-black text-white transition-colors hover:bg-sky-700"
+              className="theme-surface-inverted theme-border-strong w-full rounded-lg border px-4 py-3 font-black transition-colors"
             >
               {t.closeButton}
             </button>
