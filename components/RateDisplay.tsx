@@ -65,11 +65,11 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
       return;
     }
 
-    setIconHighlightClass('scale-110 bg-green-100 text-green-700');
+    setIconHighlightClass('theme-surface-inverted scale-110');
     const iconTimer = setTimeout(() => setIconHighlightClass(''), 500);
 
-    if (value > prevValueRef.current) setRateChangeClass('text-green-600');
-    else if (value < prevValueRef.current) setRateChangeClass('text-red-600');
+    if (value > prevValueRef.current) setRateChangeClass('opacity-80');
+    else if (value < prevValueRef.current) setRateChangeClass('opacity-70');
 
     const rateTimer = setTimeout(() => setRateChangeClass(''), 500);
 
@@ -81,19 +81,19 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
   }, [value]);
 
   const shellClass = isHero
-    ? 'theme-tone-amber'
-    : 'theme-tone-sky';
+    ? 'theme-surface-card theme-border'
+    : 'theme-surface-card theme-border';
 
   const iconClasses = iconHighlightClass || (isHero
-    ? 'theme-tone-amber theme-tone-amber-text'
-    : 'theme-tone-sky theme-tone-sky-text');
+    ? 'theme-surface-muted theme-text-primary'
+    : 'theme-surface-muted theme-text-primary');
 
   return (
-    <div className={`theme-border relative overflow-hidden rounded-[1.8rem] border p-5 shadow-sm transition-all duration-300 sm:p-6 ${shellClass}`}>
+    <div className={`theme-shadow-soft relative overflow-hidden rounded-lg border p-5 transition-all duration-300 hover:-translate-y-0.5 sm:p-6 ${shellClass}`}>
       <div className="relative">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-start gap-3">
-            <div className={`flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-[1.2rem] border border-white/50 transition-all duration-500 ${iconClasses}`}>
+            <div className={`theme-border flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg border transition-all duration-500 ${iconClasses}`}>
               <DollarIcon />
             </div>
 
@@ -107,9 +107,9 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
             <div
               className={`inline-flex items-center gap-1.5 self-start rounded-full px-3 py-1.5 text-xs font-black ${
                 trend.direction === 'up'
-                  ? 'bg-green-100 text-green-700'
+                  ? 'theme-surface-muted theme-text-primary'
                   : trend.direction === 'down'
-                    ? 'bg-red-100 text-red-700'
+                    ? 'theme-surface-muted theme-text-primary'
                     : 'theme-surface-muted theme-text-secondary'
               }`}
             >
@@ -121,12 +121,11 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
 
         <div className="mt-6 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className={`theme-text-primary relative font-black tracking-tight transition-colors duration-300 ${isHero ? 'text-4xl sm:text-5xl' : 'text-3xl sm:text-4xl'} ${rateChangeClass}`} dir="ltr">
+            <p className={`theme-text-primary font-data relative font-black tracking-tight transition-colors duration-300 ${isHero ? 'text-4xl sm:text-5xl' : 'text-3xl sm:text-4xl'} ${rateChangeClass}`} dir="ltr">
               {Math.floor(value).toLocaleString()}
               {loading && (
                 <span className="absolute -right-4 top-1 h-3 w-3">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75" />
-                  <span className="relative inline-flex h-3 w-3 rounded-full bg-sky-500" />
+                  <span className="theme-live-dot relative inline-flex h-3 w-3 rounded-full" />
                 </span>
               )}
             </p>
@@ -137,11 +136,11 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
             <div className="grid grid-cols-2 gap-3 sm:min-w-[180px]">
               <div className="theme-surface-muted theme-border rounded-2xl border p-3 text-center">
                 <p className="theme-text-secondary text-[11px] font-bold uppercase">H</p>
-                <p className="theme-text-primary mt-1 font-mono text-sm font-black" dir="ltr">{highLow.high.toLocaleString()}</p>
+                <p className="theme-text-primary font-data mt-1 text-sm font-black" dir="ltr">{highLow.high.toLocaleString()}</p>
               </div>
               <div className="theme-surface-muted theme-border rounded-2xl border p-3 text-center">
                 <p className="theme-text-secondary text-[11px] font-bold uppercase">L</p>
-                <p className="theme-text-primary mt-1 font-mono text-sm font-black" dir="ltr">{highLow.low.toLocaleString()}</p>
+                <p className="theme-text-primary font-data mt-1 text-sm font-black" dir="ltr">{highLow.low.toLocaleString()}</p>
               </div>
             </div>
           )}
@@ -160,12 +159,12 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
                   key={city.id}
                   className={`rounded-2xl border p-3 transition-all ${
                     city.isBase
-                      ? 'theme-tone-amber'
+                      ? 'theme-surface-inverted theme-border-strong'
                       : 'theme-surface-muted theme-border'
                   }`}
                 >
-                  <p className={`text-xs font-black ${city.isBase ? 'theme-tone-amber-text' : 'theme-text-secondary'}`}>{city.label}</p>
-                  <p className={`mt-2 font-mono text-lg font-black ${city.isBase ? 'theme-tone-amber-text' : 'theme-text-primary'}`} dir="ltr">
+                  <p className={`text-xs font-black ${city.isBase ? '' : 'theme-text-secondary'}`}>{city.label}</p>
+                  <p className={`font-data mt-2 text-lg font-black ${city.isBase ? '' : 'theme-text-primary'}`} dir="ltr">
                     {city.val.toLocaleString()}
                   </p>
                 </div>
