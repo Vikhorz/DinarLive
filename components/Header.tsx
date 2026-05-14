@@ -23,7 +23,7 @@ export const Header: React.FC<HeaderProps> = ({ t }) => {
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col items-center text-center xl:mx-0 xl:items-end xl:text-right">
-      <h1 className="theme-text-primary max-w-[11ch] text-balance text-[2.55rem] font-black leading-[1.18] sm:max-w-[12ch] sm:text-[3.4rem] lg:max-w-[12.5ch] lg:text-[4.5rem] xl:text-[5.35rem]">
+      <h1 className="theme-text-primary max-w-[12.8ch] text-balance text-[2.45rem] font-black leading-[1.34] sm:max-w-[13.5ch] sm:text-[3.2rem] sm:leading-[1.28] lg:max-w-[14.5ch] lg:text-[4.05rem] lg:leading-[1.22] xl:text-[4.55rem] xl:leading-[1.2]">
         {t.headerTitle}
       </h1>
 
