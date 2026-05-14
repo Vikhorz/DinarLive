@@ -1,5 +1,4 @@
-
-import React, { useMemo, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { RateHistoryEntry, Translation } from '../types';
 
 interface RateHistoryChartProps {
@@ -7,176 +6,216 @@ interface RateHistoryChartProps {
   t: Translation;
 }
 
-const SVG_WIDTH = 380;
-const SVG_HEIGHT = 200;
-const PADDING = { top: 20, right: 20, bottom: 30, left: 60 };
-const Y_AXIS_TICKS = 5;
+type ChartPoint = {
+  x: number;
+  y: number;
+  date: Date;
+  rate: number;
+};
+
+const CHART_HEIGHT = 280;
+
+const getCssVar = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
 export const RateHistoryChart: React.FC<RateHistoryChartProps> = ({ history, t }) => {
-    const [tooltip, setTooltip] = useState<{ x: number; y: number; date: string; rate: number } | null>(null);
-    const svgRef = useRef<SVGSVGElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [tooltip, setTooltip] = useState<{ x: number; y: number; date: string; rate: number } | null>(null);
+  const pointsRef = useRef<ChartPoint[]>([]);
 
-    const processedData = useMemo(() => {
-        if (!history || history.length < 2) return null;
-        return history
-            .map(d => ({ ...d, date: new Date(d.date) }))
-            .sort((a, b) => a.date.getTime() - b.date.getTime());
-    }, [history]);
+  const processedData = useMemo(() => {
+    if (!history || history.length < 2) return null;
 
-    const scales = useMemo(() => {
-        if (!processedData) return null;
-        const rates = processedData.map(d => d.rate);
-        const dates = processedData.map(d => d.date.getTime());
-        const minRate = Math.min(...rates);
-        const maxRate = Math.max(...rates);
-        const ratePadding = (maxRate - minRate) * 0.1 || 100;
-        return {
-            minRate: minRate - ratePadding,
-            maxRate: maxRate + ratePadding,
-            minDate: Math.min(...dates),
-            maxDate: Math.max(...dates),
-            realMin: minRate,
-            realMax: maxRate
-        };
-    }, [processedData]);
+    return history
+      .map((entry) => ({ ...entry, date: new Date(entry.date) }))
+      .sort((a, b) => a.date.getTime() - b.date.getTime());
+  }, [history]);
 
-    const { pathD, areaPathD, yAxisLabels, xAxisLabels } = useMemo(() => {
-        if (!processedData || !scales) return { pathD: '', areaPathD: '', yAxisLabels: [], xAxisLabels: [] };
-        const { minRate, maxRate, minDate, maxDate } = scales;
-        const chartWidth = SVG_WIDTH - PADDING.left - PADDING.right;
-        const chartHeight = SVG_HEIGHT - PADDING.top - PADDING.bottom;
-        const getX = (date: Date) => PADDING.left + ((date.getTime() - minDate) / (maxDate - minDate)) * chartWidth;
-        const getY = (rate: number) => PADDING.top + chartHeight - ((rate - minRate) / (maxRate - minRate)) * chartHeight;
+  const stats = useMemo(() => {
+    if (!processedData) return null;
 
-        let path = '';
-        processedData.forEach((d, i) => {
-            const command = i === 0 ? 'M' : 'L';
-            path += `${command}${getX(d.date)},${getY(d.rate)} `;
-        });
-        const areaPath = `${path} V${SVG_HEIGHT - PADDING.bottom} H${PADDING.left} Z`;
-        const yLabels = [];
-        for (let i = 0; i < Y_AXIS_TICKS; i++) {
-            const rate = minRate + (i / (Y_AXIS_TICKS - 1)) * (maxRate - minRate);
-            yLabels.push({
-                y: getY(rate),
-                label: Math.round(rate / 100) * 100,
-            });
+    const rates = processedData.map((entry) => entry.rate);
+    const total = rates.reduce((sum, value) => sum + value, 0);
+
+    return {
+      high: Math.max(...rates),
+      low: Math.min(...rates),
+      avg: Math.round(total / rates.length),
+    };
+  }, [processedData]);
+
+  useEffect(() => {
+    if (!processedData || !canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const draw = () => {
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const width = Math.max(320, rect.width);
+      const height = CHART_HEIGHT;
+      const padding = { top: 30, right: 24, bottom: 38, left: 62 };
+      const rates = processedData.map((entry) => entry.rate);
+      const min = Math.min(...rates);
+      const max = Math.max(...rates);
+      const rangePadding = (max - min) * 0.12 || 100;
+      const minRate = min - rangePadding;
+      const maxRate = max + rangePadding;
+      const range = maxRate - minRate || 1;
+
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, width, height);
+
+      const text = getCssVar('--surface-text');
+      const muted = getCssVar('--surface-text-muted');
+      const grid = getCssVar('--chart-grid');
+      const surface = getCssVar('--surface-muted');
+      const fillStart = getCssVar('--chart-fill-start');
+      const fillEnd = getCssVar('--chart-fill-end');
+
+      ctx.fillStyle = surface;
+      ctx.fillRect(0, 0, width, height);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = grid;
+      ctx.fillStyle = muted;
+      ctx.font = '700 11px "JetBrains Mono"';
+
+      for (let index = 0; index <= 4; index += 1) {
+        const y = padding.top + ((height - padding.top - padding.bottom) / 4) * index;
+        const label = Math.round(maxRate - (range / 4) * index);
+        ctx.beginPath();
+        ctx.moveTo(padding.left, y);
+        ctx.lineTo(width - padding.right, y);
+        ctx.stroke();
+        ctx.fillText(label.toLocaleString(), 8, y + 4);
+      }
+
+      const chartPoints = processedData.map((entry, index) => {
+        const x = padding.left + ((width - padding.left - padding.right) / (processedData.length - 1)) * index;
+        const y = padding.top + (1 - (entry.rate - minRate) / range) * (height - padding.top - padding.bottom);
+        return { x, y, date: entry.date, rate: entry.rate };
+      });
+      pointsRef.current = chartPoints;
+
+      const path = new Path2D();
+      chartPoints.forEach((point, index) => {
+        if (index === 0) {
+          path.moveTo(point.x, point.y);
+          return;
         }
-        const xLabels = [];
-        if (processedData.length > 0) {
-             const first = processedData[0];
-             const last = processedData[processedData.length - 1];
-             xLabels.push({ x: getX(first.date), label: first.date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) });
-             xLabels.push({ x: getX(last.date), label: last.date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) });
-        }
-        return { pathD: path, areaPathD: areaPath, yAxisLabels: yLabels, xAxisLabels: xLabels };
-    }, [processedData, scales]);
 
-    const handleMouseMove = useCallback((event: React.MouseEvent<SVGSVGElement>) => {
-        if (!processedData || !scales || !svgRef.current) return;
-        const svgRect = svgRef.current.getBoundingClientRect();
-        const mouseXInSvg = ((event.clientX - svgRect.left) / svgRect.width) * SVG_WIDTH;
+        const previous = chartPoints[index - 1];
+        const controlX = (previous.x + point.x) / 2;
+        path.bezierCurveTo(controlX, previous.y, controlX, point.y, point.x, point.y);
+      });
 
-        const chartWidth = SVG_WIDTH - PADDING.left - PADDING.right;
-        const { minDate, maxDate, minRate, maxRate } = scales;
-        const getX = (date: Date) => PADDING.left + ((date.getTime() - minDate) / (maxDate - minDate)) * chartWidth;
-        const getY = (rate: number) => PADDING.top + (SVG_HEIGHT - PADDING.top - PADDING.bottom) - ((rate - minRate) / (maxRate - minRate)) * (SVG_HEIGHT - PADDING.top - PADDING.bottom);
+      const area = new Path2D(path);
+      area.lineTo(chartPoints[chartPoints.length - 1].x, height - padding.bottom);
+      area.lineTo(chartPoints[0].x, height - padding.bottom);
+      area.closePath();
 
-        let closestPoint = processedData[0];
-        let minDistance = Infinity;
-        for (const point of processedData) {
-            const pointX = getX(point.date);
-            const distance = Math.abs(pointX - mouseXInSvg);
-            if (distance < minDistance) {
-                minDistance = distance;
-                closestPoint = point;
-            }
-        }
-        setTooltip({
-            x: getX(closestPoint.date),
-            y: getY(closestPoint.rate),
-            date: closestPoint.date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }),
-            rate: closestPoint.rate
-        });
-    }, [processedData, scales]);
-    
-    if (!processedData) {
-        return <p className="text-center text-sm text-gray-500 dark:text-gray-400 py-4">{t.noHistoryData}</p>;
-    }
+      const gradient = ctx.createLinearGradient(0, padding.top, 0, height - padding.bottom);
+      gradient.addColorStop(0, fillStart);
+      gradient.addColorStop(1, fillEnd);
+      ctx.fillStyle = gradient;
+      ctx.fill(area);
 
-    const getTooltipStyles = () => {
-        if (!tooltip) return {};
-        const xPercent = (tooltip.x / SVG_WIDTH) * 100;
-        const yPercent = (tooltip.y / SVG_HEIGHT) * 100;
-        const isNearRight = xPercent > 70;
-        const isNearLeft = xPercent < 30;
-        const isNearTop = yPercent < 30;
-        let translateX = '-50%';
-        if (isNearRight) translateX = '-90%';
-        if (isNearLeft) translateX = '-10%';
-        let translateY = '-110%'; 
-        if (isNearTop) translateY = '20%';
-        return {
-            left: `${xPercent}%`,
-            top: `${yPercent}%`,
-            transform: `translate(${translateX}, ${translateY})`,
-            zIndex: 50
-        };
+      ctx.strokeStyle = text;
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.stroke(path);
+
+      const endpoint = chartPoints[chartPoints.length - 1];
+      ctx.beginPath();
+      ctx.arc(endpoint.x, endpoint.y, 5, 0, Math.PI * 2);
+      ctx.fillStyle = text;
+      ctx.fill();
+
+      ctx.fillStyle = muted;
+      ctx.font = '700 10px "JetBrains Mono"';
+      chartPoints.forEach((point, index) => {
+        ctx.fillText(`D${index + 1}`, point.x - 10, height - 14);
+      });
     };
 
-    return (
-        <div className="relative w-full overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 dark:border-slate-800 dark:bg-slate-950">
-             <div className="mb-2 flex justify-between px-2">
-                <span className="text-[10px] font-mono text-slate-500">High: <span className="font-bold text-slate-700 dark:text-slate-300">{scales?.realMax.toLocaleString()}</span></span>
-                <span className="text-[10px] font-mono text-slate-500">Low: <span className="font-bold text-slate-700 dark:text-slate-300">{scales?.realMin.toLocaleString()}</span></span>
-             </div>
-            <svg 
-                ref={svgRef} 
-                viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`} 
-                onMouseMove={handleMouseMove} 
-                onMouseLeave={() => setTooltip(null)} 
-                className="w-full h-auto block"
-                style={{ touchAction: 'none' }}
-            >
-                <defs>
-                    <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" className="text-sky-400 dark:text-sky-500" stopOpacity={0.4} />
-                        <stop offset="100%" className="text-sky-400 dark:text-sky-500" stopOpacity={0} />
-                    </linearGradient>
-                </defs>
+    draw();
 
-                {/* Grid Lines */}
-                {yAxisLabels.map(({ y, label }) => (
-                    <g key={label}>
-                        <line x1={PADDING.left} y1={y} x2={SVG_WIDTH - PADDING.right} y2={y} className="stroke-slate-200 dark:stroke-slate-800" strokeWidth="1" strokeDasharray="4,4" />
-                        <text x={PADDING.left - 8} y={y + 4} textAnchor="end" className="fill-slate-500 text-[9px] font-mono dark:fill-slate-500">{label.toLocaleString()}</text>
-                    </g>
-                ))}
-                
-                {xAxisLabels.map(({ x, label }) => (
-                    <text key={label} x={x} y={SVG_HEIGHT - PADDING.bottom + 15} textAnchor="middle" className="fill-slate-500 text-[10px] font-medium dark:fill-slate-400">{label}</text>
-                ))}
+    const resizeObserver = new ResizeObserver(draw);
+    resizeObserver.observe(canvas);
 
-                <path d={areaPathD} fill="url(#areaGradient)" />
-                <path d={pathD} fill="none" className="stroke-sky-500 dark:stroke-sky-400" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    const themeObserver = new MutationObserver(draw);
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-theme'] });
 
-                {tooltip && (
-                    <g>
-                        <line x1={tooltip.x} y1={PADDING.top} x2={tooltip.x} y2={SVG_HEIGHT - PADDING.bottom} className="stroke-slate-300 dark:stroke-slate-600" strokeWidth="1" strokeDasharray="3,3" />
-                        <circle cx={tooltip.x} cy={tooltip.y} r="5" className="fill-sky-500 stroke-white dark:stroke-slate-900" strokeWidth="2" />
-                    </g>
-                )}
-            </svg>
-            
-            {tooltip && (
-                 <div 
-                    className="pointer-events-none absolute rounded-lg border border-slate-700 bg-slate-950 p-2 text-center text-white shadow-xl transition-transform duration-75 ease-out"
-                    style={getTooltipStyles()}
-                >
-                    <p className="text-xs font-bold font-mono tracking-tighter">{tooltip.rate.toLocaleString()}</p>
-                    <p className="text-[9px] opacity-70 whitespace-nowrap">{tooltip.date}</p>
-                </div>
-            )}
+    return () => {
+      resizeObserver.disconnect();
+      themeObserver.disconnect();
+    };
+  }, [processedData]);
+
+  if (!processedData || !stats) {
+    return <p className="theme-text-secondary py-4 text-center text-sm">{t.noHistoryData}</p>;
+  }
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas || pointsRef.current.length === 0) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const closest = pointsRef.current.reduce((best, point) => (Math.abs(point.x - x) < Math.abs(best.x - x) ? point : best), pointsRef.current[0]);
+
+    setTooltip({
+      x: closest.x,
+      y: closest.y,
+      date: closest.date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }),
+      rate: closest.rate,
+    });
+  };
+
+  return (
+    <div className="theme-chart theme-surface-card theme-border theme-shadow-soft relative w-full overflow-hidden rounded-lg border p-5 transition-transform duration-200 hover:-translate-y-0.5">
+      <div className="mb-4 grid grid-cols-3 gap-3">
+        <div className="theme-surface-muted theme-border rounded-lg border p-3">
+          <p className="theme-text-secondary font-data text-[10px] font-black uppercase">High</p>
+          <p className="theme-text-primary font-data mt-1 text-sm font-black" dir="ltr">{stats.high.toLocaleString()}</p>
         </div>
-    );
+        <div className="theme-surface-muted theme-border rounded-lg border p-3">
+          <p className="theme-text-secondary font-data text-[10px] font-black uppercase">Low</p>
+          <p className="theme-text-primary font-data mt-1 text-sm font-black" dir="ltr">{stats.low.toLocaleString()}</p>
+        </div>
+        <div className="theme-surface-muted theme-border rounded-lg border p-3">
+          <p className="theme-text-secondary font-data text-[10px] font-black uppercase">Avg</p>
+          <p className="theme-text-primary font-data mt-1 text-sm font-black" dir="ltr">{stats.avg.toLocaleString()}</p>
+        </div>
+      </div>
+
+      <div className="relative" dir="ltr">
+        <canvas
+          ref={canvasRef}
+          className="theme-surface-muted theme-border block h-[280px] w-full rounded-lg border"
+          onPointerMove={handlePointerMove}
+          onPointerLeave={() => setTooltip(null)}
+          aria-label={t.rateHistoryTitle}
+        />
+
+        {tooltip && (
+          <div
+            className="theme-tooltip pointer-events-none absolute rounded-lg border p-2 text-center shadow-xl"
+            style={{
+              left: `${tooltip.x}px`,
+              top: `${tooltip.y}px`,
+              transform: tooltip.x > 260 ? 'translate(-90%, -115%)' : 'translate(-10%, -115%)',
+            }}
+          >
+            <p className="font-data text-xs font-black">{tooltip.rate.toLocaleString()}</p>
+            <p className="mt-1 whitespace-nowrap text-[9px] opacity-70">{tooltip.date}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
