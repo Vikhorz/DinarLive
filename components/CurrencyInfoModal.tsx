@@ -13,8 +13,8 @@ interface CurrencyInfoModalProps {
 
 const InfoSection: React.FC<{title: string, content: string}> = ({title, content}) => (
     <div className="mb-4 text-left rtl:text-right">
-        <h3 className="font-bold text-gray-700 dark:text-gray-200">{title}</h3>
-        <p className="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-line">{content}</p>
+        <h3 className="theme-text-primary font-bold">{title}</h3>
+        <p className="theme-text-primary whitespace-pre-line text-sm leading-7">{content}</p>
     </div>
 );
 
@@ -25,11 +25,11 @@ export const CurrencyInfoModal: React.FC<CurrencyInfoModalProps> = ({ currencyCo
 
   const footer = (
     <div className="flex items-center gap-3">
-        <button onClick={onClose} className="w-full px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400">
+        <button onClick={onClose} className="theme-surface-muted theme-border theme-text-primary w-full rounded-lg border px-4 py-2 transition-colors focus:outline-none">
             {t.closeButton}
         </button>
         { currencyCode !== 'IQD' && (
-            <button onClick={onBuy} className="w-full px-4 py-2 rounded-lg bg-sky-600 text-white hover:bg-sky-700 active:bg-sky-800 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+            <button onClick={onBuy} className="theme-surface-inverted theme-border-strong w-full rounded-lg border px-4 py-2 font-black transition-colors focus:outline-none">
                 {t.buyButton(currencyCode)}
             </button>
         )}
