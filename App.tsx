@@ -465,7 +465,7 @@ export default function App(): React.ReactElement {
       </div>
 
       <Dialog isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} title={t.aboutDialogTitle} t={t} size="md">
-        <p className="theme-text-secondary text-sm leading-relaxed">{t.aboutDialogContent}</p>
+        <p className="theme-text-primary text-sm leading-7">{t.aboutDialogContent}</p>
       </Dialog>
 
       <Dialog isOpen={isSourcesOpen} onClose={() => setIsSourcesOpen(false)} title={t.sourcesTitle} t={t} size="lg">
