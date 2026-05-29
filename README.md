@@ -1,7 +1,11 @@
+# DinarLive
+A modern, real-time currency exchange tracker for Iraqi Dinar from Local Market rates. DinarLive now uses a server-side API to collect market prices from trusted public sources alongside the official Central Bank of Iraq rate.
+
+<img width="2515" height="1272" alt="dark-v1 4" src="https://github.com/user-attachments/assets/58015b02-3360-4dc1-a7dd-3cf9ae184e83" />
+
+<img width="2525" height="1265" alt="light-v1 4" src="https://github.com/user-attachments/assets/9b2a1143-c8a0-485a-81a3-c5c6c78bbdc4" />
+
 # Run and deploy DinarLive
-
-<img width="1772" height="1264" alt="image" src="https://github.com/user-attachments/assets/7de19f47-f448-478a-af2d-16f741660b45" />
-
 This contains everything you need to run your app either locally or deploying it.
 
 ## Run Locally
