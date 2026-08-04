@@ -69,7 +69,7 @@ const snapshotToneTextClasses = {
 };
 
 const SnapshotCard: React.FC<{ title: string; value: string; subtitle: string; tone: keyof typeof snapshotToneClasses }> = ({ title, value, subtitle, tone }) => (
-  <div className={`theme-shadow-soft rounded-lg border p-5 transition-transform duration-200 hover:-translate-y-0.5 sm:p-6 ${snapshotToneClasses[tone]}`}>
+  <div className={`theme-shadow-soft theme-lift rounded-lg border p-5 transition-transform duration-200 hover:-translate-y-0.5 sm:p-6 ${snapshotToneClasses[tone]}`}>
     <p className={`text-[11px] font-black ${snapshotToneTextClasses[tone]}`}>{title}</p>
     <p className={`font-data mt-2 text-3xl font-black tracking-tight sm:mt-3 sm:text-[2.35rem] ${snapshotToneTextClasses[tone]}`} dir="ltr">
       {value}
@@ -79,10 +79,10 @@ const SnapshotCard: React.FC<{ title: string; value: string; subtitle: string; t
 );
 
 const SectionCard: React.FC<{ title: string; isOpen: boolean; onToggle: () => void; children: React.ReactNode }> = ({ title, isOpen, onToggle, children }) => (
-  <section className="theme-surface-card theme-border theme-shadow-soft overflow-hidden rounded-lg border transition-transform duration-200 hover:-translate-y-0.5">
+  <section className="theme-surface-card theme-border theme-shadow-soft theme-lift overflow-hidden rounded-lg border transition-transform duration-200 hover:-translate-y-0.5">
     <button
       onClick={onToggle}
-      className="theme-hover-soft flex w-full items-center justify-between gap-4 px-5 py-5 text-start transition-all duration-300 sm:px-6"
+      className="theme-hover-soft theme-focus flex w-full items-center justify-between gap-4 px-5 py-5 text-start transition-all duration-300 sm:px-6"
     >
       <div>
         <p className="theme-text-secondary font-data text-[10px] font-black uppercase">DinarLive</p>

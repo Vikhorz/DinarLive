@@ -233,14 +233,14 @@ export const Calculator: React.FC<CalculatorProps> = ({ rates, t, onCurrencySele
                     1{' '}
                     <button
                       onClick={() => onCurrencySelect(fromCurrency)}
-                      className="font-black hover:underline focus:outline-none"
+                      className="font-black hover:underline focus:outline-none theme-focus rounded"
                     >
                       {fromCurrency}
                     </button>{' '}
                     ≈ {directRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}{' '}
                     <button
                       onClick={() => onCurrencySelect(toCurrency)}
-                      className="font-black hover:underline focus:outline-none"
+                      className="font-black hover:underline focus:outline-none theme-focus rounded"
                     >
                       {toCurrency}
                     </button>

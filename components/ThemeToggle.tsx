@@ -20,7 +20,7 @@ export const ThemeToggle: React.FC = () => {
   return (
     <button
       onClick={toggleTheme}
-      className="theme-surface-muted theme-border theme-text-primary rounded-lg border p-2 transition-transform duration-200 hover:rotate-[15deg] focus:outline-none"
+      className="theme-surface-muted theme-border theme-text-primary theme-focus rounded-lg border p-2 transition-transform duration-200 hover:rotate-[15deg] focus:outline-none"
       aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
       aria-pressed={isDarkMode}
       title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
