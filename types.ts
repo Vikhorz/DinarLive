@@ -1,4 +1,10 @@
 
+export interface MetalsData {
+  dubaiLira: number; // USD per mithqal
+  palmSilver: number; // USD per mithqal
+  copper9999: number; // USD per mithqal
+}
+
 export interface ExchangeRateData {
   iqd: number; // Main rate (Sulaymaniyah)
   centralBankRate: number; // Official rate from Credit Bank of Iraq
@@ -11,6 +17,7 @@ export interface ExchangeRateData {
   tryPerUsd: number;
   gbpPerUsd: number;
   irtPerUsd: number;
+  metals?: MetalsData;
   updated: string;
 }
 
@@ -152,4 +159,10 @@ export interface Translation {
   irt_name: string;
   irt_description: string;
   irt_fact: string;
+  metalsTitle: string;
+  metalsPriceUnit: string;
+  dubaiLiraLabel: string;
+  palmSilverLabel: string;
+  copper9999Label: string;
+  metalsIqdLabel: string;
 }

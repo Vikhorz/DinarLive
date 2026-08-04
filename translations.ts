@@ -102,6 +102,12 @@ const ku: Translation = {
   irt_name: "تمەنی ئێرانی",
   irt_description: "یەکەیەکی باوی ژماردنی دراوە لە ئێران. 1 تمەن = 10 ڕیاڵی ئێرانی.",
   irt_fact: "وشەی 'تمەن' لە زمانی مەغۆلی 'تومەن'ەوە هاتووە کە بە واتای '10,000' دێت.",
+  metalsTitle: "نرخی کانزاکان",
+  metalsPriceUnit: "نرخی مسقالێک",
+  dubaiLiraLabel: "لیرەی دوبەی",
+  palmSilverLabel: "زیوی پاڵم",
+  copper9999Label: "مسی ٩٩٩٩",
+  metalsIqdLabel: "بە دینار",
 };
 
 const en: Translation = {
@@ -205,6 +211,12 @@ const en: Translation = {
   irt_name: "Iranian Toman",
   irt_description: "A common superunit of currency in Iran. One toman is equivalent to ten Iranian rials.",
   irt_fact: "The word 'toman' is derived from the Mongolian word 'tümen', meaning 10,000.",
+  metalsTitle: "Metal Prices",
+  metalsPriceUnit: "Price per mithqal",
+  dubaiLiraLabel: "Dubai Lira",
+  palmSilverLabel: "Palm Silver",
+  copper9999Label: "Copper 9999",
+  metalsIqdLabel: "In Dinar",
 };
 
 const ar: Translation = {
@@ -308,6 +320,12 @@ const ar: Translation = {
   irt_name: "التومان الإيراني",
   irt_description: "وحدة عملة شائعة في إيران. تومان واحد يعادل عشرة ريالات إيرانية.",
   irt_fact: "كلمة 'تومان' مشتقة من الكلمة المغولية 'تومين' التي تعني 10,000.",
+  metalsTitle: "أسعار المعادن",
+  metalsPriceUnit: "سعر المثقال الواحد",
+  dubaiLiraLabel: "ليرة دبي",
+  palmSilverLabel: "فضة النخلة",
+  copper9999Label: "نحاس 9999",
+  metalsIqdLabel: "بالدينار",
 };
 
 export const translations: Record<string, Translation> = {

@@ -20,6 +20,7 @@ import { RateHistoryChart } from './components/RateHistoryChart';
 import { RateHistoryChartSkeleton } from './components/RateHistoryChartSkeleton';
 import { CurrencyInfoModal } from './components/CurrencyInfoModal';
 import { BuyCurrencyModal } from './components/BuyCurrencyModal';
+import { MetalsCard } from './components/MetalsCard';
 
 const CHAT_ENABLED = false;
 
@@ -401,6 +402,8 @@ export default function App(): React.ReactElement {
                     onCurrencySelect={handleCurrencySelect}
                   />
                 ) : null}
+
+                {rate?.metals && <MetalsCard metals={rate.metals} iqdPerUsd={iqdRateValue} t={t} />}
 
                 {rate && (
                   <div className="theme-surface-card theme-border theme-shadow-soft rounded-lg border p-5 sm:p-6">
