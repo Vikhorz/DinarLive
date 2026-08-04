@@ -1,4 +1,4 @@
-import type { ExchangeRateData, GroundingChunk, RateHistoryEntry, RatesApiResponse } from '../types';
+import type { ExchangeRateData, GroundingChunk, MetalsData, RateHistoryEntry, RatesApiResponse } from '../types';
 
 const SERVER_CACHE_TTL_MS = 2 * 60 * 1000;
 const REQUEST_TIMEOUT_MS = 12_000;
@@ -6,11 +6,21 @@ const MARKET_RATE_MIN = 120000;
 const MARKET_RATE_MAX = 170000;
 const FALLBACK_MARKET_RATE = 153250;
 const FALLBACK_CBI_SELL_RATE = 1320;
+const METAL_PRICE_MIN = 0.01;
+const METAL_PRICE_MAX = 20000;
 
 const DEFAULT_TELEGRAM_SOURCES = [
   { title: 'Telegram - Iraq Borsa', url: 'https://t.me/s/iraqborsa' },
   { title: 'Telegram - Bazari Dolaraka', url: 'https://t.me/s/bazari_dolaraka' },
 ];
+
+const DEFAULT_METALS_SOURCE = { title: 'Telegram - Yar Gold', url: 'https://t.me/s/YarGold_Co' };
+
+const METAL_ALIASES = {
+  dubaiLira: ['لیرە دوبەی', 'لیرەی دوبەی', 'ليرة دبي', 'dubai lira'],
+  palmSilver: ['زیوی پاڵم', 'فضة النخلة', 'palm silver'],
+  copper9999: ['مس 9999', 'مسی 9999', 'نحاس 9999', 'copper 9999'],
+};
 
 const DIGIT_MAP: Record<string, string> = {
   '٠': '0',
@@ -213,6 +223,36 @@ const extractRateNearAliases = (text: string, aliases: string[]) => {
       }
     }
   }
+  return null;
+};
+
+const toUsdMetalPrice = (rawValue: string | null): number | null => {
+  if (!rawValue) return null;
+  const parsedValue = Number(normalizeDigits(rawValue).replace(/,/g, ''));
+  if (!Number.isFinite(parsedValue) || parsedValue < METAL_PRICE_MIN || parsedValue > METAL_PRICE_MAX) {
+    return null;
+  }
+  return parsedValue;
+};
+
+const extractUsdPriceNearAliases = (text: string, aliases: string[]) => {
+  const normalizedText = normalizeDigits(text);
+
+  for (const alias of aliases) {
+    const escapedAlias = escapeRegExp(normalizeDigits(alias));
+    const patterns = [
+      new RegExp(`${escapedAlias}[\\s\\S]{0,20}?\\$\\s?([0-9][0-9,\\.]{0,8})`, 'i'),
+      new RegExp(`\\$\\s?([0-9][0-9,\\.]{0,8})[\\s\\S]{0,20}?${escapedAlias}`, 'i'),
+    ];
+
+    for (const pattern of patterns) {
+      const match = normalizedText.match(pattern);
+      const price = toUsdMetalPrice(match?.[1] ?? null);
+      if (price) {
+        return price;
+      }
+    }
+  }
 
   return null;
 };
@@ -386,11 +426,46 @@ const fetchGlobalRates = async () => {
   };
 };
 
+const fetchMetalsData = async (): Promise<{ metals: MetalsData | null; source: GroundingChunk | null }> => {
+  try {
+    const html = await fetchText(DEFAULT_METALS_SOURCE.url);
+    const posts = extractTelegramPosts(html, DEFAULT_METALS_SOURCE)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    let dubaiLira: number | null = null;
+    let palmSilver: number | null = null;
+    let copper9999: number | null = null;
+
+    for (const post of posts) {
+      dubaiLira ??= extractUsdPriceNearAliases(post.text, METAL_ALIASES.dubaiLira);
+      palmSilver ??= extractUsdPriceNearAliases(post.text, METAL_ALIASES.palmSilver);
+      copper9999 ??= extractUsdPriceNearAliases(post.text, METAL_ALIASES.copper9999);
+
+      if (dubaiLira && palmSilver && copper9999) {
+        break;
+      }
+    }
+
+    if (!dubaiLira || !palmSilver || !copper9999) {
+      return { metals: null, source: null };
+    }
+
+    return {
+      metals: { dubaiLira, palmSilver, copper9999 },
+      source: { web: { uri: DEFAULT_METALS_SOURCE.url, title: DEFAULT_METALS_SOURCE.title } },
+    };
+  } catch (_error) {
+    // Metals are a non-essential add-on; a failed fetch shouldn't break the core rates response.
+    return { metals: null, source: null };
+  }
+};
+
 const composeRatesResponse = async (): Promise<RatesApiResponse> => {
-  const [marketData, centralBankRate, globalRates] = await Promise.all([
+  const [marketData, centralBankRate, globalRates, metalsResult] = await Promise.all([
     fetchTelegramMarketData(),
     fetchCbiOfficialRate(),
     fetchGlobalRates(),
+    fetchMetalsData(),
   ]);
 
   const fetchedAt = new Date().toISOString();
@@ -402,6 +477,7 @@ const composeRatesResponse = async (): Promise<RatesApiResponse> => {
     tryPerUsd: globalRates.tryPerUsd,
     gbpPerUsd: globalRates.gbpPerUsd,
     irtPerUsd: globalRates.irtPerUsd,
+    metals: metalsResult.metals ?? undefined,
     updated: fetchedAt,
   };
 
@@ -432,6 +508,7 @@ const composeRatesResponse = async (): Promise<RatesApiResponse> => {
           title: 'ExchangeRate-API (Open Access)',
         },
       },
+      ...(metalsResult.source ? [metalsResult.source] : []),
     ],
     fetchedAt,
   };
