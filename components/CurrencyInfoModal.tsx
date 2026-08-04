@@ -25,11 +25,11 @@ export const CurrencyInfoModal: React.FC<CurrencyInfoModalProps> = ({ currencyCo
 
   const footer = (
     <div className="flex items-center gap-3">
-        <button onClick={onClose} className="theme-surface-muted theme-border theme-text-primary w-full rounded-lg border px-4 py-2 transition-colors focus:outline-none">
+        <button onClick={onClose} className="theme-surface-muted theme-border theme-text-primary theme-focus w-full rounded-lg border px-4 py-2 transition-colors focus:outline-none">
             {t.closeButton}
         </button>
         { currencyCode !== 'IQD' && (
-            <button onClick={onBuy} className="theme-surface-inverted theme-border-strong w-full rounded-lg border px-4 py-2 font-black transition-colors focus:outline-none">
+            <button onClick={onBuy} className="theme-surface-inverted theme-border-strong theme-focus w-full rounded-lg border px-4 py-2 font-black transition-colors focus:outline-none">
                 {t.buyButton(currencyCode)}
             </button>
         )}

@@ -20,7 +20,7 @@ const ComparisonItem: React.FC<{ label: string; value: string; description?: str
 }) => (
   <button
     onClick={onClick}
-    className="theme-surface-muted theme-border group w-full rounded-lg border p-4 text-center shadow-sm transition-all duration-300 hover:-translate-y-1"
+    className="theme-surface-muted theme-border theme-lift theme-focus group w-full rounded-lg border p-4 text-center shadow-sm transition-all duration-300 hover:-translate-y-1"
   >
     <p className="theme-text-secondary text-xs font-black uppercase">{label}</p>
     <p className="theme-text-primary font-data mt-3 text-2xl font-black" dir="ltr">

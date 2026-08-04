@@ -53,7 +53,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ currentLang,
         <div ref={wrapperRef} className="relative z-20">
             <button
                 onClick={() => setIsOpen(prev => !prev)}
-                className="theme-surface-muted theme-border theme-text-primary flex items-center gap-2 rounded-lg border px-3 py-1.5 transition-colors duration-200 focus:outline-none"
+                className="theme-surface-muted theme-border theme-text-primary theme-focus flex items-center gap-2 rounded-lg border px-3 py-1.5 transition-colors duration-200 focus:outline-none"
                 aria-haspopup="true"
                 aria-expanded={isOpen}
                 aria-label="Select language"

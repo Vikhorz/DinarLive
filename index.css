@@ -45,6 +45,7 @@
   --backdrop: rgba(0, 0, 0, 0.7);
   --shadow-soft: 0 10px 34px rgba(0, 0, 0, 0.08);
   --shadow-strong: 0 22px 70px rgba(0, 0, 0, 0.12);
+  --ease-considered: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 html.dark,
@@ -244,6 +245,43 @@ svg {
 .theme-live-dot {
   background-color: var(--surface-text) !important;
   animation: livePulse 1.45s ease-in-out infinite;
+}
+
+.theme-lift {
+  transition-timing-function: var(--ease-considered);
+}
+
+.theme-lift:active {
+  transform: translateY(0) scale(0.98);
+  transition-duration: 100ms;
+}
+
+.rate-flash {
+  border-radius: 0.375rem;
+  animation: rateFlash 0.6s var(--ease-considered);
+}
+
+@keyframes rateFlash {
+  0% {
+    box-shadow: 0 0 0 0 var(--surface-border-strong);
+  }
+  30% {
+    box-shadow: 0 0 0 3px var(--surface-border-strong);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 .theme-chart {

@@ -68,10 +68,8 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
     setIconHighlightClass('theme-surface-inverted scale-110');
     const iconTimer = setTimeout(() => setIconHighlightClass(''), 500);
 
-    if (value > prevValueRef.current) setRateChangeClass('opacity-80');
-    else if (value < prevValueRef.current) setRateChangeClass('opacity-70');
-
-    const rateTimer = setTimeout(() => setRateChangeClass(''), 500);
+    setRateChangeClass('rate-flash');
+    const rateTimer = setTimeout(() => setRateChangeClass(''), 600);
 
     prevValueRef.current = value;
     return () => {
@@ -89,7 +87,7 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
     : 'theme-surface-muted theme-text-primary');
 
   return (
-    <div className={`theme-shadow-soft relative overflow-hidden rounded-lg border p-5 transition-all duration-300 hover:-translate-y-0.5 sm:p-6 ${shellClass}`}>
+    <div className={`theme-shadow-soft theme-lift relative overflow-hidden rounded-lg border p-5 transition-all duration-300 hover:-translate-y-0.5 sm:p-6 ${shellClass}`}>
       <div className="relative">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-start gap-3">
@@ -105,11 +103,11 @@ export const RateDisplay: React.FC<RateDisplayProps> = ({ value, loading, label,
 
           {isHero && trend && (
             <div
-              className={`inline-flex items-center gap-1.5 self-start rounded-full px-3 py-1.5 text-xs font-black ${
+              className={`theme-border inline-flex items-center gap-1.5 self-start rounded-full border px-3 py-1.5 text-xs font-black transition-colors duration-300 ${
                 trend.direction === 'up'
-                  ? 'theme-surface-muted theme-text-primary'
+                  ? 'theme-surface-inverted theme-border-strong'
                   : trend.direction === 'down'
-                    ? 'theme-surface-muted theme-text-primary'
+                    ? 'theme-surface-muted theme-text-primary border-dashed'
                     : 'theme-surface-muted theme-text-secondary'
               }`}
             >
