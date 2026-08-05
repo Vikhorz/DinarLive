@@ -188,7 +188,8 @@ const extractTelegramPosts = (html: string, source: { title: string; url: string
   return blocks
     .map((block) => {
       const datetime = block.match(/datetime="([^"]+)"/)?.[1];
-      const textHtml = block.match(/<div class="tgme_widget_message_text[^>]*>([\s\S]*?)<\/div>\s*<div class="tgme_widget_message_footer"/i)?.[1]
+      const textHtml = block.match(/<div class="tgme_widget_message_text[^>]*>([\s\S]*?)<\/div>/i)?.[1]
+        ?? block.match(/<div class="tgme_widget_message_text[^>]*>([\s\S]*?)<\/div>\s*<div class="tgme_widget_message_footer"/i)?.[1]
         ?? block.match(/<div class="tgme_widget_message_text[^>]*>([\s\S]*?)<\/div>\s*<\/div>\s*<\/div>/i)?.[1];
 
       if (!datetime || !textHtml) {
@@ -447,6 +448,9 @@ const fetchMetalsData = async (): Promise<{ metals: MetalsData | null; source: G
     }
 
     if (!dubaiLira || !palmSilver || !copper9999) {
+      console.warn(
+        `[metals] extraction incomplete: dubaiLira=${dubaiLira} palmSilver=${palmSilver} copper9999=${copper9999}, checked ${posts.length} posts. First post sample: ${posts[0]?.text?.slice(0, 200) ?? '(no posts found)'}`,
+      );
       return { metals: null, source: null };
     }
 
@@ -454,8 +458,9 @@ const fetchMetalsData = async (): Promise<{ metals: MetalsData | null; source: G
       metals: { dubaiLira, palmSilver, copper9999 },
       source: { web: { uri: DEFAULT_METALS_SOURCE.url, title: DEFAULT_METALS_SOURCE.title } },
     };
-  } catch (_error) {
+  } catch (error) {
     // Metals are a non-essential add-on; a failed fetch shouldn't break the core rates response.
+    console.warn(`[metals] fetch failed: ${error instanceof Error ? error.message : String(error)}`);
     return { metals: null, source: null };
   }
 };
