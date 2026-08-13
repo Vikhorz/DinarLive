@@ -14,9 +14,9 @@ const DEFAULT_TELEGRAM_SOURCES = [
   { title: 'Telegram - Bazari Dolaraka', url: 'https://t.me/s/bazari_dolaraka' },
 ];
 
-const DEFAULT_METALS_SOURCE = { title: 'Telegram - Yar Gold', url: 'https://t.me/s/YarGold_Co' };
+export const DEFAULT_METALS_SOURCE = { title: 'Telegram - Yar Gold', url: 'https://t.me/s/YarGold_Co' };
 
-const METAL_ALIASES = {
+export const METAL_ALIASES = {
   dubaiLira: ['لیرە دوبەی', 'لیرەی دوبەی', 'ليرة دبي', 'dubai lira'],
   palmSilver: ['زیوی پاڵم', 'فضة النخلة', 'palm silver'],
   copper9999: ['مس 9999', 'مسی 9999', 'نحاس 9999', 'copper 9999'],
@@ -135,7 +135,7 @@ const withTimeout = async (url: string, init?: RequestInit) => {
   }
 };
 
-const fetchText = async (url: string) => {
+export const fetchText = async (url: string) => {
   const response = await withTimeout(url);
   if (!response.ok) {
     throw new Error(`Request failed for ${url} (${response.status})`);
@@ -182,7 +182,7 @@ const getTelegramSources = () => {
     });
 };
 
-const extractTelegramPosts = (html: string, source: { title: string; url: string }): TelegramPost[] => {
+export const extractTelegramPosts = (html: string, source: { title: string; url: string }): TelegramPost[] => {
   const blocks = html.split('tgme_widget_message_wrap').slice(1);
 
   return blocks
@@ -236,7 +236,7 @@ const toUsdMetalPrice = (rawValue: string | null): number | null => {
   return parsedValue;
 };
 
-const extractUsdPriceNearAliases = (text: string, aliases: string[]) => {
+export const extractUsdPriceNearAliases = (text: string, aliases: string[]) => {
   const normalizedText = normalizeDigits(text);
 
   for (const alias of aliases) {
