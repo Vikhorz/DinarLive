@@ -84,7 +84,9 @@ const decodeHtml = (value: string) => value
   .replace(/&quot;/gi, '"')
   .replace(/&#39;/gi, "'")
   .replace(/&lt;/gi, '<')
-  .replace(/&gt;/gi, '>');
+  .replace(/&gt;/gi, '>')
+  .replace(/&#x([0-9a-f]+);/gi, (_match, hex: string) => String.fromCharCode(parseInt(hex, 16)))
+  .replace(/&#(\d+);/g, (_match, dec: string) => String.fromCharCode(Number(dec)));
 
 const htmlToText = (value: string) => normalizeDigits(
   decodeHtml(value)

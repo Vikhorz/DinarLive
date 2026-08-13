@@ -14,7 +14,7 @@ export async function GET() {
     const html = await fetchText(DEFAULT_METALS_SOURCE.url);
     const posts = extractTelegramPosts(html, DEFAULT_METALS_SOURCE);
 
-    const postSamples = posts.slice(0, 5).map((post) => ({
+    const postSamples = posts.slice(0, 20).map((post) => ({
       date: post.date,
       text: post.text.slice(0, 300),
       dubaiLira: extractUsdPriceNearAliases(post.text, METAL_ALIASES.dubaiLira),
