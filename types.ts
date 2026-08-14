@@ -1,8 +1,8 @@
 
 export interface MetalsData {
-  dubaiLira: number; // USD per mithqal
-  palmSilver: number; // USD per mithqal
-  copper9999: number; // USD per mithqal
+  dubaiLira: number | null; // USD per mithqal, null if not seen in recent posts
+  palmSilver: number | null; // USD per mithqal, null if not seen in recent posts
+  copper9999: number | null; // USD per mithqal, null if not seen in recent posts
 }
 
 export interface ExchangeRateData {
@@ -165,4 +165,5 @@ export interface Translation {
   palmSilverLabel: string;
   copper9999Label: string;
   metalsIqdLabel: string;
+  metalsPendingLabel: string;
 }

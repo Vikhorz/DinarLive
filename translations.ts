@@ -108,6 +108,7 @@ const ku: Translation = {
   palmSilverLabel: "زیوی پاڵم",
   copper9999Label: "مسی ٩٩٩٩",
   metalsIqdLabel: "بە دینار",
+  metalsPendingLabel: "چاوەڕوانی نرخی نوێ",
 };
 
 const en: Translation = {
@@ -217,6 +218,7 @@ const en: Translation = {
   palmSilverLabel: "Palm Silver",
   copper9999Label: "Copper 9999",
   metalsIqdLabel: "In Dinar",
+  metalsPendingLabel: "Awaiting update",
 };
 
 const ar: Translation = {
@@ -326,6 +328,7 @@ const ar: Translation = {
   palmSilverLabel: "فضة النخلة",
   copper9999Label: "نحاس 9999",
   metalsIqdLabel: "بالدينار",
+  metalsPendingLabel: "بانتظار التحديث",
 };
 
 export const translations: Record<string, Translation> = {

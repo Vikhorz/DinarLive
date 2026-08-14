@@ -449,11 +449,17 @@ const fetchMetalsData = async (): Promise<{ metals: MetalsData | null; source: G
       }
     }
 
-    if (!dubaiLira || !palmSilver || !copper9999) {
+    if (!dubaiLira && !palmSilver && !copper9999) {
       console.warn(
-        `[metals] extraction incomplete: dubaiLira=${dubaiLira} palmSilver=${palmSilver} copper9999=${copper9999}, checked ${posts.length} posts. First post sample: ${posts[0]?.text?.slice(0, 200) ?? '(no posts found)'}`,
+        `[metals] no items matched across ${posts.length} posts. First post sample: ${posts[0]?.text?.slice(0, 200) ?? '(no posts found)'}`,
       );
       return { metals: null, source: null };
+    }
+
+    if (!dubaiLira || !palmSilver || !copper9999) {
+      console.warn(
+        `[metals] partial match: dubaiLira=${dubaiLira} palmSilver=${palmSilver} copper9999=${copper9999} across ${posts.length} posts`,
+      );
     }
 
     return {
