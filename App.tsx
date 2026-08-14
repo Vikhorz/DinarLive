@@ -363,7 +363,6 @@ export default function App(): React.ReactElement {
                 {(loading && !rate) ? (
                   <div className="space-y-4">
                     <RateDisplaySkeleton />
-                    <RateDisplaySkeleton />
                   </div>
                 ) : rate ? (
                   <div className="space-y-5 animate-fade-in">
@@ -378,13 +377,6 @@ export default function App(): React.ReactElement {
                       trend={marketTrend}
                       highLow={marketHighLow}
                       isHero={true}
-                    />
-                    <RateDisplay
-                      value={centralBankRateForDisplay}
-                      loading={loading}
-                      label={t.centralBankRateLabel}
-                      description={t.centralBankRateDescription}
-                      currency={t.iqdCurrency}
                     />
                   </div>
                 ) : null}
