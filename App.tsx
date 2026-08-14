@@ -21,6 +21,7 @@ import { RateHistoryChartSkeleton } from './components/RateHistoryChartSkeleton'
 import { CurrencyInfoModal } from './components/CurrencyInfoModal';
 import { BuyCurrencyModal } from './components/BuyCurrencyModal';
 import { MetalsCard } from './components/MetalsCard';
+import { MarketTicker } from './components/MarketTicker';
 
 const CHAT_ENABLED = false;
 
@@ -123,6 +124,25 @@ export default function App(): React.ReactElement {
   const irtPerUsdValue = useMemo(() => rate?.irtPerUsd ?? 0, [rate]);
   const rateForDisplay = iqdRateValue * 100;
   const centralBankRateForDisplay = officialRateValue * 100;
+
+  const tickerItems = useMemo(() => {
+    if (!rate) return [];
+    const items: string[] = [];
+
+    items.push(`${t.marketRateLabel}: ${Math.floor(rateForDisplay).toLocaleString()} ${t.iqdCurrency}`);
+    items.push(`${t.centralBankRateLabel}: ${Math.floor(centralBankRateForDisplay).toLocaleString()} ${t.iqdCurrency}`);
+
+    if (eurPerUsdValue > 0) items.push(`${t.eurToIqd}: ${(iqdRateValue / eurPerUsdValue).toLocaleString('en-US', { maximumFractionDigits: 0 })} ${t.iqdCurrency}`);
+    if (gbpPerUsdValue > 0) items.push(`${t.gbpToIqd}: ${(iqdRateValue / gbpPerUsdValue).toLocaleString('en-US', { maximumFractionDigits: 0 })} ${t.iqdCurrency}`);
+    if (tryPerUsdValue > 0) items.push(`${t.tryToIqd}: ${(iqdRateValue / tryPerUsdValue).toLocaleString('en-US', { maximumFractionDigits: 0 })} ${t.iqdCurrency}`);
+    if (irtPerUsdValue > 0) items.push(`${t.irtToIqd}: ${(iqdRateValue / irtPerUsdValue).toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 })} ${t.iqdCurrency}`);
+
+    if (rate.metals?.dubaiLira) items.push(`${t.dubaiLiraLabel}: $${rate.metals.dubaiLira.toLocaleString('en-US')}`);
+    if (rate.metals?.palmSilver) items.push(`${t.palmSilverLabel}: $${rate.metals.palmSilver.toLocaleString('en-US')}`);
+    if (rate.metals?.copper9999) items.push(`${t.copper9999Label}: $${rate.metals.copper9999.toLocaleString('en-US')}`);
+
+    return items;
+  }, [rate, t, rateForDisplay, centralBankRateForDisplay, iqdRateValue, eurPerUsdValue, gbpPerUsdValue, tryPerUsdValue, irtPerUsdValue]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -343,6 +363,8 @@ export default function App(): React.ReactElement {
               </div>
             </div>
           </section>
+
+          {tickerItems.length > 0 && <MarketTicker items={tickerItems} />}
 
           {error && (
             <div className="theme-surface-card theme-border rounded-lg border p-6 text-center shadow-sm">

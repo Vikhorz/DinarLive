@@ -251,6 +251,23 @@ svg {
   transition-timing-function: var(--ease-considered);
 }
 
+.ticker-track {
+  animation: tickerScroll linear infinite;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes tickerScroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 .theme-lift:active {
   transform: translateY(0) scale(0.98);
   transition-duration: 100ms;
