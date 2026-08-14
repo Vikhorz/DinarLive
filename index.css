@@ -291,7 +291,7 @@ svg {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
+  *:not(.ticker-track):not(.animate-slide-fade),
   *::before,
   *::after {
     animation-duration: 0.001ms !important;

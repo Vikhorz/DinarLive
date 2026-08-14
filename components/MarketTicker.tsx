@@ -15,9 +15,9 @@ export const MarketTicker: React.FC<MarketTickerProps> = ({ items }) => {
       dir="ltr"
       aria-hidden="true"
     >
-      <div className="ticker-track flex whitespace-nowrap py-2.5" style={{ animationDuration: `${Math.max(items.length * 4, 20)}s` }}>
-        <span className="font-data px-6 text-xs font-bold sm:text-sm">{content}</span>
-        <span className="font-data px-6 text-xs font-bold sm:text-sm">{content}</span>
+      <div className="ticker-track flex w-max py-2.5" style={{ animationDuration: `${Math.max(items.length * 4, 20)}s` }}>
+        <span className="font-data shrink-0 whitespace-nowrap px-6 text-xs font-bold sm:text-sm">{content}</span>
+        <span className="font-data shrink-0 whitespace-nowrap px-6 text-xs font-bold sm:text-sm">{content}</span>
       </div>
     </div>
   );
