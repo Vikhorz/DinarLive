@@ -23,11 +23,11 @@ export const Header: React.FC<HeaderProps> = ({ t }) => {
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col items-center text-center xl:mx-0 xl:items-end xl:text-right">
-      <h1 className="theme-text-primary max-w-[12.8ch] text-balance text-[2.45rem] font-black leading-[1.34] sm:max-w-[13.5ch] sm:text-[3.2rem] sm:leading-[1.28] lg:max-w-[14.5ch] lg:text-[4.05rem] lg:leading-[1.22] xl:text-[4.55rem] xl:leading-[1.2]">
+      <h1 className="theme-text-primary max-w-[12.8ch] text-balance text-[2.45rem] font-black leading-[1.55] tracking-[0.01em] sm:max-w-[13.5ch] sm:text-[3.2rem] sm:leading-[1.45] lg:max-w-[14.5ch] lg:text-[4.05rem] lg:leading-[1.38] xl:text-[4.55rem] xl:leading-[1.32]">
         {t.headerTitle}
       </h1>
 
-      <div className="theme-surface-muted theme-border relative mt-5 flex h-12 w-full max-w-md items-center justify-center overflow-hidden rounded-lg border px-5 shadow-sm sm:mt-6 sm:h-14 sm:max-w-xl">
+      <div className="theme-surface-muted theme-border relative mt-7 flex h-12 w-full max-w-md items-center justify-center overflow-hidden rounded-lg border px-5 shadow-sm sm:mt-9 sm:h-14 sm:max-w-xl">
         <p key={activeIdx} className="theme-text-primary animate-slide-fade text-[0.92rem] font-black leading-none sm:text-base lg:text-lg">
           {conversions[activeIdx]}
         </p>
