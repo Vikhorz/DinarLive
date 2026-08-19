@@ -109,6 +109,15 @@ const ku: Translation = {
   copper9999Label: "مسی ٩٩٩٩",
   metalsIqdLabel: "بە دینار",
   metalsPendingLabel: "چاوەڕوانی نرخی نوێ",
+  goldTitle: "نرخی زێڕ",
+  goldKaratWord: "عەیار",
+  goldPerMithqal: "بۆ مسقاڵێک",
+  goldOunceLabel: "نرخی ئۆنسی زێڕ",
+  goldSellPriceLabel: "نرخی فرۆشتن",
+  goldPricingNote: "نرخ دیاری کراوە لەلایەن سەندیکای زێڕنگەران",
+  goldTapHint: "کرتە بکە بۆ زانیاری زیاتر",
+  goldPendingLabel: "چاوەڕوانی نرخی نوێ",
+  goldAsOfLabel: "وەک لە ڕۆژی",
 };
 
 const en: Translation = {
@@ -219,6 +228,15 @@ const en: Translation = {
   copper9999Label: "Copper 9999",
   metalsIqdLabel: "In Dinar",
   metalsPendingLabel: "Awaiting update",
+  goldTitle: "Gold Prices",
+  goldKaratWord: "Karat",
+  goldPerMithqal: "per mithqal",
+  goldOunceLabel: "Gold Ounce (Spot)",
+  goldSellPriceLabel: "Sell Price",
+  goldPricingNote: "The price is determined by the Jewelers Union.",
+  goldTapHint: "Tap for full breakdown",
+  goldPendingLabel: "Awaiting update",
+  goldAsOfLabel: "As of",
 };
 
 const ar: Translation = {
@@ -329,6 +347,15 @@ const ar: Translation = {
   copper9999Label: "نحاس 9999",
   metalsIqdLabel: "بالدينار",
   metalsPendingLabel: "بانتظار التحديث",
+  goldTitle: "أسعار الذهب",
+  goldKaratWord: "عيار",
+  goldPerMithqal: "للمثقال الواحد",
+  goldOunceLabel: "سعر أونصة الذهب",
+  goldSellPriceLabel: "سعر البيع",
+  goldPricingNote: "يتم تحديد السعر من قبل نقابة الصاغة.",
+  goldTapHint: "اضغط لعرض كل التفاصيل",
+  goldPendingLabel: "بانتظار التحديث",
+  goldAsOfLabel: "بتاريخ",
 };
 
 export const translations: Record<string, Translation> = {

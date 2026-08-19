@@ -1,4 +1,4 @@
-import type { ExchangeRateData, GroundingChunk, MetalsData, RateHistoryEntry, RatesApiResponse } from '../types';
+import type { ExchangeRateData, GoldData, GroundingChunk, MetalsData, RateHistoryEntry, RatesApiResponse } from '../types';
 
 const SERVER_CACHE_TTL_MS = 2 * 60 * 1000;
 const REQUEST_TIMEOUT_MS = 12_000;
@@ -21,6 +21,26 @@ export const METAL_ALIASES = {
   palmSilver: ['زیوی پاڵم', 'فضة النخلة', 'palm silver'],
   copper9999: ['مس 9999', 'مسی 9999', 'نحاس 9999', 'copper 9999'],
 };
+
+const GOLD_PRICE_MIN = 50000;
+const GOLD_PRICE_MAX = 2000000;
+const GOLD_OUNCE_MIN = 500;
+const GOLD_OUNCE_MAX = 20000;
+
+const DEFAULT_GOLD_SOURCE = { title: 'Telegram - Borsay Kurdistan', url: 'https://t.me/s/BorsayKurdistan' };
+
+// One alias set per karat: matches both spaced and unspaced Kurdish/Arabic forms
+// (the source channel is inconsistent about the space before the karat number).
+const GOLD_KARAT_ALIASES: Record<'karat22' | 'karat21' | 'karat18' | 'karat14' | 'karat12' | 'karat9', string[]> = {
+  karat22: ['زێڕ\\s*عەیار\\s*22', 'ذهب\\s*عيار\\s*22'],
+  karat21: ['زێڕ\\s*عەیار\\s*21', 'ذهب\\s*عيار\\s*21'],
+  karat18: ['زێڕ\\s*عەیار\\s*18', 'ذهب\\s*عيار\\s*18'],
+  karat14: ['زێڕ\\s*عەیار\\s*14', 'ذهب\\s*عيار\\s*14'],
+  karat12: ['زێڕ\\s*عەیار\\s*12', 'ذهب\\s*عيار\\s*12'],
+  karat9: ['زێڕ\\s*عەیار\\s*9', 'ذهب\\s*عيار\\s*9'],
+};
+
+const GOLD_OUNCE_ALIASES = ['ئۆنسی\\s*زێڕ', 'اونصة\\s*الذهب', 'ونصة\\s*الذهب'];
 
 const DIGIT_MAP: Record<string, string> = {
   '٠': '0',
@@ -260,6 +280,63 @@ export const extractUsdPriceNearAliases = (text: string, aliases: string[]) => {
   return null;
 };
 
+const toIqdGoldPrice = (rawValue: string | null): number | null => {
+  if (!rawValue) return null;
+  const digitsOnly = normalizeDigits(rawValue).replace(/[^\d]/g, '');
+  if (!digitsOnly) return null;
+  const parsedValue = Number(digitsOnly);
+  if (!Number.isFinite(parsedValue) || parsedValue < GOLD_PRICE_MIN || parsedValue > GOLD_PRICE_MAX) {
+    return null;
+  }
+  return parsedValue;
+};
+
+const toUsdOuncePrice = (rawValue: string | null): number | null => {
+  if (!rawValue) return null;
+  const parsedValue = Number(normalizeDigits(rawValue).replace(/,/g, ''));
+  if (!Number.isFinite(parsedValue) || parsedValue < GOLD_OUNCE_MIN || parsedValue > GOLD_OUNCE_MAX) {
+    return null;
+  }
+  return parsedValue;
+};
+
+// Gold post aliases already contain raw regex fragments (e.g. '\\s*'), so unlike the
+// $-based extractors these are NOT escaped -- they're composed directly into the pattern.
+const extractIqdValueAfterAlias = (text: string, aliasPatterns: string[]) => {
+  const normalizedText = normalizeDigits(text);
+
+  for (const aliasPattern of aliasPatterns) {
+    const pattern = new RegExp(`${aliasPattern}[\\s\\S]{0,12}?=\\s*([0-9][0-9,]{2,9})`, 'i');
+    const match = normalizedText.match(pattern);
+    const price = toIqdGoldPrice(match?.[1] ?? null);
+    if (price) {
+      return price;
+    }
+  }
+
+  return null;
+};
+
+const extractOuncePriceAfterAlias = (text: string, aliasPatterns: string[]) => {
+  const normalizedText = normalizeDigits(text);
+
+  for (const aliasPattern of aliasPatterns) {
+    const pattern = new RegExp(`${aliasPattern}[\\s\\S]{0,12}?=\\s*([0-9][0-9,\\.]{1,8})`, 'i');
+    const match = normalizedText.match(pattern);
+    const price = toUsdOuncePrice(match?.[1] ?? null);
+    if (price) {
+      return price;
+    }
+  }
+
+  return null;
+};
+
+const extractGoldPostDate = (text: string): string | null => {
+  const match = normalizeDigits(text).match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  return match ? match[0] : null;
+};
+
 const buildRateHistory = (posts: TelegramPost[]) => {
   const historyByDate = new Map<string, RateHistoryEntry>();
 
@@ -429,6 +506,45 @@ const fetchGlobalRates = async () => {
   };
 };
 
+const fetchGoldPrices = async (): Promise<{ gold: GoldData | null; source: GroundingChunk | null }> => {
+  try {
+    const html = await fetchText(DEFAULT_GOLD_SOURCE.url);
+    const posts = extractTelegramPosts(html, DEFAULT_GOLD_SOURCE)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    // Each daily post contains the full karat breakdown together, so pull all fields
+    // from a single post rather than mixing values from different days.
+    for (const post of posts) {
+      const karat21 = extractIqdValueAfterAlias(post.text, GOLD_KARAT_ALIASES.karat21);
+      if (!karat21) continue;
+
+      const gold: GoldData = {
+        date: extractGoldPostDate(post.text),
+        karat22: extractIqdValueAfterAlias(post.text, GOLD_KARAT_ALIASES.karat22),
+        karat21,
+        karat18: extractIqdValueAfterAlias(post.text, GOLD_KARAT_ALIASES.karat18),
+        karat14: extractIqdValueAfterAlias(post.text, GOLD_KARAT_ALIASES.karat14),
+        karat12: extractIqdValueAfterAlias(post.text, GOLD_KARAT_ALIASES.karat12),
+        karat9: extractIqdValueAfterAlias(post.text, GOLD_KARAT_ALIASES.karat9),
+        ounceUsd: extractOuncePriceAfterAlias(post.text, GOLD_OUNCE_ALIASES),
+      };
+
+      return {
+        gold,
+        source: { web: { uri: DEFAULT_GOLD_SOURCE.url, title: DEFAULT_GOLD_SOURCE.title } },
+      };
+    }
+
+    console.warn(
+      `[gold] no post with a karat21 price found across ${posts.length} posts. First post sample: ${posts[0]?.text?.slice(0, 200) ?? '(no posts found)'}`,
+    );
+    return { gold: null, source: null };
+  } catch (error) {
+    console.warn(`[gold] fetch failed: ${error instanceof Error ? error.message : String(error)}`);
+    return { gold: null, source: null };
+  }
+};
+
 const fetchMetalsData = async (): Promise<{ metals: MetalsData | null; source: GroundingChunk | null }> => {
   try {
     const html = await fetchText(DEFAULT_METALS_SOURCE.url);
@@ -474,11 +590,12 @@ const fetchMetalsData = async (): Promise<{ metals: MetalsData | null; source: G
 };
 
 const composeRatesResponse = async (): Promise<RatesApiResponse> => {
-  const [marketData, centralBankRate, globalRates, metalsResult] = await Promise.all([
+  const [marketData, centralBankRate, globalRates, metalsResult, goldResult] = await Promise.all([
     fetchTelegramMarketData(),
     fetchCbiOfficialRate(),
     fetchGlobalRates(),
     fetchMetalsData(),
+    fetchGoldPrices(),
   ]);
 
   const fetchedAt = new Date().toISOString();
@@ -491,6 +608,7 @@ const composeRatesResponse = async (): Promise<RatesApiResponse> => {
     gbpPerUsd: globalRates.gbpPerUsd,
     irtPerUsd: globalRates.irtPerUsd,
     metals: metalsResult.metals ?? undefined,
+    goldPrices: goldResult.gold ?? undefined,
     updated: fetchedAt,
   };
 
@@ -522,6 +640,7 @@ const composeRatesResponse = async (): Promise<RatesApiResponse> => {
         },
       },
       ...(metalsResult.source ? [metalsResult.source] : []),
+      ...(goldResult.source ? [goldResult.source] : []),
     ],
     fetchedAt,
   };

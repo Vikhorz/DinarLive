@@ -21,6 +21,8 @@ import { RateHistoryChartSkeleton } from './components/RateHistoryChartSkeleton'
 import { CurrencyInfoModal } from './components/CurrencyInfoModal';
 import { BuyCurrencyModal } from './components/BuyCurrencyModal';
 import { MetalsCard } from './components/MetalsCard';
+import { GoldCard } from './components/GoldCard';
+import { GoldModal } from './components/GoldModal';
 import { MarketTicker } from './components/MarketTicker';
 
 const CHAT_ENABLED = false;
@@ -112,6 +114,7 @@ export default function App(): React.ReactElement {
   const [shareFeedback, setShareFeedback] = useState('');
   const [cooldownMessage, setCooldownMessage] = useState<string | null>(null);
   const [modalState, setModalState] = useState<{ currency: string | null; view: 'info' | 'buy' }>({ currency: null, view: 'info' });
+  const [isGoldModalOpen, setIsGoldModalOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const cooldownMessageTimerRef = useRef<number | null>(null);
   const t = translations[language];
@@ -140,6 +143,9 @@ export default function App(): React.ReactElement {
     if (rate.metals?.dubaiLira) items.push(`${t.dubaiLiraLabel}: $${rate.metals.dubaiLira.toLocaleString('en-US')}`);
     if (rate.metals?.palmSilver) items.push(`${t.palmSilverLabel}: $${rate.metals.palmSilver.toLocaleString('en-US')}`);
     if (rate.metals?.copper9999) items.push(`${t.copper9999Label}: $${rate.metals.copper9999.toLocaleString('en-US')}`);
+
+    if (rate.goldPrices?.karat21) items.push(`${t.goldTitle} ${t.goldKaratWord} 21: ${rate.goldPrices.karat21.toLocaleString()} ${t.iqdCurrency}`);
+    if (rate.goldPrices?.karat22) items.push(`${t.goldTitle} ${t.goldKaratWord} 22: ${rate.goldPrices.karat22.toLocaleString()} ${t.iqdCurrency}`);
 
     return items;
   }, [rate, t, rateForDisplay, centralBankRateForDisplay, iqdRateValue, eurPerUsdValue, gbpPerUsdValue, tryPerUsdValue, irtPerUsdValue]);
@@ -419,6 +425,8 @@ export default function App(): React.ReactElement {
 
                 {rate?.metals && <MetalsCard metals={rate.metals} iqdPerUsd={iqdRateValue} t={t} />}
 
+                {rate?.goldPrices && <GoldCard gold={rate.goldPrices} t={t} onOpen={() => setIsGoldModalOpen(true)} />}
+
                 {rate && (
                   <div className="theme-surface-card theme-border theme-shadow-soft rounded-lg border p-5 sm:p-6">
                     <div className="theme-surface-muted theme-border rounded-lg border p-4">
@@ -507,6 +515,7 @@ export default function App(): React.ReactElement {
         <>
           <CurrencyInfoModal isOpen={modalState.view === 'info'} onClose={handleCloseModals} onBuy={handleBuyClick} currencyCode={modalState.currency} t={t} />
           <BuyCurrencyModal isOpen={modalState.view === 'buy'} onClose={handleCloseModals} currencyCode={modalState.currency} rates={allRates} t={t} />
+          {rate?.goldPrices && <GoldModal gold={rate.goldPrices} isOpen={isGoldModalOpen} onClose={() => setIsGoldModalOpen(false)} t={t} />}
         </>
       )}
 

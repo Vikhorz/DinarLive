@@ -5,6 +5,17 @@ export interface MetalsData {
   copper9999: number | null; // USD per mithqal, null if not seen in recent posts
 }
 
+export interface GoldData {
+  date: string | null; // e.g. "16/08/2026", as posted
+  karat22: number | null; // IQD per mithqal, sell price
+  karat21: number | null; // IQD per mithqal, sell price
+  karat18: number | null; // IQD per mithqal, sell price
+  karat14: number | null; // IQD per mithqal, sell price
+  karat12: number | null; // IQD per mithqal, sell price
+  karat9: number | null; // IQD per mithqal, sell price
+  ounceUsd: number | null; // USD per troy ounce, spot
+}
+
 export interface ExchangeRateData {
   iqd: number; // Main rate (Sulaymaniyah)
   centralBankRate: number; // Official rate from Credit Bank of Iraq
@@ -18,6 +29,7 @@ export interface ExchangeRateData {
   gbpPerUsd: number;
   irtPerUsd: number;
   metals?: MetalsData;
+  goldPrices?: GoldData;
   updated: string;
 }
 
@@ -166,4 +178,13 @@ export interface Translation {
   copper9999Label: string;
   metalsIqdLabel: string;
   metalsPendingLabel: string;
+  goldTitle: string;
+  goldKaratWord: string;
+  goldPerMithqal: string;
+  goldOunceLabel: string;
+  goldSellPriceLabel: string;
+  goldPricingNote: string;
+  goldTapHint: string;
+  goldPendingLabel: string;
+  goldAsOfLabel: string;
 }
