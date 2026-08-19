@@ -1,10 +1,12 @@
 import React from 'react';
-import type { MetalsData, Translation } from '../types';
+import type { GoldData, MetalsData, Translation } from '../types';
 
 interface MetalsCardProps {
   metals: MetalsData;
   iqdPerUsd: number;
   t: Translation;
+  gold?: GoldData;
+  onOpenGold?: () => void;
 }
 
 const MetalItem: React.FC<{ label: string; usdValue: number | null; iqdPerUsd: number; iqdLabel: string; pendingLabel: string }> = ({
@@ -31,14 +33,41 @@ const MetalItem: React.FC<{ label: string; usdValue: number | null; iqdPerUsd: n
   </div>
 );
 
-export const MetalsCard: React.FC<MetalsCardProps> = ({ metals, iqdPerUsd, t }) => {
+export const MetalsCard: React.FC<MetalsCardProps> = ({ metals, iqdPerUsd, t, gold, onOpenGold }) => {
   return (
     <div className="theme-surface-card theme-border theme-shadow-soft rounded-lg border p-5 shadow-sm sm:p-6">
       <div className="mb-5 flex items-center justify-between gap-3">
-        <div>
-          <p className="theme-text-secondary font-data text-[11px] font-black uppercase">DinarLive</p>
-          <h3 className="theme-text-primary mt-1 text-lg font-black sm:text-xl">{t.metalsTitle}</h3>
-        </div>
+        <p className="theme-text-secondary font-data text-[11px] font-black uppercase">DinarLive</p>
+      </div>
+
+      {gold && (
+        <button
+          onClick={onOpenGold}
+          className="theme-surface-inverted theme-border-strong theme-lift theme-focus mb-5 w-full rounded-lg border p-5 text-start shadow-sm transition-all duration-300 hover:-translate-y-0.5 focus:outline-none sm:p-6"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <h3 className="text-lg font-black sm:text-xl">
+              {t.goldTitle} · {t.goldKaratWord} 21
+            </h3>
+            <span className="rounded-full border px-3 py-1 text-xs font-black">{t.goldSellPriceLabel}</span>
+          </div>
+
+          {gold.karat21 !== null ? (
+            <p className="font-data mt-4 text-3xl font-black sm:text-4xl" dir="ltr">
+              {gold.karat21.toLocaleString()} <span className="text-lg font-bold sm:text-xl">{t.iqdCurrency}</span>
+            </p>
+          ) : (
+            <p className="mt-4 text-sm italic opacity-80">{t.goldPendingLabel}</p>
+          )}
+
+          <p className="mt-3 text-xs font-semibold opacity-80">
+            {t.goldPerMithqal} · {t.goldTapHint}
+          </p>
+        </button>
+      )}
+
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <h3 className="theme-text-primary text-lg font-black sm:text-xl">{t.metalsTitle}</h3>
         <p className="theme-text-secondary text-xs font-semibold">{t.metalsPriceUnit}</p>
       </div>
 

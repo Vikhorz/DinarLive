@@ -21,7 +21,6 @@ import { RateHistoryChartSkeleton } from './components/RateHistoryChartSkeleton'
 import { CurrencyInfoModal } from './components/CurrencyInfoModal';
 import { BuyCurrencyModal } from './components/BuyCurrencyModal';
 import { MetalsCard } from './components/MetalsCard';
-import { GoldCard } from './components/GoldCard';
 import { GoldModal } from './components/GoldModal';
 import { MarketTicker } from './components/MarketTicker';
 
@@ -423,9 +422,15 @@ export default function App(): React.ReactElement {
                   />
                 ) : null}
 
-                {rate?.metals && <MetalsCard metals={rate.metals} iqdPerUsd={iqdRateValue} t={t} />}
-
-                {rate?.goldPrices && <GoldCard gold={rate.goldPrices} t={t} onOpen={() => setIsGoldModalOpen(true)} />}
+                {(rate?.metals || rate?.goldPrices) && (
+                  <MetalsCard
+                    metals={rate.metals ?? { dubaiLira: null, palmSilver: null, copper9999: null }}
+                    iqdPerUsd={iqdRateValue}
+                    t={t}
+                    gold={rate.goldPrices}
+                    onOpenGold={() => setIsGoldModalOpen(true)}
+                  />
+                )}
 
                 {rate && (
                   <div className="theme-surface-card theme-border theme-shadow-soft rounded-lg border p-5 sm:p-6">
@@ -515,9 +520,9 @@ export default function App(): React.ReactElement {
         <>
           <CurrencyInfoModal isOpen={modalState.view === 'info'} onClose={handleCloseModals} onBuy={handleBuyClick} currencyCode={modalState.currency} t={t} />
           <BuyCurrencyModal isOpen={modalState.view === 'buy'} onClose={handleCloseModals} currencyCode={modalState.currency} rates={allRates} t={t} />
-          {rate?.goldPrices && <GoldModal gold={rate.goldPrices} isOpen={isGoldModalOpen} onClose={() => setIsGoldModalOpen(false)} t={t} />}
         </>
       )}
+      {rate?.goldPrices && <GoldModal gold={rate.goldPrices} isOpen={isGoldModalOpen} onClose={() => setIsGoldModalOpen(false)} t={t} />}
 
       {CHAT_ENABLED && !isCompletelyEmpty && (
         <ChatDialog isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} rate={rate} t={t} />
