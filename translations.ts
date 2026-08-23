@@ -109,6 +109,7 @@ const ku: Translation = {
   copper9999Label: "مسی ٩٩٩٩",
   metalsIqdLabel: "بە دینار",
   metalsPendingLabel: "چاوەڕوانی نرخی نوێ",
+  metalsAsOfLabel: "دوایین نرخ لە",
   goldTitle: "نرخی زێڕ",
   goldKaratWord: "عەیار",
   goldPerMithqal: "بۆ مسقاڵێک",
@@ -117,7 +118,7 @@ const ku: Translation = {
   goldPricingNote: "نرخ دیاری کراوە لەلایەن سەندیکای زێڕنگەران",
   goldTapHint: "کرتە بکە بۆ زانیاری زیاتر",
   goldPendingLabel: "چاوەڕوانی نرخی نوێ",
-  goldAsOfLabel: "وەک لە ڕۆژی",
+  goldAsOfLabel: "لە بەرواری",
 };
 
 const en: Translation = {
@@ -228,6 +229,7 @@ const en: Translation = {
   copper9999Label: "Copper 9999",
   metalsIqdLabel: "In Dinar",
   metalsPendingLabel: "Awaiting update",
+  metalsAsOfLabel: "Last known price:",
   goldTitle: "Gold Prices",
   goldKaratWord: "Karat",
   goldPerMithqal: "per mithqal",
@@ -347,6 +349,7 @@ const ar: Translation = {
   copper9999Label: "نحاس 9999",
   metalsIqdLabel: "بالدينار",
   metalsPendingLabel: "بانتظار التحديث",
+  metalsAsOfLabel: "آخر سعر بتاريخ",
   goldTitle: "أسعار الذهب",
   goldKaratWord: "عيار",
   goldPerMithqal: "للمثقال الواحد",

@@ -424,7 +424,7 @@ export default function App(): React.ReactElement {
 
                 {(rate?.metals || rate?.goldPrices) && (
                   <MetalsCard
-                    metals={rate.metals ?? { dubaiLira: null, palmSilver: null, copper9999: null }}
+                    metals={rate.metals ?? { dubaiLira: null, dubaiLiraDate: null, palmSilver: null, palmSilverDate: null, copper9999: null, copper9999Date: null }}
                     iqdPerUsd={iqdRateValue}
                     t={t}
                     gold={rate.goldPrices}

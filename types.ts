@@ -1,8 +1,11 @@
 
 export interface MetalsData {
-  dubaiLira: number | null; // USD per mithqal, null if not seen in recent posts
-  palmSilver: number | null; // USD per mithqal, null if not seen in recent posts
-  copper9999: number | null; // USD per mithqal, null if not seen in recent posts
+  dubaiLira: number | null; // USD per mithqal, null if not seen even in extended history
+  dubaiLiraDate: string | null; // ISO date the price above was posted
+  palmSilver: number | null; // USD per mithqal, null if not seen even in extended history
+  palmSilverDate: string | null;
+  copper9999: number | null; // USD per mithqal, null if not seen even in extended history
+  copper9999Date: string | null;
 }
 
 export interface GoldData {
@@ -178,6 +181,7 @@ export interface Translation {
   copper9999Label: string;
   metalsIqdLabel: string;
   metalsPendingLabel: string;
+  metalsAsOfLabel: string;
   goldTitle: string;
   goldKaratWord: string;
   goldPerMithqal: string;

@@ -76,6 +76,7 @@ type TelegramPost = {
   source: { title: string; url: string };
   text: string;
   date: string;
+  id: string | null;
 };
 
 type MarketSnapshot = {
@@ -223,7 +224,9 @@ export const extractTelegramPosts = (html: string, source: { title: string; url:
         return null;
       }
 
-      return { source, text, date: datetime };
+      const id = block.match(/data-post="[^"]*\/(\d+)"/)?.[1] ?? null;
+
+      return { source, text, date: datetime, id };
     })
     .filter((post): post is TelegramPost => Boolean(post));
 };
@@ -548,20 +551,64 @@ const fetchGoldPrices = async (): Promise<{ gold: GoldData | null; source: Groun
 const fetchMetalsData = async (): Promise<{ metals: MetalsData | null; source: GroundingChunk | null }> => {
   try {
     const html = await fetchText(DEFAULT_METALS_SOURCE.url);
-    const posts = extractTelegramPosts(html, DEFAULT_METALS_SOURCE)
+    let posts = extractTelegramPosts(html, DEFAULT_METALS_SOURCE)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     let dubaiLira: number | null = null;
+    let dubaiLiraDate: string | null = null;
     let palmSilver: number | null = null;
+    let palmSilverDate: string | null = null;
     let copper9999: number | null = null;
+    let copper9999Date: string | null = null;
 
-    for (const post of posts) {
-      dubaiLira ??= extractUsdPriceNearAliases(post.text, METAL_ALIASES.dubaiLira);
-      palmSilver ??= extractUsdPriceNearAliases(post.text, METAL_ALIASES.palmSilver);
-      copper9999 ??= extractUsdPriceNearAliases(post.text, METAL_ALIASES.copper9999);
+    const scan = (postList: TelegramPost[]) => {
+      for (const post of postList) {
+        if (dubaiLira === null) {
+          const value = extractUsdPriceNearAliases(post.text, METAL_ALIASES.dubaiLira);
+          if (value) {
+            dubaiLira = value;
+            dubaiLiraDate = post.date;
+          }
+        }
+        if (palmSilver === null) {
+          const value = extractUsdPriceNearAliases(post.text, METAL_ALIASES.palmSilver);
+          if (value) {
+            palmSilver = value;
+            palmSilverDate = post.date;
+          }
+        }
+        if (copper9999 === null) {
+          const value = extractUsdPriceNearAliases(post.text, METAL_ALIASES.copper9999);
+          if (value) {
+            copper9999 = value;
+            copper9999Date = post.date;
+          }
+        }
 
-      if (dubaiLira && palmSilver && copper9999) {
-        break;
+        if (dubaiLira && palmSilver && copper9999) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    const foundAllInFirstPage = scan(posts);
+
+    // Some items (e.g. Copper 9999) post far less often than others. If anything is still
+    // missing after the first page (~20 posts), page back once for a wider search window
+    // instead of giving up, so "last known price" can genuinely reach further back.
+    if (!foundAllInFirstPage) {
+      const oldestId = posts[posts.length - 1]?.id;
+      if (oldestId) {
+        try {
+          const olderHtml = await fetchText(`${DEFAULT_METALS_SOURCE.url}?before=${oldestId}`);
+          const olderPosts = extractTelegramPosts(olderHtml, DEFAULT_METALS_SOURCE)
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          posts = [...posts, ...olderPosts];
+          scan(olderPosts);
+        } catch (pageError) {
+          console.warn(`[metals] pagination fetch failed: ${pageError instanceof Error ? pageError.message : String(pageError)}`);
+        }
       }
     }
 
@@ -579,7 +626,7 @@ const fetchMetalsData = async (): Promise<{ metals: MetalsData | null; source: G
     }
 
     return {
-      metals: { dubaiLira, palmSilver, copper9999 },
+      metals: { dubaiLira, dubaiLiraDate, palmSilver, palmSilverDate, copper9999, copper9999Date },
       source: { web: { uri: DEFAULT_METALS_SOURCE.url, title: DEFAULT_METALS_SOURCE.title } },
     };
   } catch (error) {

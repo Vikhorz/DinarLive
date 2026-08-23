@@ -9,13 +9,15 @@ interface MetalsCardProps {
   onOpenGold?: () => void;
 }
 
-const MetalItem: React.FC<{ label: string; usdValue: number | null; iqdPerUsd: number; iqdLabel: string; pendingLabel: string }> = ({
-  label,
-  usdValue,
-  iqdPerUsd,
-  iqdLabel,
-  pendingLabel,
-}) => (
+const MetalItem: React.FC<{
+  label: string;
+  usdValue: number | null;
+  dateIso: string | null;
+  iqdPerUsd: number;
+  iqdLabel: string;
+  pendingLabel: string;
+  asOfLabel: string;
+}> = ({ label, usdValue, dateIso, iqdPerUsd, iqdLabel, pendingLabel, asOfLabel }) => (
   <div className="theme-surface-muted theme-border theme-lift rounded-lg border p-4 text-center shadow-sm transition-all duration-300 hover:-translate-y-1">
     <p className="theme-text-secondary text-xs font-black uppercase">{label}</p>
     {usdValue !== null ? (
@@ -26,6 +28,11 @@ const MetalItem: React.FC<{ label: string; usdValue: number | null; iqdPerUsd: n
         <p className="theme-text-secondary mt-2 text-xs" dir="ltr">
           {iqdLabel}: {Math.round(usdValue * iqdPerUsd).toLocaleString()}
         </p>
+        {dateIso && (
+          <p className="theme-text-secondary mt-1 text-[11px] opacity-70" dir="ltr">
+            {asOfLabel} {new Date(dateIso).toLocaleDateString('en-GB')}
+          </p>
+        )}
       </>
     ) : (
       <p className="theme-text-secondary mt-3 text-sm italic">{pendingLabel}</p>
@@ -72,9 +79,9 @@ export const MetalsCard: React.FC<MetalsCardProps> = ({ metals, iqdPerUsd, t, go
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <MetalItem label={t.dubaiLiraLabel} usdValue={metals.dubaiLira} iqdPerUsd={iqdPerUsd} iqdLabel={t.metalsIqdLabel} pendingLabel={t.metalsPendingLabel} />
-        <MetalItem label={t.palmSilverLabel} usdValue={metals.palmSilver} iqdPerUsd={iqdPerUsd} iqdLabel={t.metalsIqdLabel} pendingLabel={t.metalsPendingLabel} />
-        <MetalItem label={t.copper9999Label} usdValue={metals.copper9999} iqdPerUsd={iqdPerUsd} iqdLabel={t.metalsIqdLabel} pendingLabel={t.metalsPendingLabel} />
+        <MetalItem label={t.dubaiLiraLabel} usdValue={metals.dubaiLira} dateIso={metals.dubaiLiraDate} iqdPerUsd={iqdPerUsd} iqdLabel={t.metalsIqdLabel} pendingLabel={t.metalsPendingLabel} asOfLabel={t.metalsAsOfLabel} />
+        <MetalItem label={t.palmSilverLabel} usdValue={metals.palmSilver} dateIso={metals.palmSilverDate} iqdPerUsd={iqdPerUsd} iqdLabel={t.metalsIqdLabel} pendingLabel={t.metalsPendingLabel} asOfLabel={t.metalsAsOfLabel} />
+        <MetalItem label={t.copper9999Label} usdValue={metals.copper9999} dateIso={metals.copper9999Date} iqdPerUsd={iqdPerUsd} iqdLabel={t.metalsIqdLabel} pendingLabel={t.metalsPendingLabel} asOfLabel={t.metalsAsOfLabel} />
       </div>
     </div>
   );
