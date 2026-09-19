@@ -117,10 +117,10 @@ export default function App(): React.ReactElement {
     items.push(`${t.tickerUsdAmount} - ${t.marketRateLabel}: ${Math.floor(rateForDisplay).toLocaleString()} ${t.iqdCurrency}`);
     items.push(`${t.tickerUsdAmount} - ${t.centralBankRateLabel}: ${Math.floor(centralBankRateForDisplay).toLocaleString()} ${t.iqdCurrency}`);
 
-    if (eurPerUsdValue > 0) items.push(`${t.tickerEuroAmount}: ${(iqdRateValue / eurPerUsdValue).toLocaleString('en-US', { maximumFractionDigits: 0 })} ${t.iqdCurrency}`);
-    if (gbpPerUsdValue > 0) items.push(`${t.tickerPoundAmount}: ${(iqdRateValue / gbpPerUsdValue).toLocaleString('en-US', { maximumFractionDigits: 0 })} ${t.iqdCurrency}`);
-    if (tryPerUsdValue > 0) items.push(`${t.tickerLiraAmount}: ${(iqdRateValue / tryPerUsdValue).toLocaleString('en-US', { maximumFractionDigits: 0 })} ${t.iqdCurrency}`);
-    if (irtPerUsdValue > 0) items.push(`${t.tickerTomanAmount}: ${(iqdRateValue / irtPerUsdValue).toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 })} ${t.iqdCurrency}`);
+    if (eurPerUsdValue > 0) items.push(`${t.tickerEuroAmount}: ${((iqdRateValue / eurPerUsdValue) * 100).toLocaleString('en-US', { maximumFractionDigits: 0 })} ${t.iqdCurrency}`);
+    if (gbpPerUsdValue > 0) items.push(`${t.tickerPoundAmount}: ${((iqdRateValue / gbpPerUsdValue) * 100).toLocaleString('en-US', { maximumFractionDigits: 0 })} ${t.iqdCurrency}`);
+    if (tryPerUsdValue > 0) items.push(`${t.tickerLiraAmount}: ${((iqdRateValue / tryPerUsdValue) * 100).toLocaleString('en-US', { maximumFractionDigits: 0 })} ${t.iqdCurrency}`);
+    if (irtPerUsdValue > 0) items.push(`${t.tickerTomanAmount}: ${((iqdRateValue / irtPerUsdValue) * 100).toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 })} ${t.iqdCurrency}`);
 
     if (rate.metals?.dubaiLira) items.push(`${t.dubaiLiraLabel}: $${rate.metals.dubaiLira.toLocaleString('en-US')}`);
     if (rate.metals?.palmSilver) items.push(`${t.palmSilverLabel}: $${rate.metals.palmSilver.toLocaleString('en-US')}`);
