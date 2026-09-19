@@ -10,7 +10,9 @@ export const MarketTicker: React.FC<MarketTickerProps> = ({ items }) => {
   const renderItems = (keyPrefix: string) =>
     items.map((item, index) => (
       <React.Fragment key={`${keyPrefix}-${index}`}>
-        <span className="shrink-0 whitespace-nowrap px-1 text-xs font-bold tracking-wide sm:text-sm">{item}</span>
+        <bdi dir="ltr" className="shrink-0 whitespace-nowrap px-1 text-xs font-bold tracking-wide sm:text-sm">
+          {item}
+        </bdi>
         <span
           className="theme-surface-card theme-text-primary theme-border flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[9px] font-black shadow-sm sm:h-8 sm:w-8 sm:text-[10px]"
           aria-hidden="true"
