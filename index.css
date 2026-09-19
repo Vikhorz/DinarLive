@@ -259,12 +259,6 @@ svg {
   animation-play-state: paused;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .ticker-track {
-    animation-play-state: paused;
-  }
-}
-
 @keyframes tickerScroll {
   from {
     transform: translateX(0);
