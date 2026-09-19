@@ -140,6 +140,11 @@ export interface Translation {
   assistantTyping: string;
   rateHistoryTitle: string;
   noHistoryData: string;
+  homeNavLabel: string;
+  calculatorNavLabel: string;
+  chartNavLabel: string;
+  calculatorPageDescription: string;
+  chartPageDescription: string;
   refreshCooldown: (time: string) => string;
   usdTooltip: string;
   iqdTooltip: string;

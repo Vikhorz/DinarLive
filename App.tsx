@@ -26,12 +26,6 @@ import { MarketTicker } from './components/MarketTicker';
 
 const CHAT_ENABLED = false;
 
-const ChevronIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-  </svg>
-);
-
 const RefreshIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
@@ -56,10 +50,20 @@ const SourcesIcon: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
-const isLargeScreen = () => {
-  if (typeof window === 'undefined') return false;
-  return window.matchMedia('(min-width: 1024px)').matches;
-};
+type AppPage = 'home' | 'calculator' | 'chart';
+
+const HomeIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V10Z" />
+  </svg>
+);
+
+const CalculatorIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <rect width="16" height="19" x="4" y="2.5" rx="2" />
+    <path strokeLinecap="round" d="M8 6.5h8M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 19h.01M12 19h.01M16 19h.01" />
+  </svg>
+);
 
 const snapshotToneClasses = {
   amber: 'theme-surface-inverted theme-border-strong',
@@ -81,31 +85,10 @@ const SnapshotCard: React.FC<{ title: string; value: string; subtitle: string; t
   </div>
 );
 
-const SectionCard: React.FC<{ title: string; isOpen: boolean; onToggle: () => void; children: React.ReactNode }> = ({ title, isOpen, onToggle, children }) => (
-  <section className="theme-surface-card theme-border theme-shadow-soft theme-lift overflow-hidden rounded-lg border transition-transform duration-200 hover:-translate-y-0.5">
-    <button
-      onClick={onToggle}
-      className="theme-hover-soft theme-focus flex w-full items-center justify-between gap-4 px-5 py-5 text-start transition-all duration-300 sm:px-6"
-    >
-      <div>
-        <p className="theme-text-secondary font-data text-[10px] font-black uppercase">DinarLive</p>
-        <h2 className="theme-text-primary mt-1.5 text-xl font-black sm:text-2xl">{title}</h2>
-      </div>
-      <span className="theme-surface-muted theme-border theme-text-primary flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg border">
-        <ChevronIcon className={`h-6 w-6 transition-transform duration-500 ${isOpen ? 'rotate-180' : ''}`} />
-      </span>
-    </button>
-    <div className={`overflow-hidden transition-all duration-700 ease-in-out ${isOpen ? 'max-h-[960px] opacity-100' : 'max-h-0 opacity-0'}`}>
-      <div className="px-4 pb-4 sm:px-6 sm:pb-6">{children}</div>
-    </div>
-  </section>
-);
-
 export default function App(): React.ReactElement {
   const { rate, sources, loading, error, refetch, rateHistory, cooldownSeconds } = useExchangeRate();
 
-  const [isCalculatorOpen, setIsCalculatorOpen] = useState(isLargeScreen());
-  const [isChartOpen, setIsChartOpen] = useState(isLargeScreen());
+  const [activePage, setActivePage] = useState<AppPage>('home');
   const [language, setLanguage] = useLanguage();
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isSourcesOpen, setIsSourcesOpen] = useState(false);
@@ -330,7 +313,9 @@ export default function App(): React.ReactElement {
       </div>
 
       <div className={`min-h-screen w-full pt-24 transition-filter duration-500 ${showFullScreenLoader ? 'blur-sm' : ''}`}>
-        <main className="relative mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 pb-10 sm:px-6 lg:px-8">
+        <main className="relative mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 pb-32 sm:px-6 lg:px-8">
+          {activePage === 'home' && (
+            <>
           <section className="theme-surface-card theme-border theme-shadow-soft overflow-hidden rounded-lg border px-5 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-10">
             <div className="grid gap-8 xl:grid-cols-12 xl:items-center">
               <div className="xl:col-span-7">
@@ -385,8 +370,8 @@ export default function App(): React.ReactElement {
           )}
 
           {(hasUsableData || !error) && (
-            <div className="grid grid-cols-1 gap-6 xl:grid-cols-12 xl:items-start">
-              <aside className="order-1 space-y-6 xl:col-span-5 xl:sticky xl:top-28">
+            <div className="grid grid-cols-1 gap-6 xl:items-start">
+              <aside className="order-1 mx-auto w-full max-w-5xl space-y-6">
                 {(loading && !rate) ? (
                   <div className="space-y-4">
                     <RateDisplaySkeleton />
@@ -449,24 +434,68 @@ export default function App(): React.ReactElement {
                 )}
               </aside>
 
-              <div className="order-2 space-y-6 xl:col-span-7">
-                <SectionCard title={t.rateHistoryTitle} isOpen={isChartOpen} onToggle={() => setIsChartOpen((prev) => !prev)}>
-                  {(loading && rateHistory.length === 0) ? <RateHistoryChartSkeleton /> : <RateHistoryChart history={rateHistory} t={t} />}
-                </SectionCard>
-
-                {rate && (
-                  <SectionCard title={t.calculatorTitle} isOpen={isCalculatorOpen} onToggle={() => setIsCalculatorOpen((prev) => !prev)}>
-                    <Calculator rates={allRates} t={t} onCurrencySelect={handleCurrencySelect} />
-                  </SectionCard>
-                )}
-              </div>
             </div>
+          )}
+            </>
+          )}
+
+          {activePage === 'calculator' && (
+            <section className="mx-auto w-full max-w-4xl space-y-6">
+              <div className="text-center">
+                <p className="theme-text-secondary font-data text-[10px] font-black uppercase">DinarLive</p>
+                <h1 className="theme-text-primary mt-2 text-2xl font-black sm:text-3xl">{t.calculatorTitle}</h1>
+                <p className="theme-text-secondary mt-2 text-sm">{t.calculatorPageDescription}</p>
+              </div>
+              {rate ? (
+                <Calculator rates={allRates} t={t} onCurrencySelect={handleCurrencySelect} />
+              ) : (
+                <div className="theme-surface-card theme-border rounded-lg border p-8 text-center">
+                  <p className="theme-text-secondary text-sm">{loading ? t.fetchingRates : t.errorAfterRetriesMessage}</p>
+                </div>
+              )}
+            </section>
+          )}
+
+          {activePage === 'chart' && (
+            <section className="mx-auto w-full max-w-5xl space-y-6">
+              <div className="text-center">
+                <p className="theme-text-secondary font-data text-[10px] font-black uppercase">DinarLive</p>
+                <h1 className="theme-text-primary mt-2 text-2xl font-black sm:text-3xl">{t.rateHistoryTitle}</h1>
+                <p className="theme-text-secondary mt-2 text-sm">{t.chartPageDescription}</p>
+              </div>
+              {(loading && rateHistory.length === 0) ? <RateHistoryChartSkeleton /> : <RateHistoryChart history={rateHistory} t={t} />}
+            </section>
           )}
         </main>
       </div>
 
+      <nav className="theme-surface-card theme-border theme-shadow-strong fixed bottom-0 left-0 right-0 z-40 border-t px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2 sm:bottom-4 sm:left-1/2 sm:right-auto sm:w-auto sm:-translate-x-1/2 sm:rounded-2xl sm:border">
+        <div className="mx-auto flex max-w-md items-center justify-around gap-1 sm:gap-2">
+          {([
+            { id: 'home' as const, label: t.homeNavLabel, Icon: HomeIcon },
+            { id: 'calculator' as const, label: t.calculatorNavLabel, Icon: CalculatorIcon },
+            { id: 'chart' as const, label: t.chartNavLabel, Icon: PulseIcon },
+          ]).map(({ id, label, Icon }) => (
+            <button
+              key={id}
+              onClick={() => {
+                setActivePage(id);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className={`theme-focus flex min-w-[5.5rem] flex-col items-center gap-1 rounded-xl px-4 py-2 text-[10px] font-black transition-all sm:min-w-[7rem] sm:px-5 ${
+                activePage === id ? 'theme-surface-inverted' : 'theme-text-secondary theme-hover-soft'
+              }`}
+              aria-current={activePage === id ? 'page' : undefined}
+            >
+              <Icon className="h-5 w-5" />
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
+      </nav>
+
       <div
-        className="fixed bottom-6 z-40 flex flex-col items-center gap-4 transition-all duration-500"
+        className="fixed bottom-24 z-40 flex flex-col items-center gap-4 transition-all duration-500 sm:bottom-6"
         style={{ right: language === 'en' ? '1.5rem' : 'auto', left: language !== 'en' ? '1.5rem' : 'auto' }}
       >
         <button
