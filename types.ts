@@ -145,6 +145,11 @@ export interface Translation {
   chartNavLabel: string;
   calculatorPageDescription: string;
   chartPageDescription: string;
+  tickerUsdAmount: string;
+  tickerEuroAmount: string;
+  tickerPoundAmount: string;
+  tickerLiraAmount: string;
+  tickerTomanAmount: string;
   refreshCooldown: (time: string) => string;
   usdTooltip: string;
   iqdTooltip: string;
