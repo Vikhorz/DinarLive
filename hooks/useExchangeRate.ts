@@ -7,8 +7,8 @@ import type {
   RatesApiResponse,
 } from '../types';
 
-const FETCH_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes
-const REFRESH_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
+const FETCH_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes
+const REFRESH_COOLDOWN_MS = 1 * 60 * 1000; // 1 minute
 const VERY_STALE_THRESHOLD_MS = 12 * 60 * 60 * 1000; // 12 hours
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 3000;
@@ -120,8 +120,12 @@ export const useExchangeRate = () => {
   useEffect(() => {
     updateCooldown();
     cooldownTimerRef.current = window.setInterval(updateCooldown, 1000);
+    window.addEventListener('focus', updateCooldown);
+    document.addEventListener('visibilitychange', updateCooldown);
     return () => {
       if (cooldownTimerRef.current) clearInterval(cooldownTimerRef.current);
+      window.removeEventListener('focus', updateCooldown);
+      document.removeEventListener('visibilitychange', updateCooldown);
     };
   }, [updateCooldown]);
 

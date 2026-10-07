@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useRef } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useExchangeRate } from './hooks/useExchangeRate';
 import { Header } from './components/Header';
 import { RateDisplay } from './components/RateDisplay';
@@ -94,11 +94,9 @@ export default function App(): React.ReactElement {
   const [isSourcesOpen, setIsSourcesOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [shareFeedback, setShareFeedback] = useState('');
-  const [cooldownMessage, setCooldownMessage] = useState<string | null>(null);
   const [modalState, setModalState] = useState<{ currency: string | null; view: 'info' | 'buy' }>({ currency: null, view: 'info' });
   const [isGoldModalOpen, setIsGoldModalOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const cooldownMessageTimerRef = useRef<number | null>(null);
   const t = translations[language];
 
   const iqdRateValue = useMemo(() => rate?.iqd ?? 0, [rate]);
@@ -141,15 +139,6 @@ export default function App(): React.ReactElement {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  useEffect(
-    () => () => {
-      if (cooldownMessageTimerRef.current) {
-        clearTimeout(cooldownMessageTimerRef.current);
-      }
-    },
-    [],
-  );
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -207,20 +196,14 @@ export default function App(): React.ReactElement {
   const handleManualRefresh = async () => {
     if (loading) return;
 
-    if (cooldownSeconds > 0) {
-      setCooldownMessage(t.refreshCooldown(`${cooldownSeconds}s`));
-      if (cooldownMessageTimerRef.current) {
-        clearTimeout(cooldownMessageTimerRef.current);
-      }
-      cooldownMessageTimerRef.current = window.setTimeout(() => {
-        setCooldownMessage(null);
-        cooldownMessageTimerRef.current = null;
-      }, 2500);
-      return;
-    }
+    if (cooldownSeconds > 0) return;
 
     await refetch();
   };
+
+  const refreshCountdown = `${Math.floor(cooldownSeconds / 60)
+    .toString()
+    .padStart(2, '0')}:${(cooldownSeconds % 60).toString().padStart(2, '0')}`;
 
   const handleShare = async () => {
     if (!rate) return;
@@ -290,7 +273,9 @@ export default function App(): React.ReactElement {
               <div className="relative">
                 <button
                   onClick={handleManualRefresh}
-                  className={`flex items-center justify-center rounded-2xl p-2.5 transition-all duration-300 shadow-sm ${
+                  disabled={loading || cooldownSeconds > 0}
+                  title={cooldownSeconds > 0 ? t.refreshCooldown(refreshCountdown) : t.pullToRefresh}
+                  className={`flex min-h-11 items-center justify-center gap-2 rounded-2xl px-2.5 transition-all duration-300 shadow-sm ${
                     loading
                       ? 'theme-surface-muted theme-text-primary'
                       : cooldownSeconds > 0
@@ -300,12 +285,12 @@ export default function App(): React.ReactElement {
                   aria-label="Refresh rates"
                 >
                   <RefreshIcon className={`h-5 w-5 sm:h-6 sm:w-6 ${loading ? 'animate-spin' : ''}`} />
+                  {cooldownSeconds > 0 && (
+                    <span className="font-data min-w-[2.8rem] text-[10px] font-black tabular-nums" dir="ltr" aria-live="off">
+                      {refreshCountdown}
+                    </span>
+                  )}
                 </button>
-                {cooldownMessage && (
-                  <div className="theme-tooltip absolute right-0 top-full z-50 mt-3 rounded-2xl border px-4 py-2 text-[10px] font-bold shadow-2xl sm:text-xs">
-                    {cooldownMessage}
-                  </div>
-                )}
               </div>
             </div>
           </div>
