@@ -275,7 +275,7 @@ export default function App(): React.ReactElement {
                   onClick={handleManualRefresh}
                   disabled={loading || cooldownSeconds > 0}
                   title={cooldownSeconds > 0 ? t.refreshCooldown(refreshCountdown) : t.pullToRefresh}
-                  className={`flex min-h-11 items-center justify-center gap-2 rounded-2xl px-2.5 transition-all duration-300 shadow-sm ${
+                  className={`relative flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl p-2.5 transition-all duration-300 shadow-sm ${
                     loading
                       ? 'theme-surface-muted theme-text-primary'
                       : cooldownSeconds > 0
@@ -286,7 +286,7 @@ export default function App(): React.ReactElement {
                 >
                   <RefreshIcon className={`h-5 w-5 sm:h-6 sm:w-6 ${loading ? 'animate-spin' : ''}`} />
                   {cooldownSeconds > 0 && (
-                    <span className="font-data min-w-[2.8rem] text-[10px] font-black tabular-nums" dir="ltr" aria-live="off">
+                    <span className="theme-surface-card theme-border font-data absolute -right-2 -top-2 z-10 min-w-[2.8rem] rounded-md border px-1 py-0.5 text-[9px] font-black tabular-nums shadow-sm" dir="ltr" aria-live="off">
                       {refreshCountdown}
                     </span>
                   )}
