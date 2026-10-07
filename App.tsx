@@ -100,7 +100,7 @@ export default function App(): React.ReactElement {
   const t = translations[language];
 
   const iqdRateValue = useMemo(() => rate?.iqd ?? 0, [rate]);
-  const officialRateValue = useMemo(() => rate?.centralBankRate ?? 1310, [rate]);
+  const officialRateValue = useMemo(() => rate?.centralBankRate ?? 1520, [rate]);
   const eurPerUsdValue = useMemo(() => rate?.eurPerUsd ?? 0, [rate]);
   const tryPerUsdValue = useMemo(() => rate?.tryPerUsd ?? 0, [rate]);
   const gbpPerUsdValue = useMemo(() => rate?.gbpPerUsd ?? 0, [rate]);

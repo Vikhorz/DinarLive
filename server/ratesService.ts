@@ -5,7 +5,7 @@ const REQUEST_TIMEOUT_MS = 12_000;
 const MARKET_RATE_MIN = 120000;
 const MARKET_RATE_MAX = 170000;
 const FALLBACK_MARKET_RATE = 153250;
-const FALLBACK_CBI_SELL_RATE = 1320;
+const FALLBACK_CBI_SELL_RATE = 1520;
 const METAL_PRICE_MIN = 0.01;
 const METAL_PRICE_MAX = 20000;
 
@@ -471,13 +471,10 @@ const fetchTelegramMarketData = async (): Promise<MarketSnapshot> => {
 
 const fetchCbiOfficialRate = async () => {
   try {
-    const cbiHtml = await fetchText('https://cbi.iq/news/view/2229');
+    const cbiHtml = await fetchText('https://cbi.iq/news/view/3355');
     const cbiText = htmlToText(cbiHtml);
     const officialRate = toDecimalRate(
-      cbiText.match(/1320\s+dinars per dollar/i)?.[0]?.match(/([0-9.,]+)/)?.[1]
-        ?? cbiText.match(/sale price of the dollar[\s\S]{0,40}?([0-9.,]+)/i)?.[1]
-        ?? cbiText.match(/beneficiaries[\s\S]{0,40}?([0-9.,]+)/i)?.[1]
-        ?? cbiText.match(/السعر الرسمي[\s\S]{0,40}?([0-9.,]+)/i)?.[1]
+      cbiText.match(/سعر بيع الدولار النقدي للجمهور\s*[:：]?\s*([0-9,]+)/)?.[1]
         ?? `${FALLBACK_CBI_SELL_RATE}`,
     );
 
@@ -676,7 +673,7 @@ const composeRatesResponse = async (): Promise<RatesApiResponse> => {
       ...marketData.sources,
       {
         web: {
-          uri: 'https://cbi.iq/news/view/2229',
+          uri: 'https://cbi.iq/news/view/3355',
           title: 'Central Bank of Iraq - USD Selling Price',
         },
       },
